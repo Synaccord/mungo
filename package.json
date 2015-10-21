@@ -1,0 +1,24 @@
+{
+  "name": "mung",
+  "version": "1.0.0",
+  "description": "Mung ===",
+  "main": "index.js",
+  "directories": {
+    "test": "test"
+  },
+  "scripts": {
+    "test": "mocha --compilers js:babel/register test/convert.js test/validate.js test/schema.js test/document.js",
+    "build": "rm -rf dist; babel app --modules common --stage 0 --optional runtime --out-dir dist;",
+    "postinstall" : "npm build"
+  },
+  "author": "",
+  "license": "ISC",
+  "devDependencies": {
+    "babel": "^5.8.23",
+    "mocha": "^2.3.3",
+    "should": "^7.1.0"
+  },
+  "dependencies": {
+    "mongodb": "^2.0.45"
+  }
+}
