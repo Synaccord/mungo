@@ -27,10 +27,6 @@ class Model {
         value       :   this.constructor.parseIndexes(schema)
       },
 
-      __defaults    :   {
-        value       :   this.parseDefaults(schema)
-      },
-
       __private     :   {
         value       :   this.parsePrivate(schema)
       },
@@ -58,6 +54,15 @@ class Model {
     if ( this._id ) {
       Object.defineProperty(this, '__timeStamp', {
         value : this._id.getTimestamp()
+      });
+    }
+
+    if ( Mung.debug ) {
+      Mung.printDebug({
+        [`new ${this.constructor.name}()`] : {
+          original : this.__original,
+          document : this.__document
+        }
       });
     }
 
@@ -161,7 +166,7 @@ class Model {
 
   //~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 
-  parseDefaults (schema, ns = '') {
+  static parseDefaults (schema, ns = '') {
     let defaults = {};
 
     for ( let field in schema ) {
@@ -473,15 +478,17 @@ class Model {
   //~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 
   applyDefault () {
-    for ( let field in this.__defaults ) {
+    const defaults = this.constructor.parseDefaults(this.constructor.schema());
+
+    for ( let field in defaults ) {
       if ( ! ( field in this.__document ) ) {
         let _default;
 
-        if ( typeof this.__defaults[field] === 'function' ) {
-          _default = this.__defaults[field]();
+        if ( typeof defaults[field] === 'function' ) {
+          _default = defaults[field]();
         }
         else {
-          _default = this.__defaults[field];
+          _default = defaults[field];
         }
 
         this.__document[field] = _default;
@@ -654,34 +661,43 @@ class Model {
               () => {
                 try {
                   const { Query } = Mung;
+                  if ( Mung.debug ) {
+                    Mung.printDebug({
+                      [`{${this.constructor.name}}.save()`] : {
+                        operation : 'insert',
+                        document : this.__document
+                      }
+                    });
+                  }
                   new Query({ model })
                     .insert(this.__document)
                     .then(
-                      created => {
+                      operation => {
                         try {
-                          this.__document._id = created.insertedId;
+
+                          // this.__document._id = operation.insertedId;
 
                           Object.defineProperty(this, '__queryTime', {
                             enumerable : false,
                             writable : false,
-                            value : created.__queryTime
+                            value : operation.__queryTime
                           });
 
                           if ( ! ( '__timeStamp' in this ) ) {
                             Object.defineProperty(this, '__timeStamp', {
                               enumerable : false,
                               writable : false,
-                              value : created.insertedId.getTimestamp()
+                              value : operation.insertedId.getTimestamp()
                             });
                           }
 
-                          if ( ! ( '_id' in this ) ) {
-                            Object.defineProperty(this, '_id', {
-                              enumerable : true,
-                              writable : false,
-                              value : this.__document._id
-                            });
-                          }
+                          // if ( ! ( '_id' in this ) ) {
+                          //   Object.defineProperty(this, '_id', {
+                          //     enumerable : true,
+                          //     writable : false,
+                          //     value : this.__document._id
+                          //   });
+                          // }
 
                           Object.defineProperty(this, '__totalQueryTime', {
                             enumerable : false,
@@ -689,7 +705,20 @@ class Model {
                             value : Date.now() - started
                           });
 
+                          for ( let field in operation.ops[0] ) {
+                            this.set(field, operation.ops[0][field]);
+                          }
+
                           ok(this);
+
+                          if ( Mung.debug ) {
+                            Mung.printDebug({
+                              [`{${this.constructor.name}}.save()`] : {
+                                operation : 'insert',
+                                document : this.__document
+                              }
+                            }, 'success');
+                          }
 
                           if ( typeof model.inserted === 'function' ) {
                             const pipe = model.inserted();
@@ -1048,9 +1077,13 @@ class Model {
 
   //~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 
-  static create (document, options) {
+  static create (document, options = {}) {
     return new Promise((ok, ko) => {
       try {
+        if ( Mung.debug ) {
+          Mung.printDebug({ [`${this.name}#v${this.version || 0}.create()`] : { document, options } });
+        }
+
         if ( Array.isArray(document) ) {
           return Promise.all(document.map(document => this.create(document, options))).then(ok, ko);
         }

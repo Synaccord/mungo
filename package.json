@@ -1,6 +1,6 @@
 {
   "name": "mung",
-  "version": "1.0.2",
+  "version": "1.0.3",
   "description": "Mung ===",
   "main": "dist/index.js",
   "directories": {
@@ -9,16 +9,19 @@
   "scripts": {
     "test": "mocha --compilers js:babel/register test/convert.js test/validate.js test/schema.js test/document.js",
     "build": "babel app --modules common --stage 0 --optional runtime --out-dir dist",
-    "postinstall" : "npm run build"
+    "hot-build": "rm -rf dist; babel app --modules common --stage 0 --optional runtime --watch --out-dir dist",
+    "postinstall": "npm run build"
   },
   "author": "",
   "license": "ISC",
   "devDependencies": {
     "babel": "^5.8.23",
+    "babel-runtime": "^5.8.25",
     "mocha": "^2.3.3",
     "should": "^7.1.0"
   },
   "dependencies": {
+    "colors": "^1.1.2",
     "mongodb": "^2.0.45"
   }
 }

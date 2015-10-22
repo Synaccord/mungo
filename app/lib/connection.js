@@ -29,9 +29,21 @@ class Connection extends EventEmitter {
 
     Mung.connections.push(connection);
 
+    if ( Mung.debug ) {
+      Mung.printDebug({ connect : { url } });
+    }
+
     mongodb.MongoClient.connect(url, (error, db) => {
       if ( error ) {
+        if ( Mung.debug ) {
+          Mung.printDebug({ connect : { url, error } }, 'error');
+        }
+
         return Mung.events.emit('error', error);
+      }
+
+      if ( Mung.debug ) {
+        Mung.printDebug({ connect : { url } }, 'success');
       }
 
       connection.connected = true;

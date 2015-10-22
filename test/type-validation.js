@@ -1,7 +1,7 @@
 'use strict';
 
 import should from 'should';
-import Mung from '../';
+import Mung from 'mung';
 
 describe ( 'Type validations' , function () {
 

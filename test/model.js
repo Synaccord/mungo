@@ -1,6 +1,6 @@
 'use strict';
 
-import Mung from '../';
+import Mung from 'mung';
 
 class Bar extends Mung.Model {}
 

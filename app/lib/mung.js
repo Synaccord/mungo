@@ -2,6 +2,7 @@
 
 import { EventEmitter } from 'events';
 import mongodb from 'mongodb';
+import colors from 'colors';
 
 class Mung {
 
@@ -275,6 +276,14 @@ class Mung {
             };
           }
 
+          // query[field].$type
+
+          else if ( '$type' in query[field] ) {
+            parsed[field] = {
+              $type : query[field].$type
+            };
+          }
+
           // query[field].$lt
 
           else if ( '$lt' in query[field] ) {
@@ -478,6 +487,29 @@ class Mung {
 //~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 
 Mung.events = new EventEmitter();
+
+Mung.debug = false;
+
+Mung.printDebug = (message, type = 'log') => {
+  const now = new Date();
+  const time = `${now.getMonth() + 1}/${now.getDate()}-${now.getHours()}:${now.getMinutes()}:${now.getSeconds()}`;
+  let color;
+  switch ( type ) {
+    case 'log': default:
+      color = 'grey';
+      break;
+    case 'error':
+      color = 'red';
+      break;
+    case 'success':
+      color = 'green';
+      break;
+    case 'warning':
+      color = 'yellow';
+      break;
+  }
+  console.log(`${"mung".bold} ${time}`[color], require('util').inspect(message, { depth: 15 }));
+};
 
 Mung.ObjectID = mongodb.ObjectID;
 

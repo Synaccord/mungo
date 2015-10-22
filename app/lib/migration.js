@@ -1,6 +1,6 @@
 'use strict';
 
-import Mung from './mung';
+import Mung  from './mung';
 
 class Migration extends Mung.Model {
     static schema () {

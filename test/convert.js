@@ -1,7 +1,7 @@
 'use strict';
 
 import should from 'should';
-import Mung from '../';
+import Mung from 'mung';
 
 class Bar extends Mung.Model {
   static schema () {
