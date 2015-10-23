@@ -1,6 +1,6 @@
 {
   "name": "mung",
-  "version": "1.0.8",
+  "version": "1.0.9",
   "description": "Mung ===",
   "main": "dist/index.js",
   "directories": {
@@ -10,7 +10,7 @@
     "test": "mocha --compilers js:babel/register test/convert.js test/validate.js test/schema.js test/document.js",
     "transpile": "babel app --modules common --stage 0 --optional runtime --out-dir dist",
     "hot-transpile": "rm -rf dist; babel app --modules common --stage 0 --optional runtime --watch --out-dir dist",
-    "prepublish": "npm run transpile"
+    "postinstall": "npm run transpile"
   },
   "author": "",
   "license": "ISC",
