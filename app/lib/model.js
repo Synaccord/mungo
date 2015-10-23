@@ -1,6 +1,6 @@
 'use strict';
 
-import Mung from './mung';
+import Mungo from './mungo';
 import mongodb from 'mongodb';
 
 class Model {
@@ -37,7 +37,7 @@ class Model {
     });
 
     if ( options._id && ! document._id ) {
-      document._id = Mung.ObjectID();
+      document._id = Mungo.ObjectID();
     }
 
     let original = {};
@@ -57,8 +57,8 @@ class Model {
       });
     }
 
-    if ( Mung.debug ) {
-      Mung.printDebug({
+    if ( Mungo.debug ) {
+      Mungo.printDebug({
         [`new ${this.constructor.name}()`] : {
           original : this.__original,
           document : this.__document
@@ -430,7 +430,7 @@ class Model {
         this.__document[field] = null;
       }
       else {
-        this.__document[field] = Mung.convert(value, this.__types[field]);
+        this.__document[field] = Mungo.convert(value, this.__types[field]);
       }
 
       for ( let field in this.__document ) {
@@ -448,7 +448,7 @@ class Model {
       return this;
     }
     catch ( error ) {
-      throw new (Mung.Error)('Could not set field', {
+      throw new (Mungo.Error)('Could not set field', {
         model : this.constructor.name,
         field,
         value,
@@ -470,7 +470,7 @@ class Model {
 
     for ( let field in requiredFields ) {
       if ( ! ( field in this.__document ) ) {
-        throw new (Mung.Error)(`Missing field ${field}`, { code : Mung.Error.MISSING_REQUIRED_FIELD });
+        throw new (Mungo.Error)(`Missing field ${field}`, { code : Mungo.Error.MISSING_REQUIRED_FIELD });
       }
     }
   }
@@ -517,7 +517,7 @@ class Model {
 
     const type = this.__types[field][0];
 
-    const casted = Mung.convert(value, type);
+    const casted = Mungo.convert(value, type);
 
     if ( typeof casted !== 'undefined' ) {
 
@@ -530,8 +530,8 @@ class Model {
         });
 
         if ( exists ) {
-          throw new (Mung.Error)('Array only accepts distinct values', {
-            code : Mung.Error.DISTINCT_ARRAY_CONSTRAINT,
+          throw new (Mungo.Error)('Array only accepts distinct values', {
+            code : Mungo.Error.DISTINCT_ARRAY_CONSTRAINT,
             rejected : casted
           });
         }
@@ -615,7 +615,7 @@ class Model {
           beforeValidation = model.validating();
         }
 
-        Mung.runSequence(beforeValidation, this)
+        Mungo.runSequence(beforeValidation, this)
           .then(
             () => {
               try {
@@ -629,7 +629,7 @@ class Model {
                   before = model.inserting();
                 }
 
-                Mung.runSequence(before, this)
+                Mungo.runSequence(before, this)
                   .then(ok, ko);
               }
               catch ( error ) {
@@ -660,9 +660,9 @@ class Model {
             .then(
               () => {
                 try {
-                  const { Query } = Mung;
-                  if ( Mung.debug ) {
-                    Mung.printDebug({
+                  const { Query } = Mungo;
+                  if ( Mungo.debug ) {
+                    Mungo.printDebug({
                       [`{${this.constructor.name}}.save()`] : {
                         operation : 'insert',
                         document : this.__document
@@ -711,8 +711,8 @@ class Model {
 
                           ok(this);
 
-                          if ( Mung.debug ) {
-                            Mung.printDebug({
+                          if ( Mungo.debug ) {
+                            Mungo.printDebug({
                               [`{${this.constructor.name}}.save()`] : {
                                 operation : 'insert',
                                 document : this.__document
@@ -724,7 +724,7 @@ class Model {
                             const pipe = model.inserted();
 
                             if ( Array.isArray(pipe) ) {
-                              Mung.runSequence(pipe, this);
+                              Mungo.runSequence(pipe, this);
                             }
                           }
                         }
@@ -777,11 +777,11 @@ class Model {
 
           this.applyDefault();
 
-          Mung.runSequence(updating, this)
+          Mungo.runSequence(updating, this)
             .then(
               () => {
                 try {
-                  const { Query } = Mung;
+                  const { Query } = Mungo;
                   new Query({ model : this.constructor })
                     .insert(this.__document, this.__document._id)
                     .then(
@@ -793,7 +793,7 @@ class Model {
 
                             if ( Array.isArray(pipe) ) {
 
-                              Mung.runSequence(pipe, this).then(
+                              Mungo.runSequence(pipe, this).then(
                                 () => ok(this),
                                 ko
                               );
@@ -850,10 +850,10 @@ class Model {
           }
         }
 
-        Mung.runSequence(removing, this).then(
+        Mungo.runSequence(removing, this).then(
           () => {
             try {
-              const { Query } = Mung;
+              const { Query } = Mungo;
               new Query({ model })
                 .remove({ _id : this._id }, { one : true })
                 .then(
@@ -865,7 +865,7 @@ class Model {
                         const pipe = model.removed();
 
                         if ( Array.isArray(pipe) ) {
-                          Mung.runSequence(pipe, this);
+                          Mungo.runSequence(pipe, this);
                         }
                       }
                     }
@@ -928,7 +928,7 @@ class Model {
 
         let refs = this.constructor.parseRefs(this.__types);
 
-        const flatten = Mung.flatten(this.toJSON({ private : true }));
+        const flatten = Mungo.flatten(this.toJSON({ private : true }));
 
         for ( let ref in refs ) {
           if ( foreignKeys.length && foreignKeys.indexOf(ref) === - 1 ) {
@@ -945,7 +945,7 @@ class Model {
             if ( ref in flatten ) {
               promises.push(new Promise((ok, ko) => {
                 refs[ref]
-                  .findById(Mung.resolve(ref, flatten))
+                  .findById(Mungo.resolve(ref, flatten))
                   .then(
                     document => {
                       this.__populated[ref] = document;
@@ -970,20 +970,20 @@ class Model {
 
   static convert (value) {
     if ( value ) {
-      if ( value instanceof Mung.ObjectID ) {
+      if ( value instanceof Mungo.ObjectID ) {
         return value;
       }
 
       if ( value._id ) {
-        return Mung.ObjectID(value._id);
+        return Mungo.ObjectID(value._id);
       }
 
       if ( typeof value === 'string' ) {
-        return Mung.ObjectID(value);
+        return Mungo.ObjectID(value);
       }
     }
 
-    throw new (Mung.Error)('Can not convert value to Model', {
+    throw new (Mungo.Error)('Can not convert value to Model', {
       value, model : this.name
     });
   }
@@ -991,8 +991,8 @@ class Model {
   //~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 
   static equal (a, b) {
-    if ( a instanceof Mung.ObjectID ) {
-      if ( b instanceof Mung.ObjectID ) {
+    if ( a instanceof Mungo.ObjectID ) {
+      if ( b instanceof Mungo.ObjectID ) {
         return a.equals(b);
       }
     }
@@ -1017,7 +1017,7 @@ class Model {
       schema = this.schema();
     }
 
-    schema._id = Mung.ObjectID;
+    schema._id = Mungo.ObjectID;
 
     schema.__v = Number;
 
@@ -1030,7 +1030,7 @@ class Model {
 
   static find (document, options) {
     const constructor = this;
-    const { Query } = Mung;
+    const { Query } = Mungo;
 
     if ( Array.isArray(document) ) {
       document = { $or : document };
@@ -1044,7 +1044,7 @@ class Model {
 
   static count (document, options) {
     const constructor = this;
-    const { Query } = Mung;
+    const { Query } = Mungo;
 
     if ( Array.isArray(document) ) {
       document = { $or : document };
@@ -1080,8 +1080,8 @@ class Model {
   static create (document, options = {}) {
     return new Promise((ok, ko) => {
       try {
-        if ( Mung.debug ) {
-          Mung.printDebug({ [`${this.name}#v${this.version || 0}.create()`] : { document, options } });
+        if ( Mungo.debug ) {
+          Mungo.printDebug({ [`${this.name}#v${this.version || 0}.create()`] : { document, options } });
         }
 
         if ( Array.isArray(document) ) {
@@ -1242,14 +1242,14 @@ class Model {
       return this.collection;
     }
 
-    return Mung.pluralize(this.name).toLowerCase();
+    return Mungo.pluralize(this.name).toLowerCase();
   }
 
   //~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 
   static stream (rows = 100, filter = {}) {
 
-    const { Streamable } = Mung;
+    const { Streamable } = Mungo;
 
     let stream = new Streamable();
 
@@ -1369,7 +1369,7 @@ class Model {
   static buildIndexes () {
     return new Promise((ok, ko) => {
       try {
-        const { Query } = Mung;
+        const { Query } = Mungo;
 
         const query = new Query({ model : this });
 
@@ -1398,4 +1398,4 @@ class Model {
   //~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 }
 
-Mung.Model = Model;
+Mungo.Model = Model;

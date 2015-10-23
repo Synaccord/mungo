@@ -4,7 +4,7 @@ import { EventEmitter } from 'events';
 import mongodb from 'mongodb';
 import colors from 'colors';
 
-class Mung {
+class Mungo {
 
   static validate (value, type, convert = false ) {
     try {
@@ -73,7 +73,7 @@ class Mung {
     try {
       if ( Array.isArray(type) ) {
         if ( ! Array.isArray(value) ) {
-          throw new MungError('Can not convert a non-array to an array of types', { value, type });
+          throw new MungoError('Can not convert a non-array to an array of types', { value, type });
         }
 
         if ( type.length === 1 ) {
@@ -119,7 +119,7 @@ class Mung {
         value,
         type : type ? type.name : typeof type
       };
-      if ( error instanceof (Mung.Error) ) {
+      if ( error instanceof (Mungo.Error) ) {
         debug.error = {
           name : error.name,
           message : JSON.parse(error.message),
@@ -132,7 +132,7 @@ class Mung {
           stack : error.stack
         }
       }
-      throw new (Mung.Error)('Could not convert value to type', debug);
+      throw new (Mungo.Error)('Could not convert value to type', debug);
     }
   }
 
@@ -226,7 +226,7 @@ class Mung {
           const type = schema[primaryField];
 
           if ( Array.isArray(type) ) {
-            parsed[field] = Mung.convert([query[field]], type)[0];
+            parsed[field] = Mungo.convert([query[field]], type)[0];
           }
         }
 
@@ -245,7 +245,7 @@ class Mung {
           if ( '$in' in query[field] ) {
             parsed[field] = {
               $in : query[field].$in.map(value =>
-                Mung.convert(value, schema[field])
+                Mungo.convert(value, schema[field])
               )
             };
           }
@@ -255,7 +255,7 @@ class Mung {
           else if ( '$nin' in query[field] ) {
             parsed[field] = {
               $nin : query[field].$nin.map(value =>
-                Mung.convert(value, schema[field])
+                Mungo.convert(value, schema[field])
               )
             };
           }
@@ -288,7 +288,7 @@ class Mung {
 
           else if ( '$lt' in query[field] ) {
             parsed[field] = {
-              $lt : Mung.convert(query[field].$lt, schema[field])
+              $lt : Mungo.convert(query[field].$lt, schema[field])
             };
           }
 
@@ -296,7 +296,7 @@ class Mung {
 
           else if ( '$gt' in query[field] ) {
             parsed[field] = {
-              $gt : Mung.convert(query[field].$gt, schema[field])
+              $gt : Mungo.convert(query[field].$gt, schema[field])
             };
           }
 
@@ -304,7 +304,7 @@ class Mung {
 
           else if ( '$gte' in query[field] ) {
             parsed[field] = {
-              $gte : Mung.convert(query[field].$gte, schema[field])
+              $gte : Mungo.convert(query[field].$gte, schema[field])
             };
           }
 
@@ -312,7 +312,7 @@ class Mung {
 
           else if ( '$lte' in query[field] ) {
             parsed[field] = {
-              $lte : Mung.convert(query[field].$lte, schema[field])
+              $lte : Mungo.convert(query[field].$lte, schema[field])
             };
           }
 
@@ -341,23 +341,23 @@ class Mung {
           }
 
           else if ( ! Array.isArray(schema[field]) ) {
-            parsed[field] = Mung.convert(query[field], schema[field]);
+            parsed[field] = Mungo.convert(query[field], schema[field]);
           }
         }
 
         else if ( Array.isArray(schema[field]) ) {
-          parsed[field] = Mung.convert(query[field], schema[field][0]);
+          parsed[field] = Mungo.convert(query[field], schema[field][0]);
         }
 
         else {
-          parsed[field] = Mung.convert(query[field], schema[field]);
+          parsed[field] = Mungo.convert(query[field], schema[field]);
         }
       }
 
       return parsed;
     }
     catch ( error ) {
-      Mung.Error.rethrow(error, 'Could not parse find query', { query });
+      Mungo.Error.rethrow(error, 'Could not parse find query', { query });
     }
   }
 
@@ -378,7 +378,7 @@ class Mung {
         const type = schema[primaryField];
 
         if ( Array.isArray(type) ) {
-          parsed[field] = Mung.convert([query[field]], type)[0];
+          parsed[field] = Mungo.convert([query[field]], type)[0];
         }
       }
 
@@ -397,7 +397,7 @@ class Mung {
         if ( '$in' in query[field] ) {
           parsed[field] = {
             $in : query[field].$in.map(value =>
-              Mung.convert(value, schema[field])
+              Mungo.convert(value, schema[field])
             )
           };
         }
@@ -422,7 +422,7 @@ class Mung {
 
         else if ( '$lt' in query[field] ) {
           parsed[field] = {
-            $lt : Mung.convert(query[field].$lt, schema[field])
+            $lt : Mungo.convert(query[field].$lt, schema[field])
           };
         }
 
@@ -435,16 +435,16 @@ class Mung {
         }
 
         else if ( ! Array.isArray(schema[field]) ) {
-          parsed[field] = Mung.convert(query[field], schema[field]);
+          parsed[field] = Mungo.convert(query[field], schema[field]);
         }
       }
 
       else if ( Array.isArray(schema[field]) ) {
-        parsed[field] = Mung.convert(query[field], schema[field][0]);
+        parsed[field] = Mungo.convert(query[field], schema[field][0]);
       }
 
       else {
-        parsed[field] = Mung.convert(query[field], schema[field]);
+        parsed[field] = Mungo.convert(query[field], schema[field]);
       }
     }
 
@@ -464,7 +464,7 @@ class Mung {
       }
 
       else if ( typeof object[key] === 'object' ) {
-        let sub = Mung.flatten(object[key], fieldName);
+        let sub = Mungo.flatten(object[key], fieldName);
         for ( let subKey in sub ) {
           flatten[subKey] = sub[subKey];
         }
@@ -480,17 +480,17 @@ class Mung {
   // Converts { 'a.b.c' : true } to { a : { b : { c : true } } }
 
   static resolve (dotNotation, object) {
-    return Mung.flatten(object)[dotNotation];
+    return Mungo.flatten(object)[dotNotation];
   }
 }
 
 //~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 
-Mung.events = new EventEmitter();
+Mungo.events = new EventEmitter();
 
-Mung.debug = false;
+Mungo.debug = false;
 
-Mung.printDebug = (message, type = 'log') => {
+Mungo.printDebug = (message, type = 'log') => {
   const now = new Date();
   const time = `${now.getMonth() + 1}/${now.getDate()}-${now.getHours()}:${now.getMinutes()}:${now.getSeconds()}`;
   let color;
@@ -508,12 +508,12 @@ Mung.printDebug = (message, type = 'log') => {
       color = 'yellow';
       break;
   }
-  console.log(`${"mung".bold} ${time}`[color], require('util').inspect(message, { depth: 15 }));
+  console.log(`${"Mungo".bold} ${time}`[color], require('util').inspect(message, { depth: 15 }));
 };
 
-Mung.ObjectID = mongodb.ObjectID;
+Mungo.ObjectID = mongodb.ObjectID;
 
-Mung.ObjectID.convert = function (id) {
+Mungo.ObjectID.convert = function (id) {
   if ( typeof id === 'string' ) {
     return mongodb.ObjectID(id);
   }
@@ -524,7 +524,7 @@ Mung.ObjectID.convert = function (id) {
 
   if ( id && typeof id === 'object' ) {
     if ( id.$in ) {
-      return { $in : id.$in.map(id => Mung.ObjectID.convert(id)) };
+      return { $in : id.$in.map(id => Mungo.ObjectID.convert(id)) };
     }
 
     if ( id._id ) {
@@ -533,7 +533,7 @@ Mung.ObjectID.convert = function (id) {
   }
 }
 
-Mung.ObjectID.equal = function (a, b) {
+Mungo.ObjectID.equal = function (a, b) {
   return a.equals(b);
 }
 
@@ -548,14 +548,14 @@ class _Number {
     const converted = +value;
 
     if ( ! this.validate(converted) ) {
-      throw new (Mung.Error)('Can not convert value to Number', { value });
+      throw new (Mungo.Error)('Can not convert value to Number', { value });
     }
 
     return converted;
   }
 }
 
-Mung.Number = _Number;
+Mungo.Number = _Number;
 
 //~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 
@@ -569,7 +569,7 @@ class _String {
   }
 }
 
-Mung.String = _String;
+Mungo.String = _String;
 
 //~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 
@@ -583,7 +583,7 @@ class _Boolean {
   }
 }
 
-Mung.Boolean = _Boolean;
+Mungo.Boolean = _Boolean;
 
 //~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 
@@ -593,7 +593,7 @@ class _Object {
   }
 }
 
-Mung.Object = _Object;
+Mungo.Object = _Object;
 
 //~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 
@@ -603,7 +603,7 @@ class _Mixed {
   }
 }
 
-Mung.Mixed = _Mixed;
+Mungo.Mixed = _Mixed;
 
 //~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 
@@ -613,7 +613,7 @@ class _Hex {
   }
 }
 
-Mung.Hex = _Hex;
+Mungo.Hex = _Hex;
 
 //~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 
@@ -623,7 +623,7 @@ class _Octal {
   }
 }
 
-Mung.Octal = _Octal;
+Mungo.Octal = _Octal;
 
 //~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 
@@ -633,7 +633,7 @@ class _Binary {
   }
 }
 
-Mung.Binary = _Binary;
+Mungo.Binary = _Binary;
 
 //~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 
@@ -643,7 +643,7 @@ class _Error {
   }
 }
 
-Mung.ErrorType = _Error;
+Mungo.ErrorType = _Error;
 
 //~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 
@@ -653,7 +653,7 @@ class _RegExp {
   }
 }
 
-Mung.RegExp = _RegExp;
+Mungo.RegExp = _RegExp;
 
 //~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 
@@ -666,14 +666,14 @@ class _Date {
     const converted = new Date(value);
 
     if ( ! this.validate(converted) ) {
-      throw new (Mung.Error)('Can not convert value to Date', { value });
+      throw new (Mungo.Error)('Can not convert value to Date', { value });
     }
 
     return converted;
   }
 }
 
-Mung.Date = _Date;
+Mungo.Date = _Date;
 
 //~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 
@@ -686,7 +686,7 @@ class ExtendableError extends Error {
   }
 }
 
-class MungError extends ExtendableError {
+class MungoError extends ExtendableError {
   constructor (message, options = {}) {
     let msg;
 
@@ -727,22 +727,22 @@ class MungError extends ExtendableError {
   }
 }
 
-Mung.Error = MungError;
+Mungo.Error = MungoError;
 
-MungError.MISSING_REQUIRED_FIELD = 1;
-MungError.DISTINCT_ARRAY_CONSTRAINT = 2;
+MungoError.MISSING_REQUIRED_FIELD = 1;
+MungoError.DISTINCT_ARRAY_CONSTRAINT = 2;
 
 //~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 
-export default Mung;
+export default Mungo;
 
-// Mung.Model = function () {
+// Mungo.Model = function () {
 //
 // }
 //
-// class Message extends Mung.Model {}
-// class Room extends Mung.Model {}
-// class User extends Mung.Model {}
+// class Message extends Mungo.Model {}
+// class Room extends Mungo.Model {}
+// class User extends Mungo.Model {}
 //
 //
 // parse(

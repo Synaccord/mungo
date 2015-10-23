@@ -1,6 +1,6 @@
 'use strict';
 
-import Mung from './mung';
+import Mungo from './mungo';
 
 class Query {
   static project (options = {}) {
@@ -43,7 +43,7 @@ class Query {
     let { connection } = this.options;
 
     if ( ! connection ) {
-      connection = Mung.connections[0];
+      connection = Mungo.connections[0];
     }
 
     if ( ! connection ) {
@@ -201,10 +201,10 @@ class Query {
   }
 
   parse (query) {
-    const { Model, Util } = Mung;
+    const { Model, Util } = Mungo;
     const { model } = this.options;
 
-    return Mung.parseFindQuery(query, new (this.options.model)().__types);
+    return Mungo.parseFindQuery(query, new (this.options.model)().__types);
   }
 
   remove (document, options = {}) {
@@ -307,7 +307,7 @@ class Query {
   find (document, options = {}) {
     return new Promise((ok, ko) => {
       try {
-        const { Document } = Mung;
+        const { Document } = Mungo;
         const { model } = this.options;
         let { schema } = model;
 
@@ -448,7 +448,7 @@ class Query {
   count (document, options = {}) {
     return new Promise((ok, ko) => {
       try {
-        const { Document } = Mung;
+        const { Document } = Mungo;
         const { model } = this.options;
         let { schema } = model;
 
@@ -462,7 +462,7 @@ class Query {
           parsed = this.parse(document);
         }
         catch ( error ) {
-          throw new (Mung.Error)(`Could not count from ${model.name}: parse error`, { query : document, error : {
+          throw new (Mungo.Error)(`Could not count from ${model.name}: parse error`, { query : document, error : {
             message : error.message, stack : error.stack, name : error.name, code : error.code
           }});
         }
@@ -496,4 +496,4 @@ class Query {
 
 }
 
-Mung.Query = Query;
+Mungo.Query = Query;

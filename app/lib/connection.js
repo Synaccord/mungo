@@ -2,7 +2,7 @@
 
 import { EventEmitter }     from 'events';
 import mongodb              from 'mongodb';
-import Mung                 from './mung';
+import Mungo                 from './mungo';
 
 class Connection extends EventEmitter {
 
@@ -27,23 +27,23 @@ class Connection extends EventEmitter {
   static connect (url) {
     let connection = new Connection();
 
-    Mung.connections.push(connection);
+    Mungo.connections.push(connection);
 
-    if ( Mung.debug ) {
-      Mung.printDebug({ connect : { url } });
+    if ( Mungo.debug ) {
+      Mungo.printDebug({ connect : { url } });
     }
 
     mongodb.MongoClient.connect(url, (error, db) => {
       if ( error ) {
-        if ( Mung.debug ) {
-          Mung.printDebug({ connect : { url, error } }, 'error');
+        if ( Mungo.debug ) {
+          Mungo.printDebug({ connect : { url, error } }, 'error');
         }
 
-        return Mung.events.emit('error', error);
+        return Mungo.events.emit('error', error);
       }
 
-      if ( Mung.debug ) {
-        Mung.printDebug({ connect : { url } }, 'success');
+      if ( Mungo.debug ) {
+        Mungo.printDebug({ connect : { url } }, 'success');
       }
 
       connection.connected = true;
@@ -52,14 +52,14 @@ class Connection extends EventEmitter {
 
       connection.emit('connected');
 
-      Mung.events.emit('connected', connection);
+      Mungo.events.emit('connected', connection);
     });
 
     return connection;
   }
 
   static disconnect () {
-    let connections = Mung.connections;
+    let connections = Mungo.connections;
 
     return Promise.all(connections.map(connection => connection.disconnect()));
   }
@@ -67,7 +67,7 @@ class Connection extends EventEmitter {
 
 //~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 
-Mung.connections = [];
+Mungo.connections = [];
 
-Mung.connect = Connection.connect.bind(Connection);
-Mung.disconnect = Connection.disconnect.bind(Connection);
+Mungo.connect = Connection.connect.bind(Connection);
+Mungo.disconnect = Connection.disconnect.bind(Connection);

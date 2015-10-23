@@ -1,4 +1,4 @@
-Mung
+Mungo
 ===
 
 Schema models for MongoDB
@@ -6,12 +6,12 @@ Schema models for MongoDB
 # Install
 
 ```bash
-npm install mung
+npm install mungo
 ```
 
 # Overview
 
-`Mung` is a library to create models for MongoDB with the following key features in mind:
+`Mungo` is a library to create models for MongoDB with the following key features in mind:
 
 - ES6 class syntax
 - Migration
@@ -21,9 +21,9 @@ npm install mung
 # Usage
 
 ```js
-import Mung from 'mung';
+import Mungo from 'mungo';
 
-class Team extends Mung.Model {
+class Team extends Mungo.Model {
   static schema () {
     return {
       name : {
@@ -35,7 +35,7 @@ class Team extends Mung.Model {
   }
 }
 
-class Player extends Mung.Model {
+class Player extends Mungo.Model {
   static schema () {
     return {
       name : {

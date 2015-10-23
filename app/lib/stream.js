@@ -1,7 +1,7 @@
 'use strict';
 
 import { Readable }       from 'stream';
-import Mung               from './mung';
+import Mungo               from './mungo';
 
 class Streamable extends Readable {
   constructor (options) {
@@ -37,4 +37,4 @@ class Streamable extends Readable {
   }
 }
 
-Mung.Streamable = Streamable;
+Mungo.Streamable = Streamable;

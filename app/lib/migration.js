@@ -1,8 +1,8 @@
 'use strict';
 
-import Mung  from './mung';
+import Mungo  from './mungo';
 
-class Migration extends Mung.Model {
+class Migration extends Mungo.Model {
     static schema () {
       return {
         collection : {
@@ -14,7 +14,7 @@ class Migration extends Mung.Model {
           required : true
         },
         undo : [{
-          _id : Mung.ObjectID,
+          _id : Mungo.ObjectID,
           set : Object,
           unset : [String]
         }],
@@ -23,7 +23,7 @@ class Migration extends Mung.Model {
           set : Object,
           unset : [String]
         }],
-        created : [Mung.ObjectID],
+        created : [Mungo.ObjectID],
         removed : [Object]
       };
     }
@@ -88,6 +88,6 @@ class Migration extends Mung.Model {
 
 Migration.version = 1;
 
-Migration.collection = 'mung_migrations';
+Migration.collection = 'Mungo_migrations';
 
-Mung.Migration = Migration;
+Mungo.Migration = Migration;
