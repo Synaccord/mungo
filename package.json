@@ -1,6 +1,6 @@
 {
   "name": "mung",
-  "version": "1.0.3",
+  "version": "1.0.4",
   "description": "Mung ===",
   "main": "dist/index.js",
   "directories": {
@@ -15,12 +15,12 @@
   "author": "",
   "license": "ISC",
   "devDependencies": {
-    "babel": "^5.8.23",
-    "babel-runtime": "^5.8.25",
     "mocha": "^2.3.3",
     "should": "^7.1.0"
   },
   "dependencies": {
+    "babel": "^5.8.23",
+    "babel-runtime": "^5.8.25",
     "colors": "^1.1.2",
     "mongodb": "^2.0.45"
   }
