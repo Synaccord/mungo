@@ -148,6 +148,14 @@ class Query {
                               results.forEach(indexName => {
                                 indexes = indexes.map(index => {
                                   if ( index.name === indexName ) {
+                                    if ( Mungo.debug ) {
+                                      Mungo.printDebug({
+                                        'new index' : {
+                                          collection,
+                                          index
+                                        }
+                                      });
+                                    }
                                     index.created = true;
                                   }
                                   return index;
