@@ -553,6 +553,12 @@ class Model {
 
   //~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 
+  map (field, mapper) {
+    return this.set(field, (this[field] || []).map(mapper));
+  }
+
+  //~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+
   increment (field, step = 1 ) {
     if ( typeof field === 'object' ) {
       for ( let _field in field ) {
