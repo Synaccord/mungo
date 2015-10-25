@@ -559,6 +559,29 @@ class Model {
 
   //~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 
+  setByIndex (field, index, value) {
+    if ( typeof index === 'object' ) {
+      for ( let position in index ) {
+        this.setByIndex(field, position, index[position]);
+      }
+      return this;
+    }
+
+    if ( ! ( field in this.__document ) ) {
+      this.set(field, []);
+    }
+
+    let doc = Object.assign(this.__document);
+
+    let array = doc[field];
+
+    array[index] = value;
+
+    return this.set(field, array);
+  }
+
+  //~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+
   increment (field, step = 1 ) {
     if ( typeof field === 'object' ) {
       for ( let _field in field ) {
