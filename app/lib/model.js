@@ -422,6 +422,11 @@ class Model {
         return this.push(array, value[array]);
       }
 
+      if ( field === '$pull' ) {
+        const array = Object.keys(value)[0];
+        return this.pull(array, value[array]);
+      }
+
       if ( ! ( field in this.__schema ) ) {
         return this;
       }
@@ -545,10 +550,14 @@ class Model {
 
   //~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 
+  pull (field, value) {
+    return this.filter(field, item => item !== value);
+  }
+
+  //~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+
   filter (field, filter) {
-    if ( Array.isArray(this.__document[field]) ) {
-      this.__document[field] = this.__document[field].filter(filter);
-    }
+    return this.set(field, (this.__document[field] || []).filter(filter));
   }
 
   //~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~

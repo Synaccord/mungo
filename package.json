@@ -1,16 +1,16 @@
 {
   "name": "mungo",
-  "version": "1.0.4",
+  "version": "1.0.5",
   "description": "Mungo ===",
   "main": "dist/index.js",
   "directories": {
     "test": "test"
   },
   "scripts": {
-    "test": "mocha --compilers js:babel/register test/convert.js test/validate.js test/schema.js test/document.js",
+    "test": "mocha --compilers js:babel/register test/convert.js",
     "transpile": "babel app --modules common --stage 0 --optional runtime --out-dir dist",
     "hot-transpile": "rm -rf dist; babel app --modules common --stage 0 --optional runtime --watch --out-dir dist",
-    "prepublish": "npm run transpile"
+    "prepublish": "npm test && npm run transpile"
   },
   "author": "",
   "license": "ISC",
