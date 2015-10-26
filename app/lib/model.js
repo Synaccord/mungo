@@ -453,7 +453,7 @@ class Model {
       return this;
     }
     catch ( error ) {
-      Mungo.Error.rethrow(error, 'Could not set field', {
+      throw Mungo.Error.rethrow(error, 'Could not set field', {
         model : this.constructor.name,
         field,
         value
@@ -503,11 +503,24 @@ class Model {
   //~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 
   pull (field, value) {
-    if ( value !== null ) {
-      value = Mungo.convert(value, this.__types[field]);
+    try {
+      let converted;
+      if ( value === null ) {
+        converted = null;
+      }
+      else {
+        converted = Mungo.convert([value], this.__types[field])[0];
+      }
+      return this.filter(field, item => item !== converted);
     }
-    console.log('pull', field, value);
-    return this.filter(field, item => item !== value);
+    catch ( error ) {
+      throw Mungo.Error.rethrow(error, 'Could not pull field', {
+        model : this.constructor.name,
+        field,
+        value,
+        converted
+      });
+    }
   }
 
   //~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
