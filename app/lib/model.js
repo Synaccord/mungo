@@ -453,59 +453,11 @@ class Model {
       return this;
     }
     catch ( error ) {
-      throw new (Mungo.Error)('Could not set field', {
+      Mungo.Error.rethrow(error, 'Could not set field', {
         model : this.constructor.name,
         field,
-        value,
-        error : {
-          message : error.message,
-          code : error.code
-        }
-      })
-    }
-  }
-
-  //~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
-
-  verifyRequired (options = {}) {
-
-    const schema = this.constructor.getSchema(options);
-
-    const requiredFields = this.constructor.parseRequired(schema);
-
-    for ( let field in requiredFields ) {
-      if ( ! ( field in this.__document ) ) {
-        throw new (Mungo.Error)(`Missing field ${field}`, { code : Mungo.Error.MISSING_REQUIRED_FIELD });
-      }
-    }
-  }
-
-  //~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
-
-  applyDefault () {
-    const defaults = this.constructor.parseDefaults(this.constructor.schema());
-
-    for ( let field in defaults ) {
-      if ( ! ( field in this.__document ) ) {
-        let _default;
-
-        if ( typeof defaults[field] === 'function' ) {
-          _default = defaults[field]();
-        }
-        else {
-          _default = defaults[field];
-        }
-
-        this.__document[field] = _default;
-
-        Object.defineProperty(this, field, {
-          enumerable : true,
-          configurable : true,
-          get : () => {
-            return this.__document[field];
-          }
-        });
-      }
+        value
+      });
     }
   }
 
@@ -551,6 +503,10 @@ class Model {
   //~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 
   pull (field, value) {
+    if ( value !== null ) {
+      value = Mungo.convert(value, this.__types[field]);
+    }
+    console.log('pull', field, value);
     return this.filter(field, item => item !== value);
   }
 
@@ -614,6 +570,50 @@ class Model {
     delete this.__document[field];
 
     return this;
+  }
+
+  //~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+
+  verifyRequired (options = {}) {
+
+    const schema = this.constructor.getSchema(options);
+
+    const requiredFields = this.constructor.parseRequired(schema);
+
+    for ( let field in requiredFields ) {
+      if ( ! ( field in this.__document ) ) {
+        throw new (Mungo.Error)(`Missing field ${field}`, { code : Mungo.Error.MISSING_REQUIRED_FIELD });
+      }
+    }
+  }
+
+  //~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+
+  applyDefault () {
+    const defaults = this.constructor.parseDefaults(this.constructor.schema());
+
+    for ( let field in defaults ) {
+      if ( ! ( field in this.__document ) ) {
+        let _default;
+
+        if ( typeof defaults[field] === 'function' ) {
+          _default = defaults[field]();
+        }
+        else {
+          _default = defaults[field];
+        }
+
+        this.__document[field] = _default;
+
+        Object.defineProperty(this, field, {
+          enumerable : true,
+          configurable : true,
+          get : () => {
+            return this.__document[field];
+          }
+        });
+      }
+    }
   }
 
   //~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
