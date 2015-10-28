@@ -1135,6 +1135,8 @@ class Model {
           Mungo.printDebug({ [`${this.name}#v${this.version || 0}.create()`] : { document, options } });
         }
 
+        options.create = true;
+
         if ( Array.isArray(document) ) {
           return Promise.all(document.map(document => this.create(document, options))).then(ok, ko);
         }

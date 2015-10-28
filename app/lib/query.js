@@ -279,6 +279,13 @@ class Query {
                 );
             }
             else {
+              if ( Mungo.debug ) {
+                Mungo.printDebug({
+                  action : 'insertOne',
+                  collection : collection.collectionName,
+                  document
+                }, 'log');
+              }
               collection
                 .insertOne(document)
                 .then(
