@@ -1128,6 +1128,31 @@ class Model {
 
   //~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 
+  static findOneRandom (where = {}, options = {}) {
+    return new Promise((ok, ko) => {
+      try {
+        this.count(where, options).then(
+          count => {
+            try {
+              options.skip = Math.ceil(Math.max(0, Math.floor(count)*Math.random()));
+
+              this.findOne(where, options).then(ok, ko);
+            }
+            catch ( error ) {
+              ko(error);
+            }
+          },
+          ko
+        );
+      }
+      catch ( error ) {
+        ko(error);
+      }
+    });
+  }
+
+  //~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+
   static create (document, options = {}) {
     return new Promise((ok, ko) => {
       try {
