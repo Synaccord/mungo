@@ -44,6 +44,21 @@ You can view a complete summary of type acceptance by running the test `mocha --
 
 Note that these types can be declared inside an array or an object (see below). Note also that you can create your custom types.
 
+# Conversion
+
+All types will try to convert values. For example, a type set to `String` will convert `1` to `"1"`. You can disable this by setting convert to false:
+
+```js
+{
+  field : {
+    type : String,
+    convert : false
+  }
+}
+```
+
+In this case, `1` will not be accepted because it is not a string.
+
 # Number
 
 Will accept only numbers but will try to convert any givem values into numbers (unless the attribute `convert` is set to `false` or to a function that evaluates to `false`).
@@ -57,3 +72,11 @@ Will accept only numbers but will try to convert any givem values into numbers (
 Will accept only numbers validated by the `Mung.Number` class `validate` method (see [_Number class](../lib/mung.js)). If `convert` is not set to false (and by default it is not), Mung will attempt to convert values to numbers using the `+` tick. This is native in JavaScript so please refer to ECMA official docs about the specificities. For example, a non-numeric string (`+'hello'`) will fail to convert to a number, while an array will succeed because its length is returned (`+[]` returns 0, which is the array length). If convert fails, an exception is thrown and the operation fails.
 
 # String
+
+Will accept strings and will try to convert other values to string.
+
+```js
+{
+  field : String
+}
+```
