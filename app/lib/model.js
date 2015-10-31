@@ -1244,11 +1244,11 @@ class Model {
 
   //~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 
-  static updateByIds (...ids) {
+  static updateByIds (ids, set, options = {}) {
     if ( ids.length === 1 && Array.isArray(ids[0]) ) {
       ids = ids[0];
     }
-    return this.find({ _id : { $in : ids } });
+    return this.update({ _id : { $in : ids } }, set, options);
   }
 
   //~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
