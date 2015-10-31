@@ -427,10 +427,6 @@ class Model {
         return this.pull(array, value[array]);
       }
 
-      if ( field === '$unset' ) {
-        return this.unset(value);
-      }
-
       if ( ! ( field in this.__schema ) ) {
         return this;
       }
@@ -584,11 +580,6 @@ class Model {
   //~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 
   unset (field) {
-    if ( Array.isArray(field) ) {
-      field.forEach(field => this.unset(field));
-      return this;
-    }
-
     delete this.__document[field];
 
     return this;
@@ -1249,6 +1240,15 @@ class Model {
 
   static updateById (id, set, options = {}) {
     return this.updateOne({ _id : id }, set, options);
+  }
+
+  //~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+
+  static updateByIds (...ids) {
+    if ( ids.length === 1 && Array.isArray(ids[0]) ) {
+      ids = ids[0];
+    }
+    return this.find({ _id : { $in : ids } });
   }
 
   //~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
