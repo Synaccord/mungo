@@ -1253,6 +1253,15 @@ class Model {
 
   //~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 
+  static updateByIds (ids, set, options = {}) {
+    if ( ids.length === 1 && Array.isArray(ids[0]) ) {
+      ids = ids[0];
+    }
+    return this.update({ _id : { $in : ids } }, set, options);
+  }
+
+  //~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+
   static updateOne (where, set, options = {}) {
     return new Promise((ok,  ko) => {
       try {
