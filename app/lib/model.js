@@ -427,6 +427,10 @@ class Model {
         return this.pull(array, value[array]);
       }
 
+      if ( field === '$unset' ) {
+        return this.unset(value);
+      }
+
       if ( ! ( field in this.__schema ) ) {
         return this;
       }
@@ -580,6 +584,11 @@ class Model {
   //~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 
   unset (field) {
+    if ( Array.isArray(field) ) {
+      field.forEach(field => this.unset(field));
+      return this;
+    }
+
     delete this.__document[field];
 
     return this;
