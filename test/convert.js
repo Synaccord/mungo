@@ -832,80 +832,124 @@ describe ( 'Convert' , function () {
       });
     });
 
-    // describe ( '{Buffer}' , function () {
-    //
-    //   it ( 'should throw an eror', function () {
-    //     () => { Mungo.convert(new Buffer(123), Number) }.should.throw(Mungo.Error);
-    //   });
-    // });
-    //
-    // describe ( '{Binary}' , function () {
-    //
-    //   const converted = Mungo.convert(0b11, Number);
-    //
-    //   it ( 'should be a number', function () {
-    //
-    //     converted.should.be.a.Number();
-    //
-    //   });
-    //
-    //   it ( 'should be 3', function () {
-    //
-    //     converted.should.be.exactly(3);
-    //
-    //   });
-    //
-    //   describe ( 'base 2', function () {
-    //
-    //     const base2 = Mungo.convert(0b0011, Number);
-    //
-    //     it ( 'should be a number', function () {
-    //
-    //       base2.should.be.a.Number();
-    //
-    //     });
-    //
-    //     it ( 'should be 3', function () {
-    //
-    //       converted.should.be.exactly(3);
-    //
-    //     });
-    //
-    //   });
-    // });
-    //
-    // describe ( '{Model}' , function () {
-    //
-    //   it ( 'should throw an eror', function () {
-    //     () => { Mungo.convert(new (Mungo.Model)(), Number) }.should.throw(Mungo.Error);
-    //   });
-    //
-    // });
-    //
-    // describe ( '{ObjectID}' , function () {
-    //
-    //   it ( 'should throw an eror', function () {
-    //     () => { Mungo.convert(Mungo.ObjectID(), Number) }.should.throw(Mungo.Error);
-    //   });
-    //
-    // });
-    //
-    // describe ( '{Regex}' , function () {
-    //
-    //   it ( 'should throw an eror', function () {
-    //     () => { Mungo.convert(/abc/, Number) }.should.throw(Mungo.Error);
-    //   });
-    //
-    // });
-    //
-    // describe ( '{Error}' , function () {
-    //
-    //   it ( 'should throw an eror', function () {
-    //     () => { Mungo.convert(new Error('foo'), Number) }.should.throw(Mungo.Error);
-    //   });
-    //
-    // });
-    //
+    describe ( '{Buffer}' , function () {
+
+      const converted = Mungo.convert(new Buffer('1'), String);
+
+      it ( 'should be a string', function () {
+
+        converted.should.be.a.String();
+
+      });
+
+      it ( 'should be "1"', function () {
+
+        converted.should.be.exactly('1');
+
+      });
+    });
+
+    describe ( '{Binary} (0b11)' , function () {
+
+      const converted = Mungo.convert(0b11, String);
+
+      it ( 'should be a string', function () {
+
+        converted.should.be.a.String();
+
+      });
+
+      it ( 'should be "3"', function () {
+
+        converted.should.be.exactly("3");
+
+      });
+
+      describe ( 'base 2 (0b0011)', function () {
+
+        const base2 = Mungo.convert(0b0011, String);
+
+        it ( 'should be a string', function () {
+
+          base2.should.be.a.String();
+
+        });
+
+        it ( 'should be "3"', function () {
+
+          base2.should.be.exactly("3");
+
+        });
+
+      });
+    });
+
+    describe ( '{Model}' , function () {
+
+      const converted = Mungo.convert(new (Mungo.Model)(), String);
+
+      it ( 'should be a string', function () {
+
+        converted.should.be.a.String();
+
+      });
+
+      it ( 'should be "[object Object]"', function () {
+
+        converted.should.be.exactly("[object Object]");
+
+      });
+
+    });
+
+    describe ( '{ObjectID}' , function () {
+
+      const _id = Mungo.ObjectID();
+
+      const converted = Mungo.convert(_id, String);
+
+      it ( 'should be a string', function () {
+
+        converted.should.be.a.String();
+
+      });
+
+      it ( `should be "${_id.toString()}"`, function () {
+
+        converted.should.be.exactly(_id.toString());
+
+      });
+
+    });
+
+    describe ( '{Regex} (/abc/)' , function () {
+
+      const converted = Mungo.convert(/abc/, String);
+
+      it ( 'should be a string', function () {
+        converted.should.be.a.String();
+      });
+
+      it ( 'should be "/abc/"' , function () {
+        converted.should.be.exactly("/abc/");
+      });
+
+    });
+
+    describe ( '{Error} (new Error("abc"))' , function () {
+
+      const converted = Mungo.convert(new Error('abc'), String);
+
+      it ( 'should be a string', function () {
+        converted.should.be.a.String();
+      });
+
+      it ( 'should be "Error: abc"' , function () {
+        converted.should.be.exactly("Error: abc");
+      });
+
+    });
+
 
   });
 
