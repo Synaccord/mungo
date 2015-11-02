@@ -46,7 +46,7 @@ Note that these types can be declared inside an array or an object (see below). 
 
 # Conversion
 
-All types will try to convert values. For example, a type set to `String` will convert `1` to `"1"`. You can disable this by setting convert to false:
+All types will try to convert values to them. For example, a type set to `String` will convert the number `1` to the string `"1"`. You can disable this by setting convert to false:
 
 ```js
 {
@@ -78,5 +78,15 @@ Will accept strings and will try to convert other values to string.
 ```js
 {
   field : String
+}
+```
+
+# Boolean
+
+Will accept booleans and will try to convert other values to boolean.
+
+```js
+{
+  field : Boolean
 }
 ```
