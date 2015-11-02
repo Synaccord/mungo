@@ -738,7 +738,7 @@ describe ( 'Convert' , function () {
 
       describe ( 'Infinity', function () {
 
-        const converted = Mungo.convert({}, String);
+        const converted = Mungo.convert(Infinity, String);
 
         it ( 'should be a string', function () {
 
@@ -746,9 +746,9 @@ describe ( 'Convert' , function () {
 
         });
 
-        it ( 'should be "[object Object]"', function () {
+        it ( 'should be "Infinity"', function () {
 
-          converted.should.be.exactly("[object Object]");
+          converted.should.be.exactly("Infinity");
 
         });
 
@@ -756,7 +756,7 @@ describe ( 'Convert' , function () {
 
       describe ( '-Infinity', function () {
 
-        const converted = Mungo.convert({}, String);
+        const converted = Mungo.convert(-Infinity, String);
 
         it ( 'should be a string', function () {
 
@@ -764,9 +764,9 @@ describe ( 'Convert' , function () {
 
         });
 
-        it ( 'should be "[object Object]"', function () {
+        it ( 'should be "-Infinity"', function () {
 
-          converted.should.be.exactly("[object Object]");
+          converted.should.be.exactly("-Infinity");
 
         });
 
@@ -952,5 +952,562 @@ describe ( 'Convert' , function () {
 
 
   });
+
+  describe ( '<Boolean>' , function () {
+
+    describe ( '{Number}' , function () {
+
+      describe ( 'Integer' , function () {
+
+        describe ( 'Positive (123)' , function () {
+
+          const converted = Mungo.convert(123, Boolean);
+
+          it ( 'should be a boolean' , function () {
+
+            converted.should.be.a.Boolean();
+
+          });
+
+          it ( 'should be a true' , function () {
+
+            converted.should.be.exactly(true);
+
+          });
+
+        });
+
+        describe ( 'Zero (0)' , function () {
+
+          const converted = Mungo.convert(0, Boolean);
+
+          it ( 'should be a boolean' , function () {
+
+            converted.should.be.a.Boolean();
+
+          });
+
+          it ( 'should be false' , function () {
+
+            converted.should.be.exactly(false);
+
+          });
+
+        });
+
+        describe ( 'Negative (-123)' , function () {
+
+          const converted = Mungo.convert(-123, Boolean);
+
+          it ( 'should be a boolean' , function () {
+
+            converted.should.be.a.Boolean();
+
+          });
+
+          it ( 'should be true' , function () {
+
+            converted.should.be.exactly(true);
+
+          });
+
+        });
+
+      });
+
+      describe ( 'Float' , function () {
+
+        describe ( 'Positive (1.99)' , function () {
+
+          const converted = Mungo.convert(1.99, Boolean);
+
+          it ( 'should be a boolean' , function () {
+
+            converted.should.be.a.Boolean();
+
+          });
+
+          it ( 'should be true' , function () {
+
+            converted.should.be.exactly(true);
+
+          });
+
+        });
+
+        describe ( 'Negative (-1.99)' , function () {
+
+          const converted = Mungo.convert(-1.99, Boolean);
+
+          it ( 'should be a boolean' , function () {
+
+            converted.should.be.a.Boolean();
+
+          });
+
+          it ( 'should be true' , function () {
+
+            converted.should.be.exactly(true);
+
+          });
+
+        });
+
+      });
+
+      describe ( 'Big number' , function () {
+
+        describe ( 'Big (42e17)' , function () {
+
+          const converted = Mungo.convert(42e17, Boolean);
+
+          it ( 'should be a boolean' , function () {
+
+            converted.should.be.a.Boolean();
+
+          });
+
+          it ( 'should be true' , function () {
+
+            converted.should.be.exactly(true);
+
+          });
+
+        });
+
+        describe ( 'Small (42e-6)' , function () {
+
+          const converted = Mungo.convert(42e-6, Boolean);
+
+          it ( 'should be a boolean' , function () {
+
+            converted.should.be.a.Boolean();
+
+          });
+
+          it ( 'should be true' , function () {
+
+            converted.should.be.exactly(true);
+
+          });
+
+        });
+
+      });
+
+      describe ( 'Precision (1.023616785)' , function () {
+
+        const converted = Mungo.convert(1.023616785, Boolean);
+
+        it ( 'should be a boolean' , function () {
+
+          converted.should.be.a.Boolean();
+
+        });
+
+        it ( 'should be true' , function () {
+
+          converted.should.be.exactly(true);
+
+        });
+
+      });
+
+    });
+
+    describe ( '{String' , function () {
+
+      describe ( 'String ("abc")', function () {
+
+        const converted = Mungo.convert('abc', Boolean);
+
+        it ( 'should be a boolean' , function () {
+
+          converted.should.be.a.Boolean();
+
+        });
+
+        it ( 'should be true' , function () {
+
+          converted.should.be.true;
+
+        });
+      });
+
+      describe ( 'Empty string ()', function () {
+
+        const converted = Mungo.convert('', Boolean);
+
+        it ( 'should be a boolean' , function () {
+
+          converted.should.be.a.Boolean();
+
+        });
+
+        it ( 'should be false' , function () {
+
+          converted.should.be.false;
+
+        });
+      });
+
+
+    });
+
+    describe ( '{Boolean}' , function () {
+
+      describe ( 'true', function () {
+
+        const converted = Mungo.convert(true, Boolean);
+
+        it ( 'should be a boolean' , function () {
+
+          converted.should.be.a.Boolean();
+
+        });
+
+        it ( 'should be true' , function () {
+
+          converted.should.be.exactly(true);
+
+        });
+
+      });
+
+      describe ( 'false', function () {
+
+        const converted = Mungo.convert(false, Boolean);
+
+        it ( 'should be a boolean' , function () {
+
+          converted.should.be.a.Boolean();
+
+        });
+
+        it ( 'should be false' , function () {
+
+          converted.should.be.exactly(false);
+
+        });
+
+      });
+
+    });
+
+    describe ( '{Date}' , function () {
+
+      let date = new Date();
+
+      const converted = Mungo.convert(date, Boolean);
+
+      it ( 'should be a boolean' , function () {
+
+        converted.should.be.a.Boolean();
+
+      });
+
+      it ( 'should be true' , function () {
+
+        converted.should.be.exactly(true);
+
+      });
+
+    });
+
+    describe ( '{null}' , function () {
+
+      const converted = Mungo.convert(null, Boolean);
+
+      it ( 'should be a boolean', function () {
+
+        converted.should.be.a.Boolean();
+
+      });
+
+      it ( 'should be false' , function () {
+
+        converted.should.be.exactly(false);
+
+      });
+
+    });
+
+    describe ( '{undefined}' , function () {
+
+      const converted = Mungo.convert(undefined, Boolean);
+
+      it ( 'should be a boolean', function () {
+
+        converted.should.be.a.Boolean();
+
+      });
+
+      it ( 'should be false' , function () {
+
+        converted.should.be.exactly(false);
+
+      });
+
+    });
+
+    describe ( '{Array}' , function () {
+
+      const converted = Mungo.convert([], Boolean);
+
+      it ( 'should be a boolean', function () {
+
+        converted.should.be.a.Boolean();
+
+      });
+
+      it ( 'should be true', function () {
+
+        converted.should.be.exactly(true);
+
+      });
+
+    });
+
+    describe ( '{Object}' , function () {
+
+      const converted = Mungo.convert({}, Boolean);
+
+      it ( 'should be a boolean', function () {
+
+        converted.should.be.a.Boolean();
+
+      });
+
+      it ( 'should be true', function () {
+
+        converted.should.be.exactly(true);
+
+      });
+
+    });
+
+    describe ( '{Infinity}' , function () {
+
+      describe ( 'Infinity', function () {
+
+        const converted = Mungo.convert(Infinity, Boolean);
+
+        it ( 'should be a boolean', function () {
+
+          converted.should.be.a.Boolean();
+
+        });
+
+        it ( 'should be true', function () {
+
+          converted.should.be.exactly(true);
+
+        });
+
+      });
+
+      describe ( '-Infinity', function () {
+
+        const converted = Mungo.convert(-Infinity, Boolean);
+
+        it ( 'should be a boolean', function () {
+
+          converted.should.be.a.Boolean();
+
+        });
+
+        it ( 'should be true', function () {
+
+          converted.should.be.exactly(true);
+
+        });
+
+      });
+
+    });
+
+    describe ( '{Octal}' , function () {
+
+      const converted = Mungo.convert(0o644, Boolean);
+
+      it ( 'should be a boolean', function () {
+        converted.should.be.a.Boolean();
+      });
+
+      it ( 'should be true' , function () {
+        converted.should.be.exactly(true);
+      });
+
+    });
+
+    describe ( '{Decimal} (0x3e71)' , function () {
+
+      const converted = Mungo.convert(0x3e71, Boolean);
+
+      it ( 'should be a boolean', function () {
+        converted.should.be.a.Boolean();
+      });
+
+      it ( 'should be true' , function () {
+        converted.should.be.exactly(true);
+      });
+
+    });
+
+    describe ( '{Symbol} (Symbol())' , function () {
+
+      const converted = Mungo.convert(Symbol(), Boolean);
+
+      it ( 'should be a boolean', function () {
+        converted.should.be.a.Boolean();
+      });
+
+      it ( 'should be true' , function () {
+        converted.should.be.exactly(true);
+      });
+    });
+
+    describe ( '{Function} (Function)' , function () {
+
+      const converted = Mungo.convert(Function, Boolean);
+
+      it ( 'should be a boolean', function () {
+
+        converted.should.be.a.Boolean();
+
+      });
+
+      it ( 'should be true', function () {
+
+        converted.should.be.exactly(true);
+
+      });
+    });
+
+    describe ( '{Buffer}' , function () {
+
+      const converted = Mungo.convert(new Buffer('1'), Boolean);
+
+      it ( 'should be a boolean', function () {
+
+        converted.should.be.a.Boolean();
+
+      });
+
+      it ( 'should be true', function () {
+
+        converted.should.be.exactly(true);
+
+      });
+    });
+
+    describe ( '{Binary} (0b11)' , function () {
+
+      const converted = Mungo.convert(0b11, Boolean);
+
+      it ( 'should be a boolean', function () {
+
+        converted.should.be.a.Boolean();
+
+      });
+
+      it ( 'should be true', function () {
+
+        converted.should.be.exactly(true);
+
+      });
+
+      describe ( 'base 2 (0b0011)', function () {
+
+        const base2 = Mungo.convert(0b0011, Boolean);
+
+        it ( 'should be a boolean', function () {
+
+          base2.should.be.a.Boolean();
+
+        });
+
+        it ( 'should be true', function () {
+
+          converted.should.be.exactly(true);
+
+        });
+
+      });
+    });
+
+    describe ( '{Model}' , function () {
+
+      const converted = Mungo.convert(new (Mungo.Model)(), Boolean);
+
+      it ( 'should be a boolean', function () {
+
+        converted.should.be.a.Boolean();
+
+      });
+
+      it ( 'should be true', function () {
+
+        converted.should.be.exactly(true);
+
+      });
+
+    });
+
+    describe ( '{ObjectID}' , function () {
+
+      const _id = Mungo.ObjectID();
+
+      const converted = Mungo.convert(_id, Boolean);
+
+      it ( 'should be a boolean', function () {
+
+        converted.should.be.a.Boolean();
+
+      });
+
+      it ( 'should be true', function () {
+
+        converted.should.be.exactly(true);
+
+      });
+
+    });
+
+    describe ( '{Regex} (/abc/)' , function () {
+
+      const converted = Mungo.convert(/abc/, Boolean);
+
+      it ( 'should be a boolean', function () {
+        converted.should.be.a.Boolean();
+      });
+
+      it ( 'should be true', function () {
+
+        converted.should.be.exactly(true);
+
+      });
+
+    });
+
+    describe ( '{Error} (new Error("abc"))' , function () {
+
+      const converted = Mungo.convert(new Error('abc'), Boolean);
+
+      it ( 'should be a boolean', function () {
+        converted.should.be.a.Boolean();
+      });
+
+      it ( 'should be true', function () {
+
+        converted.should.be.exactly(true);
+
+      });
+
+    });
+
+
+  });
+
 
 });
