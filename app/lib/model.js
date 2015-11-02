@@ -419,6 +419,9 @@ class Model {
 
       if ( field === '$push' ) {
         const array = Object.keys(value)[0];
+        if ( Array.isArray(value[array] ) ) {
+          return this.push(array, ...value[array]);
+        }
         return this.push(array, value[array]);
       }
 
@@ -467,7 +470,7 @@ class Model {
 
   //~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 
-  push (field, value) {
+  push (field, ...values) {
     if ( ! ( field in this  ) ) {
       this.set(field, []);
     }
@@ -475,6 +478,13 @@ class Model {
     if ( ! Array.isArray(this[field]) ) {
       throw new Error(`${this.constructor.name}.${field} is not an array`);
     }
+
+    if ( values.length > 1 ) {
+      values.forEach(value => this.push(field, value));
+      return this;
+    }
+
+    const value = values[0];
 
     const type = this.__types[field][0];
 
