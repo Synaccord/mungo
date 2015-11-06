@@ -330,6 +330,7 @@ class Query {
           schema = schema();
         }
 
+
         this.collection().then(collection => {
           try {
             const projection = Query.project(options);
@@ -361,6 +362,7 @@ class Query {
                 .toArray();
             }
 
+
             query.then(
               documents => {
                 try {
@@ -376,6 +378,10 @@ class Query {
                   }
                   else {
                     documents = documents.map(doc => new model(doc));
+                  }
+
+                  if ( Mungo.debug ) {
+                    Mungo.printDebug({ [`${model.name}#v${model.version || 0}.find()`] : { documents } });
                   }
 
                   if ( documents ) {
