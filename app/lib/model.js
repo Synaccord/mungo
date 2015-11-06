@@ -1009,7 +1009,30 @@ class Model {
 
           }
           else if ( Array.isArray(this.__types[ref]) ) {
+            if ( Array.isArray(flatten[ref]) ) {
+              flatten[ref].forEach((item, index) => {
+                promises.push(new Promise((ok, ko) => {
+                  try {
+                    refs[ref].findById(Mungo.resolve(ref, flatten)[index])
+                      .then(
+                        document => {
+                          if ( ! this.__populated[ref] ) {
+                            this.__populated[ref] = [];
+                          }
 
+                          this.__populated[ref][index] = document;
+
+                          ok();
+                        },
+                        ko
+                      );
+                  }
+                  catch ( error ) {
+                    ko(error);
+                  }
+                }));
+              });
+            }
           }
           else {
             if ( ref in flatten ) {
