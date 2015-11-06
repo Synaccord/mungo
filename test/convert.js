@@ -2,6 +2,7 @@
 
 import should from 'should';
 import Mungo from '../app';
+import isDate from './is.date';
 
 class Bar extends Mungo.Model {
   static schema () {
@@ -1519,9 +1520,9 @@ describe ( 'Convert' , function () {
 
           const converted =  Mungo.convert(123, Date);
 
-          it ( 'should be a date' , function () {
+          it ( `should be a date (${converted})` , function () {
 
-            converted.should.be.an.instanceof(Date);
+            converted.should.be.a.Date();
 
           });
 
@@ -1529,9 +1530,11 @@ describe ( 'Convert' , function () {
 
         describe ( 'Zero (0)' , function () {
 
-          it ( 'should throw error', function () {
+          const converted =  Mungo.convert(0, Date);
 
-            () => { Mungo.convert(0, Date) }.should.throw(Mungo.Error);
+          it ( `should be a date (${converted})` , function () {
+
+            converted.should.be.a.Date();
 
           });
 
@@ -1539,19 +1542,11 @@ describe ( 'Convert' , function () {
 
         describe ( 'Negative (-123)' , function () {
 
-          it ( 'should throw error', function () {
+          const converted =  Mungo.convert(-123, Date);
 
-            () => { Mungo.convert(-123, Date) }.should.throw(Mungo.Error);
+          it ( `should be a date (${converted})` , function () {
 
-          });
-
-        });
-
-        describe ( `Timestamp ${Date.now()}` , function () {
-
-          it ( 'should throw error', function () {
-
-            () => { Mungo.convert(Date.now(), Date) }.should.throw(Mungo.Error);
+            converted.should.be.a.Date();
 
           });
 
@@ -1559,331 +1554,271 @@ describe ( 'Convert' , function () {
 
       });
 
-      // describe ( 'Float' , function () {
-      //
-      //   describe ( 'Positive (1.99)' , function () {
-      //
-      //     const converted = Mungo.convert(1.99, Boolean);
-      //
-      //     it ( 'should be a boolean' , function () {
-      //
-      //       converted.should.be.a.Boolean();
-      //
-      //     });
-      //
-      //     it ( 'should be true' , function () {
-      //
-      //       converted.should.be.exactly(true);
-      //
-      //     });
-      //
-      //   });
-      //
-      //   describe ( 'Negative (-1.99)' , function () {
-      //
-      //     const converted = Mungo.convert(-1.99, Boolean);
-      //
-      //     it ( 'should be a boolean' , function () {
-      //
-      //       converted.should.be.a.Boolean();
-      //
-      //     });
-      //
-      //     it ( 'should be true' , function () {
-      //
-      //       converted.should.be.exactly(true);
-      //
-      //     });
-      //
-      //   });
-      //
-      // });
-      //
-      // describe ( 'Big number' , function () {
-      //
-      //   describe ( 'Big (42e17)' , function () {
-      //
-      //     const converted = Mungo.convert(42e17, Boolean);
-      //
-      //     it ( 'should be a boolean' , function () {
-      //
-      //       converted.should.be.a.Boolean();
-      //
-      //     });
-      //
-      //     it ( 'should be true' , function () {
-      //
-      //       converted.should.be.exactly(true);
-      //
-      //     });
-      //
-      //   });
-      //
-      //   describe ( 'Small (42e-6)' , function () {
-      //
-      //     const converted = Mungo.convert(42e-6, Boolean);
-      //
-      //     it ( 'should be a boolean' , function () {
-      //
-      //       converted.should.be.a.Boolean();
-      //
-      //     });
-      //
-      //     it ( 'should be true' , function () {
-      //
-      //       converted.should.be.exactly(true);
-      //
-      //     });
-      //
-      //   });
-      //
-      // });
-      //
-      // describe ( 'Precision (1.023616785)' , function () {
-      //
-      //   const converted = Mungo.convert(1.023616785, Boolean);
-      //
-      //   it ( 'should be a boolean' , function () {
-      //
-      //     converted.should.be.a.Boolean();
-      //
-      //   });
-      //
-      //   it ( 'should be true' , function () {
-      //
-      //     converted.should.be.exactly(true);
-      //
-      //   });
-      //
-      // });
+      describe ( 'Float' , function () {
+
+        describe ( 'Positive (1.99)' , function () {
+
+          const converted = Mungo.convert(1.99, Date);
+
+          it ( `should be a date (${converted})` , function () {
+
+            converted.should.be.a.Date();
+
+          });
+        });
+
+        describe ( 'Negative (-1.99)' , function () {
+
+          const converted = Mungo.convert(-1.99, Date);
+
+          it ( `should be a date (${converted})` , function () {
+
+            converted.should.be.a.Date();
+
+          });
+
+        });
+
+      });
+
+      describe ( 'Big number' , function () {
+
+        describe ( 'Big (42e17)' , function () {
+
+          const converted = Mungo.convert(42e17, Date);
+
+          it ( `should be not a date (${converted})` , function () {
+
+            converted.should.not.be.a.Date();
+
+          });
+
+        });
+
+        describe ( 'Small (42e-6)' , function () {
+
+          const converted = Mungo.convert(42e-6, Date);
+
+          it ( `should be a date (${converted})` , function () {
+
+            converted.should.be.a.Date();
+
+          });
+
+        });
+
+      });
+
+      describe ( 'Precision (1.023616785)' , function () {
+
+        const converted = Mungo.convert(1.023616785, Date);
+
+        it ( `should be a date (${converted})` , function () {
+
+          converted.should.be.a.Date();
+
+        });
+
+      });
 
     });
 
-    // describe ( '{String' , function () {
-    //
-    //   describe ( 'String ("abc")', function () {
-    //
-    //     const converted = Mungo.convert('abc', Boolean);
-    //
-    //     it ( 'should be a boolean' , function () {
-    //
-    //       converted.should.be.a.Boolean();
-    //
-    //     });
-    //
-    //     it ( 'should be true' , function () {
-    //
-    //       converted.should.be.true;
-    //
-    //     });
-    //   });
-    //
-    //   describe ( 'Empty string ()', function () {
-    //
-    //     const converted = Mungo.convert('', Boolean);
-    //
-    //     it ( 'should be a boolean' , function () {
-    //
-    //       converted.should.be.a.Boolean();
-    //
-    //     });
-    //
-    //     it ( 'should be false' , function () {
-    //
-    //       converted.should.be.false;
-    //
-    //     });
-    //   });
-    //
-    //
-    // });
-    //
-    // describe ( '{Boolean}' , function () {
-    //
-    //   describe ( 'true', function () {
-    //
-    //     const converted = Mungo.convert(true, Boolean);
-    //
-    //     it ( 'should be a boolean' , function () {
-    //
-    //       converted.should.be.a.Boolean();
-    //
-    //     });
-    //
-    //     it ( 'should be true' , function () {
-    //
-    //       converted.should.be.exactly(true);
-    //
-    //     });
-    //
-    //   });
-    //
-    //   describe ( 'false', function () {
-    //
-    //     const converted = Mungo.convert(false, Boolean);
-    //
-    //     it ( 'should be a boolean' , function () {
-    //
-    //       converted.should.be.a.Boolean();
-    //
-    //     });
-    //
-    //     it ( 'should be false' , function () {
-    //
-    //       converted.should.be.exactly(false);
-    //
-    //     });
-    //
-    //   });
-    //
-    // });
-    //
-    // describe ( '{Date}' , function () {
-    //
-    //   let date = new Date();
-    //
-    //   const converted = Mungo.convert(date, Boolean);
-    //
-    //   it ( 'should be a boolean' , function () {
-    //
-    //     converted.should.be.a.Boolean();
-    //
-    //   });
-    //
-    //   it ( 'should be true' , function () {
-    //
-    //     converted.should.be.exactly(true);
-    //
-    //   });
-    //
-    // });
-    //
-    // describe ( '{null}' , function () {
-    //
-    //   const converted = Mungo.convert(null, Boolean);
-    //
-    //   it ( 'should be a boolean', function () {
-    //
-    //     converted.should.be.a.Boolean();
-    //
-    //   });
-    //
-    //   it ( 'should be false' , function () {
-    //
-    //     converted.should.be.exactly(false);
-    //
-    //   });
-    //
-    // });
-    //
-    // describe ( '{undefined}' , function () {
-    //
-    //   const converted = Mungo.convert(undefined, Boolean);
-    //
-    //   it ( 'should be a boolean', function () {
-    //
-    //     converted.should.be.a.Boolean();
-    //
-    //   });
-    //
-    //   it ( 'should be false' , function () {
-    //
-    //     converted.should.be.exactly(false);
-    //
-    //   });
-    //
-    // });
-    //
-    // describe ( '{Array}' , function () {
-    //
-    //   const converted = Mungo.convert([], Boolean);
-    //
-    //   it ( 'should be a boolean', function () {
-    //
-    //     converted.should.be.a.Boolean();
-    //
-    //   });
-    //
-    //   it ( 'should be true', function () {
-    //
-    //     converted.should.be.exactly(true);
-    //
-    //   });
-    //
-    // });
-    //
-    // describe ( '{Object}' , function () {
-    //
-    //   const converted = Mungo.convert({}, Boolean);
-    //
-    //   it ( 'should be a boolean', function () {
-    //
-    //     converted.should.be.a.Boolean();
-    //
-    //   });
-    //
-    //   it ( 'should be true', function () {
-    //
-    //     converted.should.be.exactly(true);
-    //
-    //   });
-    //
-    // });
-    //
-    // describe ( '{Infinity}' , function () {
-    //
-    //   describe ( 'Infinity', function () {
-    //
-    //     const converted = Mungo.convert(Infinity, Boolean);
-    //
-    //     it ( 'should be a boolean', function () {
-    //
-    //       converted.should.be.a.Boolean();
-    //
-    //     });
-    //
-    //     it ( 'should be true', function () {
-    //
-    //       converted.should.be.exactly(true);
-    //
-    //     });
-    //
-    //   });
-    //
-    //   describe ( '-Infinity', function () {
-    //
-    //     const converted = Mungo.convert(-Infinity, Boolean);
-    //
-    //     it ( 'should be a boolean', function () {
-    //
-    //       converted.should.be.a.Boolean();
-    //
-    //     });
-    //
-    //     it ( 'should be true', function () {
-    //
-    //       converted.should.be.exactly(true);
-    //
-    //     });
-    //
-    //   });
-    //
-    // });
-    //
-    // describe ( '{Octal}' , function () {
-    //
-    //   const converted = Mungo.convert(0o644, Boolean);
-    //
-    //   it ( 'should be a boolean', function () {
-    //     converted.should.be.a.Boolean();
-    //   });
-    //
-    //   it ( 'should be true' , function () {
-    //     converted.should.be.exactly(true);
-    //   });
-    //
-    // });
-    //
+    describe ( '{String' , function () {
+
+      describe ( 'String ("abc")', function () {
+
+        const converted = Mungo.convert('abc', Date);
+
+        it ( `should be not a date (${converted})` , function () {
+
+          converted.should.not.be.a.Date();
+
+        });
+      });
+
+      describe ( 'Empty string ()', function () {
+
+        const converted = Mungo.convert('', Date);
+
+        it ( `should be not a date (${converted})` , function () {
+
+          converted.should.not.be.a.Date();
+
+        });
+      });
+
+      describe ( `Date format ("${new Date()}")`, function () {
+
+        const converted = Mungo.convert(new Date().toString(), Date);
+
+        it ( `should be a date (${converted})` , function () {
+
+          converted.should.be.a.Date();
+
+        });
+      });
+
+
+    });
+
+    describe ( '{Boolean}' , function () {
+
+      describe ( 'true', function () {
+
+        const converted = Mungo.convert(true, Date);
+
+        it ( `should be a date (${converted})` , function () {
+
+          converted.should.be.a.Date();
+
+        });
+
+      });
+
+      describe ( 'false', function () {
+
+        const converted = Mungo.convert(false, Date);
+
+        it ( `should be a date (${converted})` , function () {
+
+          converted.should.be.a.Date();
+
+        });
+
+      });
+
+    });
+
+    describe ( `{Date} ${new Date()}` , function () {
+
+      let date = new Date();
+
+      const converted = Mungo.convert(date, Date);
+
+      it ( `should be a date (${converted})` , function () {
+
+        converted.should.be.a.Date();
+
+      });
+
+    });
+
+    describe ( '{null}' , function () {
+
+      const converted = Mungo.convert(null, Date);
+
+      it ( `should be a date (${converted})` , function () {
+
+        converted.should.be.a.Date();
+
+      });
+
+    });
+
+    describe ( '{undefined}' , function () {
+
+      const converted = Mungo.convert(undefined, Date);
+
+      it ( `should not be a date (${converted})` , function () {
+
+        converted.should.not.be.a.Date();
+
+      });
+
+    });
+
+    describe ( '{Array}' , function () {
+
+      describe ( 'Date array [2015, 10, 20]' , function () {
+
+        const converted = Mungo.convert([2015, 10, 20], Date);
+
+        it ( `should be a date (${converted})` , function () {
+
+          converted.should.be.a.Date();
+
+        });
+
+      });
+
+      describe ( 'Date array [2015, "January", 20]' , function () {
+
+        const converted = Mungo.convert([2015, "January", 20], Date);
+
+        it ( `should be a date (${converted})` , function () {
+
+          converted.should.be.a.Date();
+
+        });
+
+      });
+
+      describe ( 'Non Date array ["a", "b", "c"]' , function () {
+
+        const converted = Mungo.convert(['a', 'b', 'c'], Date);
+
+        it ( `should not be a date (${converted})` , function () {
+
+          converted.should.not.be.a.Date();
+
+        });
+
+      });
+
+    });
+
+    describe ( '{Object}' , function () {
+
+      const converted = Mungo.convert({}, Date);
+
+      it ( `should not be a date (${converted})` , function () {
+
+        converted.should.not.be.a.Date();
+
+      });
+
+    });
+
+    describe ( '{Infinity}' , function () {
+
+      describe ( 'Infinity', function () {
+
+        const converted = Mungo.convert(Infinity, Date);
+
+        it ( `should not be a date (${converted})` , function () {
+
+          converted.should.not.be.a.Date();
+
+        });
+
+      });
+
+      describe ( '-Infinity', function () {
+
+        const converted = Mungo.convert(-Infinity, Date);
+
+        it ( `should not be a date (${converted})` , function () {
+
+          converted.should.not.be.a.Date();
+
+        });
+
+      });
+
+    });
+
+    describe ( '{Octal}' , function () {
+
+      const converted = Mungo.convert(0o644, Date);
+
+      it ( `should be a date (${converted})` , function () {
+
+        converted.should.be.a.Date();
+
+      });
+
+    });
+
     // describe ( '{Decimal} (0x3e71)' , function () {
     //
     //   const converted = Mungo.convert(0x3e71, Boolean);
