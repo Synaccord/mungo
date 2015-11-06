@@ -992,6 +992,7 @@ class Model {
   populate (...foreignKeys) {
     return new Promise((ok, ko) => {
       try {
+        console.log('//////////~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~')
         const promises = [];
 
         this.__populated = {};
@@ -1009,7 +1010,7 @@ class Model {
 
           }
           else if ( Array.isArray(this.__types[ref]) ) {
-
+            console.log(('array ere'))
           }
           else {
             if ( ref in flatten ) {
