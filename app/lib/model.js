@@ -434,6 +434,10 @@ class Model {
         return this.unset(value);
       }
 
+      if ( field === '$increment' || field === '$inc' ) {
+        return this.increment(value);
+      }
+
       if ( ! ( field in this.__schema ) ) {
         return this;
       }
