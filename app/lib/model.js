@@ -1129,6 +1129,10 @@ class Model {
       document = { $or : document };
     }
 
+    if ( Mungo.debug ) {
+      Mungo.printDebug({ [`${this.name}#v${this.version || 0}.find()`] : { document, options } });
+    }
+
     return new Query({ model : this })
       .find(document, options);
   }
@@ -1151,6 +1155,14 @@ class Model {
 
   static findOne (where = {}) {
     return this.find(where, { one : true });
+  }
+
+  //~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+
+  static findLastOne (where = {}, options = {}) {
+    options.one = true;
+    options.sort = { _id : -1 };
+    return this.find(where, options);
   }
 
   //~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
