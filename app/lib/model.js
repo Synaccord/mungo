@@ -983,7 +983,7 @@ class Model {
     }
 
     if ( options.populate ) {
-      for ( let field in this.__populated ) {
+      for ( let field in this.__populated && this.__populated[field] ) {
         json[field] = this.__populated[field].toJSON(options);
       }
     }
