@@ -71,6 +71,7 @@ class Mungo {
 
   static convert (value, type) {
     try {
+
       if ( Array.isArray(type) ) {
         if ( ! Array.isArray(value) ) {
           throw new MungoError('Can not convert a non-array to an array of types', { value, type });
@@ -86,6 +87,16 @@ class Mungo {
             .filter((value, index) => type[index])
             .map((value, index) => this.convert(value, type[index]));
         }
+      }
+
+      if ( type.name === undefined && type.constructor === Object && typeof type === 'object' ) {
+        const obj = {};
+
+        for ( let field in value ) {
+          obj[field] = this.convert(value[field], type[field]);
+        }
+
+        return obj;
       }
 
       if ( type === String ) {
