@@ -586,13 +586,9 @@ class Model {
       return this;
     }
 
-    if ( ! this[field] ) {
-      this[field] = 0;
-    }
+    let incremented = (field in this.__document) ? this.__document[field] : 0;
 
-    this[field] += step;
-
-    return this.set(field, this[field]);
+    return this.set(field, incremented + step);
   }
 
   //~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
