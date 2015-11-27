@@ -71,6 +71,9 @@ class Mungo {
 
   static convert (value, type) {
     try {
+      if ( typeof type === 'undefined' ) {
+        return undefined;
+      }
 
       if ( Array.isArray(type) ) {
         if ( ! Array.isArray(value) ) {
@@ -93,7 +96,11 @@ class Mungo {
         const obj = {};
 
         for ( let field in value ) {
-          obj[field] = this.convert(value[field], type[field]);
+          let converted = this.convert(value[field], type[field]);
+
+          if ( typeof converted !== 'undefined' ) {
+            obj[field] = converted;
+          }
         }
 
         return obj;
