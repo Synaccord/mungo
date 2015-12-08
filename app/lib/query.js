@@ -414,7 +414,7 @@ class Query {
                       //       value : projection.sort
                       //     }
                       //   });
-                      // }
+                      }
 
                       ok(documents, parsed);
                     };
