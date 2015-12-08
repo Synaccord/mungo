@@ -77,6 +77,11 @@ class Mungo {
 
       if ( Array.isArray(type) ) {
         if ( ! Array.isArray(value) ) {
+
+          if ( value === null || typeof value === 'undefined' ) {
+            return undefined;
+          }
+
           throw new MungoError('Can not convert a non-array to an array of types', { value, type });
         }
 
@@ -228,6 +233,7 @@ class Mungo {
 
   static parseFindQuery (query, schema) {
     try {
+
       let parsed = {};
 
       if ( Array.isArray(query) ) {
@@ -239,13 +245,11 @@ class Mungo {
         // field has dot notation
 
         if ( /\./.test(field) ) {
-          const primaryField = field.split(/\./)[0];
+          // Find type
 
-          const type = schema[primaryField];
+          const finalType = this.getFinalType(field, schema);
 
-          if ( Array.isArray(type) ) {
-            parsed[field] = Mungo.convert([query[field]], type)[0];
-          }
+          parsed[field] = Mungo.convert(query[field], finalType);
         }
 
         // If operator to an array ($or, $and, $nor)
@@ -499,6 +503,20 @@ class Mungo {
 
   static resolve (dotNotation, object) {
     return Mungo.flatten(object)[dotNotation];
+  }
+
+  static getFinalType (dotNotation, schema) {
+    const fields = dotNotation.split(/\./);
+
+    return fields.reduce((finalType, field) => {
+      if ( Array.isArray(finalType) ) {
+        finalType = finalType[0][field];
+      }
+      else {
+        finalType = finalType[field];
+      }
+      return finalType;
+    }, schema);
   }
 }
 

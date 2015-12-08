@@ -320,7 +320,9 @@ class Query {
   }
 
   find (document, options = {}) {
-    return new Promise((ok, ko) => {
+    const parsed = this.parse(document);
+
+    const promise = new Promise((ok, ko) => {
       try {
         const { Document } = Mungo;
         const { model } = this.options;
@@ -334,8 +336,6 @@ class Query {
         this.collection().then(collection => {
           try {
             const projection = Query.project(options);
-
-            const parsed = this.parse(document);
 
             let query;
 
@@ -389,34 +389,34 @@ class Query {
                     const packAndGo = () => {
 
                       if ( documents ) {
-                        Object.defineProperties(documents, {
-                          __query : {
-                            numerable : false,
-                            writable : false,
-                            value : parsed
-                          },
+                      //   Object.defineProperties(documents, {
+                      //     __query : {
+                      //       numerable : false,
+                      //       writable : false,
+                      //       value : parsed
+                      //     },
+                      //
+                      //     __limit : {
+                      //       numerable : false,
+                      //       writable : false,
+                      //       value : projection.limit
+                      //     },
+                      //
+                      //     __skip : {
+                      //       numerable : false,
+                      //       writable : false,
+                      //       value : projection.skip
+                      //     },
+                      //
+                      //     __sort : {
+                      //       numerable : false,
+                      //       writable : false,
+                      //       value : projection.sort
+                      //     }
+                      //   });
+                      // }
 
-                          __limit : {
-                            numerable : false,
-                            writable : false,
-                            value : projection.limit
-                          },
-
-                          __skip : {
-                            numerable : false,
-                            writable : false,
-                            value : projection.skip
-                          },
-
-                          __sort : {
-                            numerable : false,
-                            writable : false,
-                            value : projection.sort
-                          }
-                        });
-                      }
-
-                      ok(documents);
+                      ok(documents, parsed);
                     };
 
                     if ( options.populate ) {
@@ -464,6 +464,10 @@ class Query {
         ko(error);
       }
     });
+
+    promise.query = parsed;
+
+    return promise;
   }
 
   count (document, options = {}) {
