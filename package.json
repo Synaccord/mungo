@@ -1,0 +1,28 @@
+{
+  "name": "mungo",
+  "version": "1.0.22",
+  "description": "Mungo ===",
+  "main": "dist/index.js",
+  "directories": {
+    "test": "test"
+  },
+  "scripts": {
+    "test": "echo test",
+    "transpile": "babel app --modules common --stage 0 --optional runtime --out-dir dist",
+    "hot-transpile": "rm -rf dist; babel app --modules common --stage 0 --optional runtime --watch --out-dir dist",
+    "prepublish": "npm test && npm run transpile"
+  },
+  "author": "",
+  "license": "ISC",
+  "devDependencies": {
+    "babel": "^5.8.23",
+    "babel-runtime": "^5.8.25",
+    "mocha": "^2.3.3",
+    "should": "^7.1.0"
+  },
+  "dependencies": {
+    "colors": "^1.1.2",
+    "kerberos": "0.0.17",
+    "mongodb": "^2.0.45"
+  }
+}
