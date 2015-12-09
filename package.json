@@ -9,8 +9,7 @@
   "scripts": {
     "test": "echo test",
     "transpile": "babel app --modules common --stage 0 --optional runtime --out-dir dist",
-    "hot-transpile": "rm -rf dist; babel app --modules common --stage 0 --optional runtime --watch --out-dir dist",
-    "prepublish": "npm test"
+    "hot-transpile": "rm -rf dist; babel app --modules common --stage 0 --optional runtime --watch --out-dir dist"
   },
   "author": "",
   "license": "ISC",
