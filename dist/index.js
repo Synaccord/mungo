@@ -30,5 +30,11 @@ var _libMigration = require('./lib/migration');
 
 var _libMigration2 = _interopRequireDefault(_libMigration);
 
+var _mongodb = require('mongodb');
+
+var _mongodb2 = _interopRequireDefault(_mongodb);
+
+_libMungo2['default'].mongodb = _mongodb2['default'];
+
 exports['default'] = _libMungo2['default'];
 module.exports = exports['default'];
