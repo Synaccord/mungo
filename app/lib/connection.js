@@ -25,6 +25,9 @@ class Connection extends EventEmitter {
   }
 
   static connect (url) {
+
+    console.log('Connecting to DB', url, Mungo.connections.length);
+
     let connection = new Connection();
 
     Mungo.connections.push(connection);

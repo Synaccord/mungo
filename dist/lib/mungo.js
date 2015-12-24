@@ -832,7 +832,7 @@ var _Date = (function () {
   }, {
     key: 'convert',
     value: function convert(value) {
-      var converted = new Date(value);
+      var converted = new Date(new Date(value).toISOString());
 
       if (!this.validate(converted)) {
         throw new Mungo.Error('Can not convert value to Date', { value: value });

@@ -739,7 +739,7 @@ class Model {
                       }
                     });
                   }
-                  new Query({ model })
+                  new Query(Object.assign({ model }, options))
                     .insert(this.__document)
                     .then(
                       operation => {
@@ -760,14 +760,6 @@ class Model {
                               value : operation.insertedId.getTimestamp()
                             });
                           }
-
-                          // if ( ! ( '_id' in this ) ) {
-                          //   Object.defineProperty(this, '_id', {
-                          //     enumerable : true,
-                          //     writable : false,
-                          //     value : this.__document._id
-                          //   });
-                          // }
 
                           Object.defineProperty(this, '__totalQueryTime', {
                             enumerable : false,

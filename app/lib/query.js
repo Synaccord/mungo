@@ -40,17 +40,17 @@ class Query {
   }
 
   connection () {
-    let { connection } = this.options;
+    let { client } = this.options;
 
-    if ( ! connection ) {
-      connection = Mungo.connections[0];
+    if ( ! client ) {
+      client = Mungo.connections[0];
     }
 
-    if ( ! connection ) {
-      throw new Error('No connection');
+    if ( ! client ) {
+      throw new Error('No client');
     }
 
-    return connection;
+    return client;
   }
 
   collection () {
@@ -320,7 +320,7 @@ class Query {
   }
 
   find (document, options = {}) {
-    const parsed = this.parse(document);
+    let parsed = this.parse(document);
 
     const promise = new Promise((ok, ko) => {
       try {

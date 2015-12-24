@@ -52,6 +52,9 @@ var Connection = (function (_EventEmitter) {
   }], [{
     key: 'connect',
     value: function connect(url) {
+
+      console.log('Connecting to DB', url, _mungo2['default'].connections.length);
+
       var connection = new Connection();
 
       _mungo2['default'].connections.push(connection);

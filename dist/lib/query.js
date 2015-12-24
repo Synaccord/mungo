@@ -61,17 +61,17 @@ var Query = (function () {
   _createClass(Query, [{
     key: 'connection',
     value: function connection() {
-      var connection = this.options.connection;
+      var client = this.options.client;
 
-      if (!connection) {
-        connection = _mungo2['default'].connections[0];
+      if (!client) {
+        client = _mungo2['default'].connections[0];
       }
 
-      if (!connection) {
-        throw new Error('No connection');
+      if (!client) {
+        throw new Error('No client');
       }
 
-      return connection;
+      return client;
     }
   }, {
     key: 'collection',

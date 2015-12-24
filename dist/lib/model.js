@@ -576,7 +576,7 @@ var Model = (function () {
                       document: _this7.__document
                     }));
                   }
-                  new Query({ model: model }).insert(_this7.__document).then(function (operation) {
+                  new Query(_Object$assign({ model: model }, options)).insert(_this7.__document).then(function (operation) {
                     try {
 
                       // this.__document._id = operation.insertedId;
@@ -594,14 +594,6 @@ var Model = (function () {
                           value: operation.insertedId.getTimestamp()
                         });
                       }
-
-                      // if ( ! ( '_id' in this ) ) {
-                      //   Object.defineProperty(this, '_id', {
-                      //     enumerable : true,
-                      //     writable : false,
-                      //     value : this.__document._id
-                      //   });
-                      // }
 
                       Object.defineProperty(_this7, '__totalQueryTime', {
                         enumerable: false,
