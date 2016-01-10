@@ -46,11 +46,11 @@ class User extends Mungo.Model {
 - `Number`
 - `Boolean`
 - `Date`
-- `Array` **for a better array control, see below**
-- `Object` **for a better subdocument control, see below**
-- `Subdocument` **see below**
-- `ObjectID` **MongoDB's object id**
-- `Mixed` **accepts any type**
+- `Array` *for a better array control, see below*
+- `Object` *for a better subdocument control, see below*
+- `Subdocument` *see below*
+- `ObjectID` *MongoDB's object id*
+- `Mixed` *accepts any type*
 
 ### Array of types
 
@@ -59,9 +59,7 @@ You can enclose types inside arrays:
 ```js
 // { numbers : [1, 2, 3] }
 
-class Foo extends Mungo.Model {
-  static schema = { numbers : [Number] }
-}
+static schema = { numbers : [Number] }
 ```
 
 ### Sudocuments
@@ -71,10 +69,8 @@ Use the `Subdocument` to embed a document:
 ```js
 // { foo : { bar : true } }
 
-class Foo extends Mungo.Model {
-  static schema = {
-    foo : new (Mungo.Subdocument)({ bar : Boolean })
-  }
+static schema = {
+  foo : new (Mungo.Subdocument)({ bar : Boolean })
 }
 ```
 
@@ -83,10 +79,8 @@ You could also use directly the object notation such as:
 ```js
 // { foo : { bar : true } }
 
-class Foo extends Mungo.Model {
-  static schema = {
-    foo : { bar : Boolean }
-  }
+static schema = {
+  foo : { bar : Boolean }
 }
 ```
 
