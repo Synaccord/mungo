@@ -30,6 +30,15 @@ User.update({ username : 'dude' }, { username : 'mate' });
 User.remove({ username : 'dude' });
 ```
 
+# Connect
+
+# Methods
+
+| Method | Arguments | About |
+|--------|-----------|-------|
+| `count`| - `<object> query` default `{}`<br/>- `<object> projection` default `{}` <br/>- `<object> projection` default `{}`| Count documents in collection
+
+
 # Schema
 
 ## Type
