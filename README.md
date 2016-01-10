@@ -87,12 +87,33 @@ But **you have to make sure your subdocument does not contain a `type` property*
 Use the name of the model you want to refer :
 
 ```js
-
 class Team extends Mungo.Model {
   static schema = { name : String }
 }
 
 class Player extends Mungo.Model {
   static schema = { team : Team }
+}
+```
+
+### Cyclic dependencies
+
+If your model uses references to other models that also refer it (cyclic dependency), you can use the getter syntax to make sure referred models do not end up null.
+
+```js
+static get schema () {
+  return { team : Team }
+}
+```
+
+### Type declaration
+
+You can use the sugar syntax or the type attribute in the field description:
+
+```js
+static schema = { name : String }
+// Or...
+static schema = {
+  name : { type : String }
 }
 ```
