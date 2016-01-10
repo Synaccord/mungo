@@ -1,17 +1,13 @@
 Mungo
 ===
 
-Schema models for MongoDB
+`Mungo` is a library to create models for MongoDB.
 
 # Install
 
 ```bash
 npm install mungo
 ```
-
-# Overview
-
-`Mungo` is a library to create models for MongoDB.
 
 # Usage
 
