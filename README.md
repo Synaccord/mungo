@@ -69,9 +69,7 @@ Use the `Subdocument` to embed a document:
 ```js
 // { foo : { bar : true } }
 
-static schema = {
-  foo : new (Mungo.Subdocument)({ bar : Boolean })
-}
+static schema = { foo : new (Mungo.Subdocument)({ bar : Boolean }) }
 ```
 
 You could also use directly the object notation such as:
@@ -79,9 +77,7 @@ You could also use directly the object notation such as:
 ```js
 // { foo : { bar : true } }
 
-static schema = {
-  foo : { bar : Boolean }
-}
+static schema = { foo : { bar : Boolean } }
 ```
 
 But **you have to make sure your subdocument does not contain a `type` property** - otherwise it will be mistaken with a field description.
