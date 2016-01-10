@@ -21,16 +21,12 @@ class User extends Mungo.Model {
 // Connect to MongoDB
 Mungo.connect('mongodb://@localhost');
 
-// Create a new user
 User.create({ username : 'dude' });
 
-// Find user
 User.find({ username : 'dude' });
 
-// Update user
 User.update({ username : 'dude' });
 
-// Remove user
 User.remove({ username : 'dude' });
 ```
 
