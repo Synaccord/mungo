@@ -69,7 +69,7 @@ Use the `Subdocument` to embed a document:
 ```js
 // { foo : { bar : true } }
 
-static schema = { foo : new (Mungo.Subdocument)({ bar : Boolean }) }
+static schema = { "foo" : new (Mungo.Subdocument)({ "bar" : Boolean }) }
 ```
 
 You could also use directly the object notation such as:
@@ -77,7 +77,7 @@ You could also use directly the object notation such as:
 ```js
 // { foo : { bar : true } }
 
-static schema = { foo : { bar : Boolean } }
+static schema = { "foo" : { "bar" : Boolean } }
 ```
 
 But **you have to make sure your subdocument does not contain a `type` property** - otherwise it will be mistaken with a field description.
@@ -88,11 +88,11 @@ Use the name of the model you want to refer :
 
 ```js
 class Team extends Mungo.Model {
-  static schema = { name : String }
+  static schema = { "name" : String }
 }
 
 class Player extends Mungo.Model {
-  static schema = { team : Team }
+  static schema = { "team" : Team }
 }
 ```
 
@@ -102,7 +102,7 @@ If your model uses references to other models that also refer it (cyclic depende
 
 ```js
 static get schema () {
-  return { team : Team }
+  return { "team" : Team }
 }
 ```
 
@@ -111,9 +111,29 @@ static get schema () {
 You can use the sugar syntax or the type attribute in the field description:
 
 ```js
-static schema = { name : String }
+static schema = { "name" : String }
 // Or...
 static schema = {
-  name : { type : String }
+  name : { "type" : String }
 }
+```
+
+### Default type
+
+If you don't declare a type for a field, `Mixed` is used.
+
+## Required
+
+Require a fill to be set when inserting to DB
+
+```js
+static schema = { "name" : { required : true } }
+```
+
+## Default
+
+Fill empty field values with default when inserting to DB
+
+```js
+static schema = { "score" : { default : 0 } }
 ```
