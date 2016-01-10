@@ -36,7 +36,7 @@ User.remove({ username : 'dude' });
 
 | Method | Arguments | About |
 |--------|-----------|-------|
-| `count`| - `<object> query` default `{}`<br/>- `<object> projection` default `{}` <br/>- `<object> projection` default `{}`| Count documents in collection
+| `count`| - `<object> query` default `{}`<br/>- `<object> projection` default `{}` <br/>- `<object> options` default `{}`| Count documents in collection
 
 
 # Schema
