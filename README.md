@@ -25,7 +25,7 @@ User.create({ username : 'dude' });
 
 User.find({ username : 'dude' });
 
-User.update({ username : 'dude' });
+User.update({ username : 'dude' }, { username : 'mate' });
 
 User.remove({ username : 'dude' });
 ```
