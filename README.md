@@ -30,6 +30,25 @@ User.update({ username : 'dude' }, { username : 'mate' });
 User.remove({ username : 'dude' });
 ```
 
+# Syntax
+
+All operations are promises:
+
+```js
+Foo.find()
+  .then(found => { /*...*/ })
+  .catch(error => { /*...*/ });
+```
+
+Some methods are chainable:
+
+```js
+Foo
+  .find({ foo : 1 })
+  .limit(25)
+  .then(found => {});
+```
+
 # Connect
 
 ```js
