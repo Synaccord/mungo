@@ -1,70 +1,68 @@
 Mungo
 ===
 
-Schema models for MongoDB
+MongoDB models.
 
 # Install
 
-```bash
+```
 npm install mungo
 ```
 
-# Overview
-
-`Mungo` is a library to create models for MongoDB with the following key features in mind:
-
-- ES6 class syntax
-- Migration
-- Robust type validation
-- Promise support
-
 # Usage
+
+Use Mungo to declare data models and perform DB ops.
 
 ```js
 import Mungo from 'mungo';
 
-class Team extends Mungo.Model {
-  static schema () {
-    return {
-      name : {
-        type : String,
-        required : true,
-        unique : true
-      }
-    };
+// Define a model
+
+class Player extends Munog.Model {
+
+  static schema = {
+    name        :   {
+      type      :   String,
+      required  :   true,
+      unique    :   true
+    },
+
+    email       :   {
+      type      :   String,
+      validate  :   /^.+@.+\..+$/
+    },
+
+    score       :   {
+      type      :   Number,
+      default   :   100
+    }
   }
+
 }
 
-class Player extends Mungo.Model {
-  static schema () {
-    return {
-      name : {
-        type : String,
-        required : true,
-        unique : true,
-        validate : name => name.length >= 4 && name.length <= 16
-      },
+// Perform ops
 
-      team : {
-        type : Team,
-        index : true,
-        required : true
-      },
-
-      score : {
-        type : Number,
-        default : 100
-      }
-    };
-  }
-}
-
-// New user in red team
-
-Team
-  .findOne({ name : 'red'})
-  .then(team => {
-    User.create({ name : 'dude' , team });
-  });
-
+Player
+  .create({ name : 'Rebecca' })
+  .then(() => {
+    Player
+      .find({ score : { $gt : 100 } })
+      .then(players => console.log(players));
+      // [{ name : "Revecca", score : 100 }]
+  })
 ```
+
+Apart from static access, you can also instantiate models:
+
+```js
+// new Player
+const player = new Player({ name : 'Jo' });
+
+// Insert in DB
+player.save().then(() => {
+  // Update object and save changes in DB
+  player.set('score', 1000).save();
+})
+```
+
+Browse the docs for more usage info.

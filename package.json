@@ -1,6 +1,6 @@
 {
   "name": "mungo",
-  "version": "1.0.25",
+  "version": "2.0.0",
   "description": "Mungo ===",
   "main": "dist/index.js",
   "directories": {
@@ -20,8 +20,10 @@
     "should": "^7.1.0"
   },
   "dependencies": {
+    "babel-polyfill": "^6.3.14",
     "colors": "^1.1.2",
     "kerberos": "0.0.17",
+    "lodash": "^3.10.1",
     "mongodb": "^2.1.0"
   }
 }

@@ -1430,6 +1430,7 @@ class Model {
   static migrate () {
     return new Promise((ok, ko) => {
       try {
+        console.log('buildind index', this.name);
         this.buildIndexes()
           .then(
             () => {

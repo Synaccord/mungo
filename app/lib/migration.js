@@ -84,6 +84,7 @@ class Migration extends Mungo.Model {
         }
       });
     }
+
 }
 
 Migration.version = 1;

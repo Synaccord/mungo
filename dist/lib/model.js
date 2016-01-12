@@ -1524,6 +1524,7 @@ var Model = (function () {
 
       return new _Promise(function (ok, ko) {
         try {
+          console.log('buildind index', _this18.name);
           _this18.buildIndexes().then(function () {
             try {
               (function () {

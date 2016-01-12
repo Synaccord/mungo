@@ -123,6 +123,9 @@ class Query {
 
         fn.then(
             keys => {
+              console.log('------------------------------------------------');
+              console.log(require('util').inspect( { collection : collection.collectionName, keys, indexes }, { depth: 15 }));
+              console.log('------------------------------------------------');
               try {
 
                 indexes = indexes.map(index => {
