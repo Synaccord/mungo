@@ -10,14 +10,32 @@ var _classCallCheck = require('babel-runtime/helpers/class-call-check')['default
 
 var _Promise = require('babel-runtime/core-js/promise')['default'];
 
+var _Object$assign = require('babel-runtime/core-js/object/assign')['default'];
+
 var _interopRequireDefault = require('babel-runtime/helpers/interop-require-default')['default'];
 
-var _mungo = require('./mungo');
+Object.defineProperty(exports, '__esModule', {
+  value: true
+});
 
-var _mungo2 = _interopRequireDefault(_mungo);
+var _model = require('./model');
 
-var Migration = (function (_Mungo$Model) {
-  _inherits(Migration, _Mungo$Model);
+var _model2 = _interopRequireDefault(_model);
+
+var _modelsMigration = require('../models/migration');
+
+var _modelsMigration2 = _interopRequireDefault(_modelsMigration);
+
+var _sequencer = require('sequencer');
+
+var _sequencer2 = _interopRequireDefault(_sequencer);
+
+var _prettify = require('./prettify');
+
+var _prettify2 = _interopRequireDefault(_prettify);
+
+var Migration = (function (_Model) {
+  _inherits(Migration, _Model);
 
   function Migration() {
     _classCallCheck(this, Migration);
@@ -26,77 +44,69 @@ var Migration = (function (_Mungo$Model) {
   }
 
   _createClass(Migration, null, [{
-    key: 'schema',
-    value: function schema() {
-      return {
-        collection: {
-          type: String,
-          required: true
-        },
-        version: {
-          type: Number,
-          required: true
-        },
-        undo: [{
-          _id: _mungo2['default'].ObjectID,
-          set: Object,
-          unset: [String]
-        }],
-        undoBatch: [{
-          query: Object,
-          set: Object,
-          unset: [String]
-        }],
-        created: [_mungo2['default'].ObjectID],
-        removed: [Object]
-      };
+    key: 'migrate',
+
+    //----------------------------------------------------------------------------
+
+    value: function migrate() {
+      throw new Error('Can not call migrate() on a migration -- only on a model');
     }
+
+    //----------------------------------------------------------------------------
+
   }, {
     key: 'undo',
-    value: function undo(Model, version, collection) {
+    value: function undo() {
       var _this = this;
 
-      return new _Promise(function (ok, ko) {
-        try {
-          _this.findOne(query).then(function (migration) {
+      return (0, _sequencer2['default'])(function () {
+        return _modelsMigration2['default'].find({
+          collection: _this.collection,
+          version: _this.version
+        });
+      }, function (migrations) {
+        return _Promise.all(migrations.map(function (migration) {
+          return new _Promise(function (ok, ko) {
             try {
-              if ('created' in migration) {
-                Model.removeByIds(migration.created).then(ok, ko);
-              } else if ('undo' in migration) {
-                _Promise.all(migration.undo.map(function (undo) {
-                  var promises = [];
 
-                  if ('set' in migration.undo) {
-                    promises.push(Model.updateById(undo._id, undo.set));
-                  }
+              // console.log(prettify([migration]));
 
-                  if ('unset' in migration.undo) {
-                    var $unset = migration.undo.unset.reduce(function (unset, field) {
-                      unset[field] = '';
-                      return unset;
-                    }, {});
-                    promises.push(Model.updateById(undo._id, { $unset: $unset }));
-                  }
+              if ('remove' in migration) {
+                return _this.deleteById(migration.remove._id).then(ok, ko);
+              }
 
-                  _Promise.all(promises).then(ok, ko);
-                })).then(ok, ko);
+              if ('unset' in migration) {
+                return _this.update(migration.unset.get, { $unset: migration.unset.fields }).then(ok, ko);
+              }
+
+              if ('update' in migration) {
+                return _this.update(migration.update.get, migration.update.set).then(ok, ko);
               }
             } catch (error) {
               ko(error);
             }
-          }, ko);
-        } catch (error) {
-          ko(error);
-        }
+          });
+        }));
       });
     }
+  }, {
+    key: 'revert',
+    value: function revert() {
+      var instructions = arguments.length <= 0 || arguments[0] === undefined ? {} : arguments[0];
+
+      return _modelsMigration2['default'].insert(_Object$assign({
+        collection: this.collection,
+        version: this.version
+      }, instructions));
+    }
+  }, {
+    key: 'model',
+    value: _modelsMigration2['default'],
+    enumerable: true
   }]);
 
   return Migration;
-})(_mungo2['default'].Model);
+})(_model2['default']);
 
-Migration.version = 1;
-
-Migration.collection = 'Mungo_migrations';
-
-_mungo2['default'].Migration = Migration;
+exports['default'] = Migration;
+module.exports = exports['default'];

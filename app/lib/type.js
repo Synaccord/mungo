@@ -97,6 +97,9 @@ class _String {
   }
 
   static convert (value) {
+    if ( value === null || typeof value === 'undefined' ) {
+      return null;
+    }
     return value.toString();
   }
 

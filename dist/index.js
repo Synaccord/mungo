@@ -1,40 +1,115 @@
 'use strict';
 
+var _createClass = require('babel-runtime/helpers/create-class')['default'];
+
+var _classCallCheck = require('babel-runtime/helpers/class-call-check')['default'];
+
 var _interopRequireDefault = require('babel-runtime/helpers/interop-require-default')['default'];
 
 Object.defineProperty(exports, '__esModule', {
   value: true
 });
 
-var _libMungo = require('./lib/mungo');
+var _mongodb = require('mongodb');
 
-var _libMungo2 = _interopRequireDefault(_libMungo);
+var _mongodb2 = _interopRequireDefault(_mongodb);
 
 var _libModel = require('./lib/model');
 
 var _libModel2 = _interopRequireDefault(_libModel);
 
+var _libSchema = require('./lib/schema');
+
+var _libSchema2 = _interopRequireDefault(_libSchema);
+
+var _libType = require('./lib/type');
+
+var _libType2 = _interopRequireDefault(_libType);
+
 var _libConnection = require('./lib/connection');
 
 var _libConnection2 = _interopRequireDefault(_libConnection);
-
-var _libQuery = require('./lib/query');
-
-var _libQuery2 = _interopRequireDefault(_libQuery);
-
-var _libStream = require('./lib/stream');
-
-var _libStream2 = _interopRequireDefault(_libStream);
 
 var _libMigration = require('./lib/migration');
 
 var _libMigration2 = _interopRequireDefault(_libMigration);
 
-var _mongodb = require('mongodb');
+var _libDeprecatedNotice = require('./lib/deprecated-notice');
 
-var _mongodb2 = _interopRequireDefault(_mongodb);
+var _libDeprecatedNotice2 = _interopRequireDefault(_libDeprecatedNotice);
 
-_libMungo2['default'].mongodb = _mongodb2['default'];
+var _libDocument = require('./lib/document');
 
-exports['default'] = _libMungo2['default'];
+var _libDocument2 = _interopRequireDefault(_libDocument);
+
+var _libIndex = require('./lib/index');
+
+var _libIndex2 = _interopRequireDefault(_libIndex);
+
+var _libQuery = require('./lib/query');
+
+var _libQuery2 = _interopRequireDefault(_libQuery);
+
+var _libError = require('./lib/error');
+
+var _libError2 = _interopRequireDefault(_libError);
+
+var _libFindStatement = require('./lib/find-statement');
+
+var _libFindStatement2 = _interopRequireDefault(_libFindStatement);
+
+var _libUpdateStatement = require('./lib/update-statement');
+
+var _libUpdateStatement2 = _interopRequireDefault(_libUpdateStatement);
+
+var Mungo = (function () {
+  function Mungo() {
+    _classCallCheck(this, Mungo);
+  }
+
+  _createClass(Mungo, null, [{
+    key: 'Mixed',
+    get: function get() {
+      (0, _libDeprecatedNotice2['default'])('Mungo.Mixed', 'Mungo.Type.Mixed');
+      return _libType2['default'].Mixed;
+    }
+  }, {
+    key: 'ObjectID',
+    get: function get() {
+      (0, _libDeprecatedNotice2['default'])('Mungo.ObjectID', 'Mungo.Type.ObjectID');
+      return _libType2['default'].ObjectID;
+    }
+  }]);
+
+  return Mungo;
+})();
+
+Mungo.Index = _libIndex2['default'];
+Mungo.Query = _libQuery2['default'];
+Mungo.Model = _libModel2['default'];
+Mungo.Document = _libDocument2['default'];
+Mungo.Schema = _libSchema2['default'];
+Mungo.Type = _libType2['default'];
+Mungo.Connection = _libConnection2['default'];
+Mungo.connect = _libConnection2['default'].connect.bind(_libConnection2['default']);
+Mungo.disconnect = _libConnection2['default'].disconnect.bind(_libConnection2['default']);
+Mungo.connections = _libConnection2['default'].connections;
+Mungo.Migration = _libMigration2['default'];
+Mungo.Error = _libError2['default'];
+Mungo.FindStatement = _libFindStatement2['default'];
+Mungo.UpdateStatement = _libUpdateStatement2['default'];
+
+Mungo.mongodb = _mongodb2['default'];
+
+Mungo.verbosity = 0;
+
+/*
+  0 = no verbose
+  1 = success
+  2 = error + success
+  3 = warning + error + success
+  4 = notice + warning + error + success
+*/
+
+exports['default'] = Mungo;
 module.exports = exports['default'];
