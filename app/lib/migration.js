@@ -1,94 +1,72 @@
 'use strict';
 
-import Mungo  from './mungo';
+import Model                from './model';
+import MigrationModel       from '../models/migration';
+import sequencer            from 'sequencer';
+import prettify             from './prettify';
 
-class Migration extends Mungo.Model {
-    static schema () {
-      return {
-        collection : {
-          type : String,
-          required : true
-        },
-        version : {
-          type : Number,
-          required : true
-        },
-        undo : [{
-          _id : Mungo.ObjectID,
-          set : Object,
-          unset : [String]
-        }],
-        undoBatch : [{
-          query : Object,
-          set : Object,
-          unset : [String]
-        }],
-        created : [Mungo.ObjectID],
-        removed : [Object]
-      };
-    }
+class Migration extends Model {
 
-    static undo (Model, version, collection) {
-      return new Promise((ok, ko) => {
-        try {
-          this
-            .findOne(query)
-            .then(
-              migration => {
-                try {
-                  if ( 'created' in migration ) {
-                    Model
-                      .removeByIds(migration.created)
-                      .then(ok, ko);
-                  }
-                  else if ( 'undo' in migration ) {
-                    Promise
-                      .all(
-                        migration.undo.map(undo => {
-                          const promises = [];
+  static model = MigrationModel
 
-                          if ( 'set' in migration.undo ) {
-                            promises.push(
-                              Model.updateById(undo._id, undo.set)
-                            );
-                          }
+  //----------------------------------------------------------------------------
 
-                          if ( 'unset' in migration.undo ) {
-                            const $unset = migration.undo.unset.reduce(
-                              (unset, field) => {
-                                unset[field] = '';
-                                return unset;
-                              },
-                              {}
-                            );
-                            promises.push(
-                              Model.updateById(undo._id, { $unset })
-                            );
-                          }
+  static migrate () {
+    throw new Error('Can not call migrate() on a migration -- only on a model');
+  }
 
-                          Promise.all(promises).then(ok, ko);
-                        })
-                      )
-                      .then(ok, ko);
-                  }
-                }
-                catch ( error ) {
-                  ko(error);
-                }
-              },
-              ko
-            );
-        }
-        catch ( error ) {
-          ko(error);
-        }
-      });
-    }
+  //----------------------------------------------------------------------------
+
+  static undo () {
+    return sequencer(
+
+      () => MigrationModel.find({
+          collection  :   this.collection,
+          version     :   this.version
+        }),
+
+      migrations => Promise.all(
+        migrations.map(migration => new Promise((ok, ko) => {
+          try {
+
+            // console.log(prettify([migration]));
+
+            if ( 'remove' in migration ) {
+              return this.deleteById(migration.remove._id)
+                .then(ok, ko);
+            }
+
+            if ( 'unset' in migration ) {
+              return this
+                .update(
+                  migration.unset.get,
+                  { $unset : migration.unset.fields }
+                )
+                .then(ok, ko);
+            }
+
+            if ( 'update' in migration ) {
+              return this
+                .update(migration.update.get, migration.update.set)
+                .then(ok, ko);
+            }
+          }
+          catch ( error ) {
+            ko(error);
+          }
+        }))
+      )
+
+    );
+  }
+
+  static revert (instructions = {}) {
+    return MigrationModel.insert(Object.assign({
+      collection  :   this.collection,
+      version     :   this.version
+    }, instructions));
+  }
 
 }
 
-Migration.version = 1;
-
-Migration.collection = 'Mungo_migrations';
-
-Mungo.Migration = Migration;
+export default Migration;
