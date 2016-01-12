@@ -54,8 +54,16 @@ You can force a connection to be used:
 Mungo.connect(url1);
 Mungo.connect(url2);
 
-Foo.find({}, {}, { connection : 0 });
-Foo2.find({}, {}, { connection : 1 });
+Foo.find().connection(0);
+Foo2.find().connection(1);
+```
+
+Or specify the connection directly:
+
+```js
+Mungo
+  .connect(url)
+  .on('connected', connection => Foo.find().connection(connection));
 ```
 
 # Methods
