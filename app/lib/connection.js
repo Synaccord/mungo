@@ -1,76 +1,107 @@
 'use strict';
 
-import { EventEmitter }     from 'events';
-import mongodb              from 'mongodb';
-import Mungo                 from './mungo';
+import mongodb from 'mongodb';
+import { EventEmitter } from 'events';
+import sequencer from 'sequencer';
+import prettify from './prettify';
 
 class Connection extends EventEmitter {
 
-  constructor () {
-    super();
-  }
+  //----------------------------------------------------------------------------
 
-  disconnect () {
-    return new Promise((ok, ko) => {
-      try {
-        this.db.close().then(() => {
-          this.emit('disconnected');
-          ok();
-        }, ko);
-      }
-      catch ( error ) {
-        ko(error);
-      }
-    });
-  }
+  /** @type [Connection] */
+
+  static connections  =   []
+
+  static url          =   'mongodb://@localhost'
+
+  static events       =   new EventEmitter()
+
+  //----------------------------------------------------------------------------
+
+  // Static methods
+
+  //----------------------------------------------------------------------------
+
+  /** @resolve Connection
+   *  @arg String url
+   */
 
   static connect (url) {
 
-    console.log('Connecting to DB', url, Mungo.connections.length);
+    url = url || this.url;
 
-    let connection = new Connection();
+    console.log(prettify(`Connecting to ${url}`));
 
-    Mungo.connections.push(connection);
+    const connection = new Connection();
 
-    if ( Mungo.debug ) {
-      Mungo.printDebug({ connect : { url } });
-    }
+    connection.index = this.connections.push(connection);
 
-    mongodb.MongoClient.connect(url, (error, db) => {
-      if ( error ) {
-        if ( Mungo.debug ) {
-          Mungo.printDebug({ connect : { url, error } }, 'error');
-        }
+    sequencer
 
-        return Mungo.events.emit('error', error);
-      }
+      .promisify(
+        mongodb.MongoClient.connect,
+        [url],
+        mongodb.MongoClient
+      )
 
-      if ( Mungo.debug ) {
-        Mungo.printDebug({ connect : { url } }, 'success');
-      }
+      .then(db => {
+        connection.connected = true;
 
-      connection.connected = true;
+        connection.db = db;
 
-      connection.db = db;
+        console.log(`Connected to ${url}`.green);
 
-      connection.emit('connected');
+        connection.emit('connected', connection);
+        this.events.emit('connected', connection);
+      })
 
-      Mungo.events.emit('connected', connection);
-    });
+      .catch(error => { connection.emit('error', error) });
 
     return connection;
   }
 
-  static disconnect () {
-    let connections = Mungo.connections;
+  //----------------------------------------------------------------------------
 
-    return Promise.all(connections.map(connection => connection.disconnect()));
+  /** @return Promise */
+
+  static disconnect () {
+    return Promise.all(this.connections.map(
+      connection => connection.disconnect()
+    ));
   }
+
+  //----------------------------------------------------------------------------
+
+  // Instance properties
+
+  //----------------------------------------------------------------------------
+
+  connected   =   false
+
+  db          =   null
+
+  //----------------------------------------------------------------------------
+
+  // Instance methods
+
+  //----------------------------------------------------------------------------
+
+  disconnect () {
+    return sequencer(
+      () => this.db.close(),
+
+      () => new Promise((ok, ko) => {
+        this.connected = false;
+        this.disconnected = true;
+        this.emit('disconnected');
+        ok();
+      })
+    );
+  }
+
+  //----------------------------------------------------------------------------
+
 }
 
-//~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
-
-Mungo.connections = [];
-
-Mungo.connect = Connection.connect.bind(Connection);
-Mungo.disconnect = Connection.disconnect.bind(Connection);
+export default Connection;
