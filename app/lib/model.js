@@ -74,15 +74,13 @@ class Model extends ModelStatic {
 
     this.$changes[field] = this.$document[field];
 
-    if ( ! ( field in this ) ) {
-      const self = this;
+    const self = this;
 
-      Object.assign(this, {
-        get [field] () {
-          return self.$document[field];
-        }
-      });
-    }
+    Object.assign(this, {
+      get [field] () {
+        return self.$document[field];
+      }
+    });
 
     return this;
   }
@@ -114,15 +112,13 @@ class Model extends ModelStatic {
       { [field] : this.$document[field].map(v => v) }
     );
 
-    if ( ! ( field in this ) ) {
-      const self = this;
+    const self = this;
 
-      Object.assign(this, {
-        get [field] () {
-          return self.$document[field];
-        }
-      });
-    }
+    Object.assign(this, {
+      get [field] () {
+        return self.$document[field];
+      }
+    });
 
     return this;
   }

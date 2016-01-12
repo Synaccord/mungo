@@ -132,7 +132,6 @@ var Model = (function (_ModelStatic) {
   _createClass(Model, [{
     key: 'set',
     value: function set(field, value) {
-      var _this2 = this;
 
       if (typeof field === 'object') {
         for (var i in field) {
@@ -147,19 +146,15 @@ var Model = (function (_ModelStatic) {
 
       this.$changes[field] = this.$document[field];
 
-      if (!(field in this)) {
-        (function () {
-          var self = _this2;
+      var self = this;
 
-          _Object$assign2(_this2, _Object$defineProperties4({}, _defineProperty({}, field, {
-            get: function get() {
-              return self.$document[field];
-            },
-            configurable: true,
-            enumerable: true
-          })));
-        })();
-      }
+      _Object$assign2(this, _Object$defineProperties4({}, _defineProperty({}, field, {
+        get: function get() {
+          return self.$document[field];
+        },
+        configurable: true,
+        enumerable: true
+      })));
 
       return this;
     }
@@ -169,7 +164,6 @@ var Model = (function (_ModelStatic) {
   }, {
     key: 'push',
     value: function push(field, value) {
-      var _this3 = this;
 
       if (typeof field === 'object') {
         for (var i in field) {
@@ -194,19 +188,15 @@ var Model = (function (_ModelStatic) {
         return v;
       })));
 
-      if (!(field in this)) {
-        (function () {
-          var self = _this3;
+      var self = this;
 
-          _Object$assign2(_this3, _Object$defineProperties4({}, _defineProperty({}, field, {
-            get: function get() {
-              return self.$document[field];
-            },
-            configurable: true,
-            enumerable: true
-          })));
-        })();
-      }
+      _Object$assign2(this, _Object$defineProperties4({}, _defineProperty({}, field, {
+        get: function get() {
+          return self.$document[field];
+        },
+        configurable: true,
+        enumerable: true
+      })));
 
       return this;
     }
@@ -224,16 +214,16 @@ var Model = (function (_ModelStatic) {
   }, {
     key: 'save',
     value: function save() {
-      var _this4 = this;
+      var _this2 = this;
 
       var options = arguments.length <= 0 || arguments[0] === undefined ? {} : arguments[0];
 
       return new _Promise(function (ok, ko) {
         try {
           (function () {
-            var Model = _this4.constructor;
+            var Model = _this2.constructor;
 
-            _this4.set('__V', Model.version);
+            _this2.set('__V', Model.version);
 
             // console.log(prettify({ [`>> Model {${Model.name}@#${Model.version}} save()`] : {
             //   model : Model.name,
@@ -242,57 +232,57 @@ var Model = (function (_ModelStatic) {
             //   changes : this.$changes
             // }}));
 
-            if (_this4.$fromDB) {
+            if (_this2.$fromDB) {
               (function () {
 
-                if (!_this4.get('__v')) {
-                  _this4.set('__v', 0);
+                if (!_this2.get('__v')) {
+                  _this2.set('__v', 0);
                 }
 
-                var modifier = new _updateStatement2['default'](_this4.$changes, Model);
+                var modifier = new _updateStatement2['default'](_this2.$changes, Model);
 
                 (0, _sequencer2['default'])(function () {
                   return (0, _sequencer2['default'])((Model.updating() || []).map(function (fn) {
                     return function () {
-                      return fn(_this4);
+                      return fn(_this2);
                     };
                   }));
                 }, function () {
-                  return Model.exec('updateOne', { _id: _this4.get('_id') }, modifier);
+                  return Model.exec('updateOne', { _id: _this2.get('_id') }, modifier);
                 }).then(function () {
-                  ok(_this4);
+                  ok(_this2);
 
                   (0, _sequencer2['default'])((Model.updated() || []).map(function (fn) {
                     return function () {
-                      return fn(_this4);
+                      return fn(_this2);
                     };
                   })).then(function () {
-                    _this4.$changes = {};
+                    _this2.$changes = {};
                   });
                 })['catch'](ko);
               })();
             } else {
-              _this4.set('__v', 0);
+              _this2.set('__v', 0);
 
-              _this4.setDefaults();
+              _this2.setDefaults();
 
               _sequencer2['default'].pipe(function () {
                 return (0, _sequencer2['default'])((Model.inserting() || []).map(function (fn) {
                   return function () {
-                    return fn(_this4);
+                    return fn(_this2);
                   };
                 }));
               }, function () {
-                return Model.exec('insertOne', _this4.$document);
+                return Model.exec('insertOne', _this2.$document);
               }).then(function (inserted) {
 
-                _this4.set('_id', inserted._id);
+                _this2.set('_id', inserted._id);
 
-                _this4.$fromDB = true;
+                _this2.$fromDB = true;
 
-                var self = _this4;
+                var self = _this2;
 
-                _Object$assign2(_this4, _Object$defineProperties4({}, {
+                _Object$assign2(_this2, _Object$defineProperties4({}, {
                   _id: {
                     get: function get() {
                       return self.get('_id');
@@ -302,11 +292,11 @@ var Model = (function (_ModelStatic) {
                   }
                 }));
 
-                ok(_this4);
+                ok(_this2);
 
                 (0, _sequencer2['default'])((Model.inserted() || []).map(function (fn) {
                   return function () {
-                    return fn(_this4);
+                    return fn(_this2);
                   };
                 }));
               })['catch'](ko);
@@ -331,14 +321,14 @@ var Model = (function (_ModelStatic) {
   }, {
     key: 'populate',
     value: function populate() {
-      var _this5 = this;
+      var _this3 = this;
 
       var options = arguments.length <= 0 || arguments[0] === undefined ? {} : arguments[0];
 
       return new _Promise(function (ok, ko) {
         try {
           (function () {
-            var _constructor$getSchema = _this5.constructor.getSchema();
+            var _constructor$getSchema = _this3.constructor.getSchema();
 
             var flatten = _constructor$getSchema.flatten;
 
@@ -350,14 +340,14 @@ var Model = (function (_ModelStatic) {
               if (_Reflect$getPrototypeOf(type.type) === Model) {
                 (function () {
 
-                  var value = _this5.get(flatten[field].flatten);
+                  var value = _this3.get(flatten[field].flatten);
 
                   if (value) {
                     promises.push(new _Promise(function (ok, ko) {
                       try {
                         type.type.findById(value).then(function (doc) {
                           try {
-                            _this5.$populated[flatten[field].flatten] = doc;
+                            _this3.$populated[flatten[field].flatten] = doc;
                             ok();
                           } catch (error) {
                             ko(error);
@@ -371,14 +361,14 @@ var Model = (function (_ModelStatic) {
                 })();
               } else if (type.type === _type2['default'].Array && _Reflect$getPrototypeOf(type.args[0].type) === Model) {
                 (function () {
-                  var value = _this5.get(flatten[field].flatten);
+                  var value = _this3.get(flatten[field].flatten);
 
                   if (value) {
                     promises.push(new _Promise(function (ok, ko) {
                       try {
                         type.args[0].type.find({ _id: { $in: value } }).then(function (docs) {
                           try {
-                            _this5.$populated[flatten[field].flatten] = docs;
+                            _this3.$populated[flatten[field].flatten] = docs;
                             ok();
                           } catch (error) {
                             ko(error);
@@ -401,7 +391,7 @@ var Model = (function (_ModelStatic) {
           })();
         } catch (error) {
           ko(MungoModelError.rethrow(error, 'Could not populate', {
-            modelName: _this5.constructor.name, _id: _this5._id
+            modelName: _this3.constructor.name, _id: _this3._id
           }));
         }
       });
