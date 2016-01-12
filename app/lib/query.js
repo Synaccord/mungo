@@ -1,520 +1,389 @@
 'use strict';
 
-import Mungo from './mungo';
+import mongodb              from 'mongodb';
+import Connection           from './connection';
+import Projection           from './projection';
+import prettify             from './prettify';
+import MungoError from './error';
+
+class MungoQueryError extends MungoError {}
 
 class Query {
-  static project (options = {}) {
-    const projection = {};
 
-    if ( 'limit' in options ) {
-      if ( options.limit === false ) {
-        projection.limit = 0;
+  //----------------------------------------------------------------------------
+
+  constructor (model) {
+    this.model = model;
+  }
+
+
+  //----------------------------------------------------------------------------
+
+  connect () {
+    return new Promise((ok, ko) => {
+
+      if ( this.db ) {
+        return ok();
+      }
+
+      const aliveConnections = Connection.connections
+        .filter(conn => ! conn.disconnected );
+
+      const connection = aliveConnections[0];
+
+      if ( connection ) {
+        if ( connection.connected ) {
+          this.db = connection.db;
+        }
+        else {
+          connection.on('connected', connection => {
+            this.db = connection.db;
+          });
+        }
+
+        ok();
       }
       else {
-        projection.limit = options.limit;
-      }
-    }
-    else {
-      projection.limit = 100;
-    }
-
-    projection.skip = options.skip || 0;
-
-    projection.sort = options.sort || { _id : 1 };
-
-    if ( options.reverse ) {
-      for ( let field in projection.sort ) {
-        projection.sort[field] = -1;
-      }
-    }
-
-    return projection;
-  }
-
-  constructor (options = {}) {
-    this.options = options;
-
-    if ( ! this.options.model ) {
-      throw new Error('Missing model');
-    }
-  }
-
-  connection () {
-    let { client } = this.options;
-
-    if ( ! client ) {
-      client = Mungo.connections[0];
-    }
-
-    if ( ! client ) {
-      throw new Error('No client');
-    }
-
-    return client;
-  }
-
-  collection () {
-    return new Promise((ok, ko) => {
-      try {
-        let { collection } = this.options;
-
-        if ( ! collection ) {
-          const connection = this.connection();
-          const { connected, db } = connection;
-
-          if ( ! connected ) {
-            connection.on('connected', () => {
-              this.collection().then(ok, ko);
-            });
-            return;
-          }
-
-          if ( this.options.collectionName ) {
-            collection = db.collection(this.options.collectionName);
-          }
-          else {
-            const { model } = this.options;
-
-            collection = db.collection(model.toCollectionName());
-          }
-        }
-
-        if ( ! collection ) {
-          throw new Error('No collection');
-        }
-
-        ok(collection);
-      }
-      catch ( error ) {
-        ko(error);
-      }
-    });
-  }
-
-  ensureIndexes (collection) {
-    return new Promise((ok, ko) => {
-      try {
-        this.buildIndexes(new (this.options.model)().__indexes, collection)
-          .then(
-            () => {
-              ok();
-            },
-            error => {
-              if ( error.code === 26 ) { /** No collection **/
-                ok();
-              }
-              else {
-                ko(error);
-              }
-            });
-      }
-      catch ( error ) {
-        ko(error);
-      }
-    });
-  }
-
-  buildIndexes (indexes = [], collection) {
-    return new Promise((ok, ko) => {
-      try {
-
-        const fn = collection
-          .indexes();
-
-        fn.then(
-            keys => {
-              console.log('------------------------------------------------');
-              console.log(require('util').inspect( { collection : collection.collectionName, keys, indexes }, { depth: 15 }));
-              console.log('------------------------------------------------');
-              try {
-
-                indexes = indexes.map(index => {
-                  index[2] = keys.some(key => key.name === index[1].name);
-
-                  return index;
-                });
-
-                let promises = indexes
-                  .filter(index => index[2])
-                  .map(index => collection.dropIndex(index[0]));
-
-                Promise.all(promises)
-                  .then(
-                    () => {
-                      try {
-                        let promises = indexes
-                          .map(index => collection.createIndex(index[0], index[1]));
-
-                        Promise.all(promises).then(
-                          results => {
-                            try {
-                              results.forEach(indexName => {
-                                indexes = indexes.map(index => {
-                                  if ( index.name === indexName ) {
-                                    if ( Mungo.debug ) {
-                                      Mungo.printDebug({
-                                        'new index' : {
-                                          collection,
-                                          index
-                                        }
-                                      });
-                                    }
-                                    index.created = true;
-                                  }
-                                  return index;
-                                });
-                              });
-                              ok(indexes);
-                            }
-                            catch ( error ) {
-                              ko(error);
-                            }
-                          },
-                          ko
-                        );
-                      }
-                      catch ( error ) {
-                        ko(error);
-                      }
-                    },
-                    ko
-                  );
-              }
-              catch ( error ) {
-                ko(error);
-              }
-            },
-            error => {
-              if ( error.code === 26 ) { /* No collection */
-                this.connection().db.createCollection(collection.collectionName)
-                  .then(
-                    () => {
-                      try {
-                        this.buildIndexes(indexes, this.connection().db.collection(collection.collectionName)).then(ok, ko);
-                      }
-                      catch ( error ) {
-                        ko(error);
-                      }
-                    },
-                    ko
-                  );
-              }
-              else {
-                ko(error);
-              }
-            }
-          );
-      }
-      catch ( error ) {
-        ko(error);
-      }
-    });
-  }
-
-  parse (query) {
-    const { Model, Util } = Mungo;
-    const { model } = this.options;
-
-    return Mungo.parseFindQuery(query, new (this.options.model)().__types);
-  }
-
-  remove (document, options = {}) {
-    return new Promise((ok, ko) => {
-      try {
-        const { model } = this.options;
-        let { schema } = model;
-
-        if ( typeof schema === 'function' ) {
-          schema = schema();
-        }
-
-        this.collection()
-          .then(
-            collection => {
-              try {
-                if ( options.one ) {
-                  collection
-                    .deleteOne(this.parse(document))
-                    .then(ok, ko);
-                }
-                else {
-                  collection
-                    .deleteMany(this.parse(document))
-                    .then(ok, ko);
-                }
-              }
-              catch ( error ) {
-                ko(error);
-              }
-            },
-            ko
-          );
-      }
-      catch ( error ) {
-        ko(error);
-      }
-    });
-  }
-
-  insert (document, id) {
-    return new Promise((ok, ko) => {
-      try {
-        const { model } = this.options;
-        let { schema } = model;
-
-        if ( typeof schema === 'function' ) {
-          schema = schema();
-        }
-
-        this.collection().then(collection => {
-          try {
-
-            const started = Date.now();
-
-            if ( id ) {
-              collection
-                .replaceOne({ _id : id }, document)
-                .then(
-                  () => {
-                    ok();
-                  },
-                  ko
-                );
-            }
-            else {
-              if ( Mungo.debug ) {
-                Mungo.printDebug({
-                  action : 'insertOne',
-                  collection : collection.collectionName,
-                  document
-                }, 'log');
-              }
-              collection
-                .insertOne(document)
-                .then(
-                  document => {
-                    try {
-                      if ( document ) {
-                        Object.defineProperty(document, '__queryTime', {
-                          enumerable : false,
-                          writable : false,
-                          value : Date.now() - started
-                        });
-                      }
-                      ok(document);
-                    }
-                    catch ( error ) {
-                      ko(error);
-                    }
-                  },
-                  ko
-                );
-            }
-          }
-          catch ( error ) {
-            ko(error);
-          }
+        Connection.events.on('connected', connection => {
+          this.db = connection.db;
+          return ok();
         });
       }
-      catch ( error ) {
-        ko(error);
-      }
+
     });
   }
 
-  find (document, options = {}) {
-    let parsed = this.parse(document);
+  //----------------------------------------------------------------------------
+
+
+  getCollection () {
+    return new Promise((ok, ko) => {
+      this.connect().then(
+        () => {
+          if ( this.collection ) {
+            return ok();
+          }
+
+          this.collection = this.db.collection(this.model.collection);
+
+          // console.log(prettify({ collection : this.collection.collectionName }));
+
+          ok();
+        },
+        ko
+      );
+    });
+  }
+
+  //----------------------------------------------------------------------------
+  //----------------------------------------------------------------------------
+  //----------------------------------------------------------------------------
+
+  find (query = {}, projection = {}, options = {}) {
+
+    const { model } = this;
+
+    projection = new Projection(projection);
+
+    // console.log(prettify({[`>>  Query {${this.model.name}#${this.model.version}} => find`] : { query, projection, options } }));
 
     const promise = new Promise((ok, ko) => {
-      try {
-        const { Document } = Mungo;
-        const { model } = this.options;
-        let { schema } = model;
+      this.getCollection()
+        .then(() => {
+          const action = this.collection.find(query);
 
-        if ( typeof schema === 'function' ) {
-          schema = schema();
-        }
+          action.limit(projection.limit);
 
+          action.toArray()
+            .then(documents => {
 
-        this.collection().then(collection => {
-          try {
-            const projection = Query.project(options);
+              // documents = documents.map(doc => new model(doc, true));
 
-            let query;
+              // console.log(prettify({ [`<<  Query {${this.model.name}#${this.model.version}} <= find`] : { found : documents } }));
 
-            if ( options.one ) {
-              if ( collection.findOne ) {
-                query = collection
-                  .findOne(parsed, projection);
-              }
-              else {
-                query = collection
-                  .find(parsed)
-                  .limit(1)
-                  .skip(projection.skip)
-                  .sort(projection.sort);
-              }
-            }
-
-            else {
-              query = collection
-                .find(parsed)
-                .limit(projection.limit)
-                .skip(projection.skip)
-                .sort(projection.sort)
-                .toArray();
-            }
-
-
-            query.then(
-              documents => {
-                try {
-                  if ( options.one ) {
-                    if ( collection.findOne ) {
-                      if ( documents ) {
-                        documents = new model(documents);
-                      }
-                    }
-                    else if ( documents.length ) {
-                      documents = new model(documents[0]);
-                    }
-                  }
-                  else {
-                    documents = documents.map(doc => new model(doc));
-                  }
-
-                  if ( Mungo.debug ) {
-                    Mungo.printDebug({ [`${model.name}#v${model.version || 0}.find()`] : { documents } });
-                  }
-
-                  if ( documents ) {
-
-                    const packAndGo = () => {
-
-                      if ( documents ) {
-                      //   Object.defineProperties(documents, {
-                      //     __query : {
-                      //       numerable : false,
-                      //       writable : false,
-                      //       value : parsed
-                      //     },
-                      //
-                      //     __limit : {
-                      //       numerable : false,
-                      //       writable : false,
-                      //       value : projection.limit
-                      //     },
-                      //
-                      //     __skip : {
-                      //       numerable : false,
-                      //       writable : false,
-                      //       value : projection.skip
-                      //     },
-                      //
-                      //     __sort : {
-                      //       numerable : false,
-                      //       writable : false,
-                      //       value : projection.sort
-                      //     }
-                      //   });
-                      }
-
-                      ok(documents, parsed);
-                    };
-
-                    if ( options.populate ) {
-                      if ( options.one && documents ) {
-                        documents
-                          .populate(options.populate)
-                          .then(
-                            () => packAndGo,
-                            ko
-                          );
-                      }
-                      else {
-                        Promise
-                          .all(
-                            documents.map(document => document.populate(options.populate))
-                          )
-                          .then(
-                            () => packAndGo,
-                            ko
-                          );
-                      }
-                    }
-                    else {
-                      packAndGo();
-                    }
-                  }
-
-                  else {
-                    ok(documents);
-                  }
-                }
-                catch ( error ) {
-                  ko(error);
-                }
-              },
-              ko
-            );
-          }
-          catch ( error ) {
-            ko(error);
-          }
-        });
-      }
-      catch ( error ) {
-        ko(error);
-      }
+              ok(documents);
+            })
+            .catch(ko);
+          })
+          .catch(ko);
     });
 
-    promise.query = parsed;
+    promise.limit = limit => {
+      projection.setLimit(limit);
+      return promise;
+    };
+
+    promise.skip = skip => {
+      projection.setSkip(skip);
+      return promise;
+    };
 
     return promise;
   }
 
-  count (document, options = {}) {
+  //----------------------------------------------------------------------------
+
+  findOne (query = {}, projection = {}, options = {}) {
+
+    const { model } = this;
+
+    projection = new Projection(projection);
+
+    Object.assign(options, projection);
+
+    // console.log(prettify({ [`>> ${this.model.name}#${this.model.version} => findOne`] : { query, projection, options }}));
+
     return new Promise((ok, ko) => {
-      try {
-        const { Document } = Mungo;
-        const { model } = this.options;
-        let { schema } = model;
-
-        if ( typeof schema === 'function' ) {
-          schema = schema();
-        }
-
-        let parsed;
-
-        try {
-          parsed = this.parse(document);
-        }
-        catch ( error ) {
-          throw new (Mungo.Error)(`Could not count from ${model.name}: parse error`, { query : document, error : {
-            message : error.message, stack : error.stack, name : error.name, code : error.code
-          }});
-        }
-
-        this.collection().then(collection => {
+      this.getCollection()
+        .then(() => {
           try {
-            collection
-              .count(parsed)
-              .then(
-                count => {
-                  try {
-                    ok(count);
-                  }
-                  catch ( error ) {
-                    ko(error);
-                  }
-                },
-                ko
-              );
+            const action = this.collection.findOne(query, options);
+
+            action.
+              then(document => {
+                try {
+                  // console.log(`>> ${this.model.name}#${this.model.version} => findOne`.blue.bold);
+                  // console.log(prettify(document));
+
+                  ok(document);
+                }
+                catch ( error ) {
+                  ko(error);
+                }
+              })
+              .catch(ko);
           }
           catch ( error ) {
             ko(error);
           }
-        });
+        })
+        .catch(ko);
+    });
+  }
+
+  //----------------------------------------------------------------------------
+
+  count (query = {}) {
+    const { model } = this;
+
+    // console.log(prettify({ [`${this.model.name}.count()`] : query }));
+
+    return new Promise((ok, ko) => {
+      this.getCollection()
+        .then(() => {
+          try {
+            const action = this.collection.count(query);
+
+            action
+              .then(count => {
+                try {
+                  // console.log(prettify({ [`${this.model.name}.count()`] : count}));
+
+                  ok(count);
+                }
+                catch ( error ) {
+                  ko(error);
+                }
+              })
+              .catch(ko);
+          }
+          catch ( error ) {
+            ko(error);
+          }
+        })
+        .catch(ko);
+    });
+  }
+
+  //----------------------------------------------------------------------------
+
+  deleteMany (filter = {}, projection = {}, options = {}) {
+    return new Promise((ok, ko) => {
+
+      projection = new Projection(Object.assign({ limit : 0 }, projection));
+
+      // console.log(prettify({ [`>> Query {${this.model.name}#${this.model.version}} => deleteMany`] : {filter, projection, options}}));
+
+      this.getCollection().then(
+        () => {
+
+          let action;
+
+          if ( ! projection.limit ) {
+            action = this.collection.deleteMany(filter);
+          }
+
+          action
+            .then(result => {
+              ok();
+            })
+            .catch(ko)
+        },
+        ko
+      );
+    });
+  }
+
+  //----------------------------------------------------------------------------
+
+  deleteOne (filter = {}, projection = {}, options = {}) {
+    return new Promise((ok, ko) => {
+      try {
+        projection = new Projection(Object.assign({ limit : 0 }, projection));
+
+        // console.log(prettify({ [`>> Query {${this.model.name}#${this.model.version}} => deleteOne`] : {filter, projection, options}}));
+
+        this.getCollection()
+          .then(() => {
+            try {
+              let action;
+
+              if ( ! projection.limit ) {
+                action = this.collection.deleteOne(filter);
+              }
+
+              action
+                .then(result => {
+                  try {
+                    // console.log('---------------------------------------');
+                    // console.log(result);
+
+                    // console.log(prettify({ [`<< Query {${this.model.name}#${this.model.version}} <= deleteOne`] : result.deletedCount}));
+
+                    ok(result.deletedCount);
+                  }
+                  catch ( error ) {
+                    ko(error);
+                  }
+                })
+                .catch(ko)
+            }
+            catch ( error ) {
+              ko(error);
+            }
+          })
+          .catch(ko);
+      }
+      catch ( error ) {
+        ko(error);
+      }
+    });
+  }
+
+  //----------------------------------------------------------------------------
+
+  insertMany (docs = [], options = {}) {
+    return new Promise((ok, ko) => {
+
+      const { model } = this;
+
+      // console.log(prettify({ [`>> Query {${model.name}#${model.version}} => insertMany`] : { docs, options }}));
+
+      this.getCollection().then(
+        () => {
+
+          let action = this.collection.insertMany(docs);
+
+          action
+            .then(res => {
+              ok(res.ops.map(op => new model(op, true)));
+            })
+            .catch(ko);
+        },
+        ko
+      );
+    });
+  }
+
+  //----------------------------------------------------------------------------
+
+  insertOne (doc = {}, options = {}) {
+    return new Promise((ok, ko) => {
+
+      const { model } = this;
+
+      // console.log(prettify({ [`>> Query {${this.model.name}#${this.model.version}} => insertOne`] : { doc, options } }));
+
+      this.getCollection()
+
+        .then(() => {
+          let action = this.collection.insertOne(doc);
+
+          action
+            .then(inserted => {
+
+              // const document = new model(inserted.ops[0], true);
+
+              // console.log(prettify({ [`<< Query {${this.model.name}#${this.model.version}} <= insertOne`] : { ops:  inserted.ops } }));
+
+
+
+              ok(inserted.ops[0]);
+            })
+            .catch(ko);
+        })
+
+        .catch(ko);
+    });
+  }
+
+  //----------------------------------------------------------------------------
+
+  updateOne (filter = {}, modifier = {}, options = {}) {
+    return new Promise((ok, ko) => {
+
+      const { model } = this;
+
+      // console.log(prettify({ [`>> Query {${model.name}#${model.version}} => updateOne`] : { filter, modifier, options }}));
+
+      this.getCollection().then(
+        () => {
+          let action = this.collection.findOneAndUpdate(
+            filter,
+            modifier,
+            options
+          );
+
+          action
+            .then(result => {
+
+              if ( ! result.value ) {
+
+                console.log(filter, modifier);
+
+                return ko(new MungoError(`Could not update ${model.name}`), { filter });
+              }
+
+              // console.log(prettify({[`<< Query {${model.name}#${model.version}} <= updateOne`]: { found : result.value}}));
+
+              this.findOne({ _id : result.value._id }).then(ok, ko);
+            })
+            .catch(ko);
+        },
+        ko
+      );
+    });
+  }
+
+  //----------------------------------------------------------------------------
+
+  updateMany (filter = {}, modifier = {}, options = {}) {
+    return new Promise((ok, ko) => {
+      try {
+        // console.log(prettify({[`>> Query {${this.model.name}#${this.model.version}} => updateMany`]: {filter,modifier,options}}));
+
+        this.getCollection().then(
+          () => {
+            let action = this.collection.updateMany(
+              filter,
+              modifier,
+              options
+            );
+
+            action.then(ok, ko);
+          },
+          ko
+        );
       }
       catch ( error ) {
         ko(error);
@@ -524,4 +393,4 @@ class Query {
 
 }
 
-Mungo.Query = Query;
+export default Query;
