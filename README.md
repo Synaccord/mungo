@@ -32,6 +32,32 @@ User.remove({ username : 'dude' });
 
 # Connect
 
+```js
+Mungo.connect(url);
+```
+
+Connecting by entering an url. Connect emits so you can listen to it:
+
+```js
+Mungo.connect(url)
+  .on('error', error => console.log(error.stack))
+  .on('connected', connection => {
+    console.log(connection.db)
+  });
+```
+
+Connections are stacked in `Mungo.connections`. When you try to do a op, the first alive connection in array will be chosen.
+
+You can force a connection to be used:
+
+```js
+Mungo.connect(url1);
+Mungo.connect(url2);
+
+Foo.find({}, {}, { connection : 0 });
+Foo2.find({}, {}, { connection : 1 });
+```
+
 # Methods
 
 | Method | Arguments | About |
