@@ -33,9 +33,20 @@ class _Array {
 
       type = Type.associate(type);
 
+      // if ( type.isSubdocument() ) {
+      //   console.log('-------------------------------------');
+      //   return array.map(item => {
+      //     for ( let field in item ) {
+      //
+      //     }
+      //   })
+      // }
+
       return array.map(item => type.convert(item));
     }
     catch ( error ) {
+      console.log(type);
+
       throw MungoTypeError.rethrow(error, 'Could not convert array', { array, type });
     }
   }
@@ -240,6 +251,30 @@ class Type {
   }
 
   args = []
+
+  getType() {
+    return this.type;
+  }
+
+  isSubdocument () {
+    return this.type === _Subdocument;
+  }
+
+  getSubdocument () {
+    if ( this.isSubdocument() ) {
+      return this.args[0];
+    }
+  }
+
+  isArray () {
+    return this.type === _Array;
+  }
+
+  getArray () {
+    if ( this.isArray() ) {
+      return this.args[0];
+    }
+  }
 
   convert(value) {
 

@@ -14,73 +14,85 @@ function _classCallCheck(instance, Constructor) { if (!(instance instanceof Cons
 
 function _inherits(subClass, superClass) { if (typeof superClass !== 'function' && superClass !== null) { throw new TypeError('Super expression must either be null or a function, not ' + typeof superClass); } subClass.prototype = Object.create(superClass && superClass.prototype, { constructor: { value: subClass, enumerable: false, writable: true, configurable: true } }); if (superClass) Object.setPrototypeOf ? Object.setPrototypeOf(subClass, superClass) : subClass.__proto__ = superClass; }
 
-var _mongodb = require('mongodb');
+var _redtea = require('redtea');
 
-var _mongodb2 = _interopRequireDefault(_mongodb);
+var _redtea2 = _interopRequireDefault(_redtea);
 
-var _error = require('./error');
+var _should = require('should');
 
-var _error2 = _interopRequireDefault(_error);
+var _should2 = _interopRequireDefault(_should);
 
-var ModelTypeError = (function (_MungoError) {
-  _inherits(ModelTypeError, _MungoError);
+var _ = require('../..');
 
-  function ModelTypeError() {
-    _classCallCheck(this, ModelTypeError);
+var _2 = _interopRequireDefault(_);
 
-    _get(Object.getPrototypeOf(ModelTypeError.prototype), 'constructor', this).apply(this, arguments);
+var FindStatement = _2['default'].FindStatement;
+
+var Foo1 = (function (_Mungo$Model) {
+  _inherits(Foo1, _Mungo$Model);
+
+  function Foo1() {
+    _classCallCheck(this, Foo1);
+
+    _get(Object.getPrototypeOf(Foo1.prototype), 'constructor', this).apply(this, arguments);
   }
 
-  return ModelTypeError;
-})(_error2['default']);
-
-var ModelType = (function () {
-  function ModelType() {
-    _classCallCheck(this, ModelType);
-  }
-
-  _createClass(ModelType, null, [{
-    key: 'validate',
-    value: function validate(value) {
-      return value instanceof _mongodb2['default'].ObjectID;
-    }
-  }, {
-    key: 'convert',
-    value: function convert(value) {
-      try {
-        if (!value) {
-          return null;
-        }
-
-        if (value instanceof this) {
-          if (value.get('_id')) {
-            return value.get('_id');
-          }
-
-          value.set('_id', _mongodb2['default'].ObjectID());
-
-          return value.get('_id');
-        }
-
-        if (value instanceof _mongodb2['default'].ObjectID) {
-          return value;
-        } else if (typeof value === 'string') {
-          return _mongodb2['default'].ObjectID(value);
-        }
-
-        var model = new this(value);
-
-        model.set('_id', _mongodb2['default'].ObjectID());
-
-        return model._id;
-      } catch (error) {
-        throw ModelTypeError.rethrow(error, 'Could not convert model', { value: value, model: { name: this.name, version: this.version } });
+  _createClass(Foo1, null, [{
+    key: 'schema',
+    value: {
+      A: String,
+      B: String,
+      C: {
+        D: Number
       }
-    }
+    },
+    enumerable: true
   }]);
 
-  return ModelType;
-})();
+  return Foo1;
+})(_2['default'].Model);
 
-exports['default'] = ModelType;
+function testFindStatement(props) {
+
+  var locals = {};
+
+  return (0, _redtea2['default'])('Test Find Statement', function (it) {
+
+    it('Parse simple find statement', function (it) {
+      it('should create a document', function () {
+        return locals.document = {
+          A: 'hello', B: 2
+        };
+      });
+
+      it('should parse', function () {
+        return locals.findStatement = new FindStatement(locals.document, Foo1);
+      });
+
+      it('should have the same fields, but parsed if need be', function () {
+        locals.findStatement.should.have.property('A').which.is.exactly('hello');
+
+        locals.findStatement.should.have.property('B').which.is.exactly('2');
+      });
+    });
+
+    it('Parse dot notation', function (it) {
+      it('should create a document', function () {
+        return locals.document = {
+          'C.D': '40'
+        };
+      });
+
+      it('should parse', function () {
+        return locals.findStatement = new FindStatement(locals.document, Foo1);
+      });
+
+      it('should have the fields parsed', function () {
+        locals.findStatement.should.have.property('C.D').which.is.exactly(40);
+      });
+    });
+  });
+}
+
+exports['default'] = testFindStatement;
 module.exports = exports['default'];

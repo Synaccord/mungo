@@ -7,6 +7,9 @@ import UpdateStatement            from './update-statement';
 import ModelMigrate               from './model-migrate';
 import sequencer                  from 'sequencer';
 import prettify                   from './prettify';
+import MungoError                 from './error';
+
+class MungoModelQueryError extends MungoError {}
 
 function normalizeModifier (modifier, model) {
   if ( ! ( '$inc' in modifier ) ) {
@@ -75,6 +78,10 @@ class ModelQuery extends ModelMigrate {
       return this.insertMany(...args[0]);
     }
 
+    if ( ! args.length ) {
+      return this.insertOne({});
+    }
+
     if ( args.length === 1 ) {
       return this.insertOne(args[0]);
     }
@@ -107,21 +114,70 @@ class ModelQuery extends ModelMigrate {
   //----------------------------------------------------------------------------
 
   static deleteMany (filter = {}, projection = {}, options = {}) {
-    if ( ! ( filter instanceof FindStatement ) ) {
-      filter = new FindStatement(filter, this);
-    }
+    return new Promise((ok, ko) => {
+      if ( ! ( filter instanceof FindStatement ) ) {
+        filter = new FindStatement(filter, this);
+      }
 
-    return this.exec('deleteMany', filter, projection, options);
+      sequencer
+        .pipe(
+
+          () => this.find(filter, projection, options),
+
+          docs => sequencer.pipe(
+
+            () => Promise.all(docs.map(doc => sequencer(
+              (this.removing() || []).map(fn => () => fn(doc))
+            ))),
+
+            () => this.exec('deleteMany',
+              new FindStatement({ _id : { $in : docs } }, this)
+            ),
+
+            () => new Promise(ok => ok(docs))
+
+          )
+          .then(docs => {
+            ok(docs);
+
+            Promise.all(docs.map(doc => sequencer(
+              (this.removed() || []).map(fn => () => fn(doc))
+            )));
+          })
+          .catch(ko)
+
+      );
+    });
   }
 
   //----------------------------------------------------------------------------
 
   static deleteOne (filter = {}) {
-    if ( ! ( filter instanceof FindStatement ) ) {
-      filter = new FindStatement(filter, this);
-    }
+    return new Promise((ok, ko) => {
+      if ( ! ( filter instanceof FindStatement ) ) {
+        filter = new FindStatement(filter, this);
+      }
 
-    return this.exec('deleteOne', filter);
+      sequencer,pipe(
+        () => this.findOne(filter),
+
+        doc => sequencer.pipe(
+
+          () => sequencer((this.removing() || []).map(fn => () => fn(doc))),
+
+          () => this.exec('deleteOne', new FindStatement({ _id : doc }, this)),
+
+          () => new Promise(ok => ok(doc))
+
+        )
+      )
+      .then(doc => {
+        ok(doc);
+
+        sequencer((this.removed() || []).map(fn => () => fn(doc)));
+      })
+      .catch(ko);
+    });
   }
 
   //----------------------------------------------------------------------------
@@ -162,8 +218,11 @@ class ModelQuery extends ModelMigrate {
 
   //----------------------------------------------------------------------------
 
-  static findByIds (..._id) {
-    return this.find({ _id : { $In : _id } });
+  static findByIds (..._ids) {
+    if ( _ids.length === 1 && Array.isArray(_ids[0]) ) {
+      _ids = _ids[0];
+    }
+    return this.find({ _id : { $in : _ids } });
   }
 
   //----------------------------------------------------------------------------
@@ -215,6 +274,12 @@ class ModelQuery extends ModelMigrate {
 
   //----------------------------------------------------------------------------
 
+  static insert (...args) {
+    return this.create(...args);
+  }
+
+  //----------------------------------------------------------------------------
+
   static insertMany (...docs) {
     return Promise.all(
       docs
@@ -234,16 +299,27 @@ class ModelQuery extends ModelMigrate {
 
   static insertOne (doc) {
     return new Promise((ok, ko) => {
-      if ( ! ( doc instanceof this ) ) {
-        doc = new this(doc);
-      }
+      try {
+        if ( ! ( doc instanceof this ) ) {
+          doc = new this(doc);
+        }
 
-      doc
-        .set({ __v : 0, __V : this.version })
-        .save()
-        .then(() => ok(doc))
-        .catch(ko);
-    })
+        doc
+          .set({ __v : 0, __V : this.version })
+          .save()
+          .then(() => ok(doc))
+          .catch(ko);
+      }
+      catch ( error ) {
+        ko(error);
+      }
+    });
+  }
+
+  //----------------------------------------------------------------------------
+
+  static remove (filter = {}) {
+    return this.deleteMany(filter);
   }
 
   //----------------------------------------------------------------------------
@@ -267,109 +343,144 @@ class ModelQuery extends ModelMigrate {
   //----------------------------------------------------------------------------
 
   static updateOne (filter, modifier, options = {}) {
-    // console.log({ filter, modifier, options});
+    return new Promise((ok, ko) => {
+      if ( ! ( filter instanceof FindStatement ) ) {
+        filter = new FindStatement(filter, this);
+      }
 
-    if ( ! ( filter instanceof FindStatement ) ) {
-      filter = new FindStatement(filter, this);
-    }
+      if ( ! ( modifier instanceof UpdateStatement ) ) {
+        modifier = new UpdateStatement(modifier, this);
+      }
 
-    if ( ! ( modifier instanceof UpdateStatement ) ) {
-      modifier = new UpdateStatement(modifier, this);
-    }
+      normalizeModifier(modifier, this);
 
-    normalizeModifier(modifier, this);
+      // Get document from DB
 
-    return sequencer.pipe(
-      () => this.exec('updateOne', filter, modifier, options),
+      this.findOne(filter, options)
+        .then(doc => {
+          if ( ! doc ) {
+            return ok();
+          }
 
-      updated => new Promise(ok => ok(new this(updated, true)))
-    );
+          sequencer.pipe(
+
+            // Apply before hooks
+
+            () => sequencer((this.updating() || []).map(fn => () => fn(doc))),
+
+            // Put hooks changes into modifiers
+
+            () => new Promise((ok, ko) => {
+
+              let _modifiers = Object.assign({}, modifier);
+
+              if ( Object.keys(doc.$changes).length ) {
+                if ( ! ( '$set' in _modifiers ) ) {
+                  _modifiers.$set = {};
+                }
+
+                Object.assign(_modifiers.$set, doc.$changes);
+              }
+
+              this
+                .exec('updateOne', { _id : doc._id }, _modifiers)
+                .then(() => ok(doc))
+                .catch(ko)
+            })
+            
+          )
+          .then(doc => {
+            ok(doc);
+
+            sequencer((this.updated() || []).map(fn => () => fn(doc)))
+          })
+          .catch(ko)
+        })
+        .catch(ko);
+    });
+
+    // if ( ! ( filter instanceof FindStatement ) ) {
+    //   filter = new FindStatement(filter, this);
+    // }
+    //
+    // if ( ! ( modifier instanceof UpdateStatement ) ) {
+    //   modifier = new UpdateStatement(modifier, this);
+    // }
+    //
+    // normalizeModifier(modifier, this);
+    //
+    // return sequencer.pipe(
+    //   () => this.exec('updateOne', filter, modifier, options),
+    //
+    //   updated => new Promise(ok => ok(new this(updated, true)))
+    // );
   }
 
   //----------------------------------------------------------------------------
 
   static updateMany (filter = {}, modifier = {}, options = {}) {
 
-    // console.log(prettify({[`ModelQuery ${this.name} updateMany`]: {filter,modifier,options}}));
+    // console.log(prettify({[`ModelQuery ${this.name}#${this.version} updateMany`]: {filter,modifier,options}}));
 
-    let documents;
+    return new Promise((ok, ko) => {
 
-    return sequencer(
+      if ( ! ( filter instanceof FindStatement ) ) {
+        filter = new FindStatement(filter, this);
+      }
 
-      () => new Promise((ok, ko) => {
-        try {
+      if ( ! ( modifier instanceof UpdateStatement ) ) {
+        modifier = new UpdateStatement(modifier, this);
+      }
 
-          if ( ! ( filter instanceof FindStatement ) ) {
-            filter = new FindStatement(filter, this);
-          }
+      normalizeModifier(modifier, this);
 
-          if ( ! ( modifier instanceof UpdateStatement ) ) {
-            modifier = new UpdateStatement(modifier, this);
-          }
+      sequencer.pipe(
 
-          normalizeModifier(modifier, this);
+        // Get documents from DB
 
-          ok();
-        }
-        catch ( error ) {
-          ko(error);
-        }
-      }),
+        () => this.find(filter, options),
 
-      () => this.find(filter, options),
+        docs => sequencer.pipe(
 
-      docs => new Promise(ok => {
-        documents = docs;
-        ok(docs.map(doc => doc));
-      }),
+          // Apply before hooks
 
-      docs => this.exec(
-        'updateMany',
-        {
-          _id : {
-            $in : docs.map(doc => doc._id)
-          }
-        },
-        modifier
-      ),
+          () => Promise.all(docs.map(doc =>
+            sequencer((this.updating() || []).map(fn => () => fn(doc)))
+          )),
 
-      () => this.find(
-        {
-          _id : {
-            $in : documents.map(doc => doc._id)
-          }
-        },
-        options
-      ),
+          // Put hooks changes into modifiers
 
-      docs => new Promise((ok, ko) => {
-        ok(docs.map(doc => new this(doc, true)));
+          () => Promise.all(docs.map(doc => new Promise((ok, ko) => {
+
+            let _modifiers = Object.assign({}, modifier);
+
+            if ( Object.keys(doc.$changes).length ) {
+              if ( ! ( '$set' in _modifiers ) ) {
+                _modifiers.$set = {};
+              }
+
+              Object.assign(_modifiers.$set, doc.$changes);
+            }
+
+            this
+              .exec('updateOne', { _id : doc._id }, _modifiers)
+              .then(() => ok(doc))
+              .catch(ko)
+          })))
+        )
+      )
+      .then(docs => {
+        ok(docs);
+
+        docs.forEach(doc =>
+          sequencer((this.updated() || []).map(fn => () => fn(doc)))
+        );
       })
+      .catch(ko);
 
-    );
+    });
+
   }
-
-  //----------------------------------------------------------------------------
-
-  static insert (...args) {
-    return this.create(...args);
-  }
-
-  //----------------------------------------------------------------------------
-
-  static remove (...args) {
-    return this.deleteMany(...args);
-  }
-
-
-
-  //----------------------------------------------------------------------------
-
-  static remove (filter = {}) {
-    return this.deleteMany(filter);
-  }
-
-
 
   //----------------------------------------------------------------------------
 }

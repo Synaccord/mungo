@@ -1,24 +1,20 @@
 'use strict';
 
-var _get = require('babel-runtime/helpers/get')['default'];
-
-var _inherits = require('babel-runtime/helpers/inherits')['default'];
-
-var _classCallCheck = require('babel-runtime/helpers/class-call-check')['default'];
-
-var _createClass = require('babel-runtime/helpers/create-class')['default'];
-
-var _toConsumableArray = require('babel-runtime/helpers/to-consumable-array')['default'];
-
-var _Object$assign = require('babel-runtime/core-js/object/assign')['default'];
-
-var _Object$keys = require('babel-runtime/core-js/object/keys')['default'];
-
-var _interopRequireDefault = require('babel-runtime/helpers/interop-require-default')['default'];
-
 Object.defineProperty(exports, '__esModule', {
   value: true
 });
+
+var _createClass = (function () { function defineProperties(target, props) { for (var i = 0; i < props.length; i++) { var descriptor = props[i]; descriptor.enumerable = descriptor.enumerable || false; descriptor.configurable = true; if ('value' in descriptor) descriptor.writable = true; Object.defineProperty(target, descriptor.key, descriptor); } } return function (Constructor, protoProps, staticProps) { if (protoProps) defineProperties(Constructor.prototype, protoProps); if (staticProps) defineProperties(Constructor, staticProps); return Constructor; }; })();
+
+var _get = function get(_x2, _x3, _x4) { var _again = true; _function: while (_again) { var object = _x2, property = _x3, receiver = _x4; desc = parent = getter = undefined; _again = false; if (object === null) object = Function.prototype; var desc = Object.getOwnPropertyDescriptor(object, property); if (desc === undefined) { var parent = Object.getPrototypeOf(object); if (parent === null) { return undefined; } else { _x2 = parent; _x3 = property; _x4 = receiver; _again = true; continue _function; } } else if ('value' in desc) { return desc.value; } else { var getter = desc.get; if (getter === undefined) { return undefined; } return getter.call(receiver); } } };
+
+function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { 'default': obj }; }
+
+function _toConsumableArray(arr) { if (Array.isArray(arr)) { for (var i = 0, arr2 = Array(arr.length); i < arr.length; i++) arr2[i] = arr[i]; return arr2; } else { return Array.from(arr); } }
+
+function _classCallCheck(instance, Constructor) { if (!(instance instanceof Constructor)) { throw new TypeError('Cannot call a class as a function'); } }
+
+function _inherits(subClass, superClass) { if (typeof superClass !== 'function' && superClass !== null) { throw new TypeError('Super expression must either be null or a function, not ' + typeof superClass); } subClass.prototype = Object.create(superClass && superClass.prototype, { constructor: { value: subClass, enumerable: false, writable: true, configurable: true } }); if (superClass) Object.setPrototypeOf ? Object.setPrototypeOf(subClass, superClass) : subClass.__proto__ = superClass; }
 
 var _mongodb = require('mongodb');
 
@@ -52,7 +48,7 @@ var _Object = (function () {
 
     _classCallCheck(this, _Object);
 
-    _Object$assign(this, object);
+    Object.assign(this, object);
   }
 
   //------------------------------------------------------------------------------
@@ -91,10 +87,21 @@ var _Array = (function () {
 
         type = Type.associate(type);
 
+        // if ( type.isSubdocument() ) {
+        //   console.log('-------------------------------------');
+        //   return array.map(item => {
+        //     for ( let field in item ) {
+        //
+        //     }
+        //   })
+        // }
+
         return array.map(function (item) {
           return type.convert(item);
         });
       } catch (error) {
+        console.log(type);
+
         throw MungoTypeError.rethrow(error, 'Could not convert array', { array: array, type: type });
       }
     }
@@ -143,7 +150,7 @@ var _Subdocument = (function () {
         validated[field] = schema[field].type.validate(subdoc[field]);
       }
 
-      return _Object$keys(validated).every(function (key) {
+      return Object.keys(validated).every(function (key) {
         return validated[key];
       });
     }
@@ -352,6 +359,35 @@ var _Geo = (function () {
 
 var Type = (function () {
   _createClass(Type, [{
+    key: 'getType',
+    value: function getType() {
+      return this.type;
+    }
+  }, {
+    key: 'isSubdocument',
+    value: function isSubdocument() {
+      return this.type === _Subdocument;
+    }
+  }, {
+    key: 'getSubdocument',
+    value: function getSubdocument() {
+      if (this.isSubdocument()) {
+        return this.args[0];
+      }
+    }
+  }, {
+    key: 'isArray',
+    value: function isArray() {
+      return this.type === _Array;
+    }
+  }, {
+    key: 'getArray',
+    value: function getArray() {
+      if (this.isArray()) {
+        return this.args[0];
+      }
+    }
+  }, {
     key: 'convert',
     value: function convert(value) {
 

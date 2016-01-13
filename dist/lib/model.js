@@ -1,28 +1,20 @@
 'use strict';
 
-var _get = require('babel-runtime/helpers/get')['default'];
-
-var _inherits = require('babel-runtime/helpers/inherits')['default'];
-
-var _classCallCheck = require('babel-runtime/helpers/class-call-check')['default'];
-
-var _createClass = require('babel-runtime/helpers/create-class')['default'];
-
-var _defineProperty = require('babel-runtime/helpers/define-property')['default'];
-
-var _Object$assign2 = require('babel-runtime/core-js/object/assign')['default'];
-
-var _Object$defineProperties4 = require('babel-runtime/core-js/object/define-properties')['default'];
-
-var _Promise = require('babel-runtime/core-js/promise')['default'];
-
-var _Reflect$getPrototypeOf = require('babel-runtime/core-js/reflect/get-prototype-of')['default'];
-
-var _interopRequireDefault = require('babel-runtime/helpers/interop-require-default')['default'];
-
 Object.defineProperty(exports, '__esModule', {
   value: true
 });
+
+var _createClass = (function () { function defineProperties(target, props) { for (var i = 0; i < props.length; i++) { var descriptor = props[i]; descriptor.enumerable = descriptor.enumerable || false; descriptor.configurable = true; if ('value' in descriptor) descriptor.writable = true; Object.defineProperty(target, descriptor.key, descriptor); } } return function (Constructor, protoProps, staticProps) { if (protoProps) defineProperties(Constructor.prototype, protoProps); if (staticProps) defineProperties(Constructor, staticProps); return Constructor; }; })();
+
+var _get = function get(_x6, _x7, _x8) { var _again = true; _function: while (_again) { var object = _x6, property = _x7, receiver = _x8; desc = parent = getter = undefined; _again = false; if (object === null) object = Function.prototype; var desc = Object.getOwnPropertyDescriptor(object, property); if (desc === undefined) { var parent = Object.getPrototypeOf(object); if (parent === null) { return undefined; } else { _x6 = parent; _x7 = property; _x8 = receiver; _again = true; continue _function; } } else if ('value' in desc) { return desc.value; } else { var getter = desc.get; if (getter === undefined) { return undefined; } return getter.call(receiver); } } };
+
+function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { 'default': obj }; }
+
+function _defineProperty(obj, key, value) { if (key in obj) { Object.defineProperty(obj, key, { value: value, enumerable: true, configurable: true, writable: true }); } else { obj[key] = value; } return obj; }
+
+function _classCallCheck(instance, Constructor) { if (!(instance instanceof Constructor)) { throw new TypeError('Cannot call a class as a function'); } }
+
+function _inherits(subClass, superClass) { if (typeof superClass !== 'function' && superClass !== null) { throw new TypeError('Super expression must either be null or a function, not ' + typeof superClass); } subClass.prototype = Object.create(superClass && superClass.prototype, { constructor: { value: subClass, enumerable: false, writable: true, configurable: true } }); if (superClass) Object.setPrototypeOf ? Object.setPrototypeOf(subClass, superClass) : subClass.__proto__ = superClass; }
 
 var _colors = require('colors');
 
@@ -56,7 +48,13 @@ var _type = require('./type');
 
 var _type2 = _interopRequireDefault(_type);
 
-require('babel-polyfill');
+var _isPrototypeOf = require('./is-prototype-of');
+
+var _isPrototypeOf2 = _interopRequireDefault(_isPrototypeOf);
+
+var _schema = require('./schema');
+
+var _schema2 = _interopRequireDefault(_schema);
 
 var MungoModelError = (function (_MungoError) {
   _inherits(MungoModelError, _MungoError);
@@ -113,7 +111,7 @@ var Model = (function (_ModelStatic) {
     var self = this;
 
     var _loop = function (field) {
-      _Object$assign2(_this, _Object$defineProperties4({}, _defineProperty({}, field, {
+      Object.assign(_this, Object.defineProperties({}, _defineProperty({}, field, {
         get: function get() {
           return self.$document[field];
         },
@@ -144,11 +142,13 @@ var Model = (function (_ModelStatic) {
 
       this.$document[field] = this.$document.parseField(field, value, schema[field]);
 
-      this.$changes[field] = this.$document[field];
+      if (field !== '_id') {
+        this.$changes[field] = this.$document[field];
+      }
 
       var self = this;
 
-      _Object$assign2(this, _Object$defineProperties4({}, _defineProperty({}, field, {
+      Object.assign(this, Object.defineProperties({}, _defineProperty({}, field, {
         get: function get() {
           return self.$document[field];
         },
@@ -182,15 +182,13 @@ var Model = (function (_ModelStatic) {
         this.$document[field] = this.$document.parseField(field, [], schema[field]);
       }
 
-      this.$document[field].push(this.$document.parseField(field, [value], schema[field]));
+      this.$document[field].push(this.$document.parseField(field, [value], schema[field])[0]);
 
-      _Object$assign2(this.$changes, _defineProperty({}, field, this.$document[field].map(function (v) {
-        return v;
-      })));
+      this.$changes[field] = this.$document[field];
 
       var self = this;
 
-      _Object$assign2(this, _Object$defineProperties4({}, _defineProperty({}, field, {
+      Object.assign(this, Object.defineProperties({}, _defineProperty({}, field, {
         get: function get() {
           return self.$document[field];
         },
@@ -199,6 +197,34 @@ var Model = (function (_ModelStatic) {
       })));
 
       return this;
+    }
+
+    //----------------------------------------------------------------------------
+
+  }, {
+    key: 'map',
+    value: function map(field, mapper) {
+
+      if (typeof field === 'object') {
+        for (var i in field) {
+          this.push(i, field[i]);
+        }
+        return this;
+      }
+
+      var schema = this.constructor.getSchema();
+
+      if (!(field in schema)) {
+        throw new MungoModelError('Can not map to an unset field', { field: field, modelName: this.constructor.name });
+      }
+
+      if (!this.$document[field]) {
+        this.$document[field] = this.$document.parseField(field, [], schema[field]);
+      }
+
+      var mapped = this.$document[field].map(mapper);
+
+      return this.set(field, mapped);
     }
 
     //----------------------------------------------------------------------------
@@ -218,7 +244,7 @@ var Model = (function (_ModelStatic) {
 
       var options = arguments.length <= 0 || arguments[0] === undefined ? {} : arguments[0];
 
-      return new _Promise(function (ok, ko) {
+      return new Promise(function (ok, ko) {
         try {
           (function () {
             var Model = _this2.constructor;
@@ -266,6 +292,8 @@ var Model = (function (_ModelStatic) {
 
               _this2.setDefaults();
 
+              _this2.required();
+
               _sequencer2['default'].pipe(function () {
                 return (0, _sequencer2['default'])((Model.inserting() || []).map(function (fn) {
                   return function () {
@@ -282,7 +310,7 @@ var Model = (function (_ModelStatic) {
 
                 var self = _this2;
 
-                _Object$assign2(_this2, _Object$defineProperties4({}, {
+                Object.assign(_this2, Object.defineProperties({}, {
                   _id: {
                     get: function get() {
                       return self.get('_id');
@@ -313,7 +341,21 @@ var Model = (function (_ModelStatic) {
   }, {
     key: 'toJSON',
     value: function toJSON() {
-      return JSON.parse(JSON.stringify(this.$document));
+      var options = arguments.length <= 0 || arguments[0] === undefined ? {} : arguments[0];
+
+      var serialized = JSON.parse(JSON.stringify(this.$document));
+
+      var schema = this.constructor.getSchema();
+
+      var flatten = schema.flatten;
+
+      for (var field in flatten) {
+        if (flatten[field]['private']) {
+          delete serialized[field];
+        }
+      }
+
+      return serialized;
     }
 
     //----------------------------------------------------------------------------
@@ -325,7 +367,7 @@ var Model = (function (_ModelStatic) {
 
       var options = arguments.length <= 0 || arguments[0] === undefined ? {} : arguments[0];
 
-      return new _Promise(function (ok, ko) {
+      return new Promise(function (ok, ko) {
         try {
           (function () {
             var _constructor$getSchema = _this3.constructor.getSchema();
@@ -337,16 +379,17 @@ var Model = (function (_ModelStatic) {
             var _loop2 = function (field) {
               var type = flatten[field].type;
 
-              if (_Reflect$getPrototypeOf(type.type) === Model) {
+              if ((0, _isPrototypeOf2['default'])(type.type, Model)) {
                 (function () {
 
                   var value = _this3.get(flatten[field].flatten);
 
                   if (value) {
-                    promises.push(new _Promise(function (ok, ko) {
+                    promises.push(new Promise(function (ok, ko) {
                       try {
                         type.type.findById(value).then(function (doc) {
                           try {
+                            // console.log('populated', field, dic);
                             _this3.$populated[flatten[field].flatten] = doc;
                             ok();
                           } catch (error) {
@@ -359,12 +402,12 @@ var Model = (function (_ModelStatic) {
                     }));
                   }
                 })();
-              } else if (type.type === _type2['default'].Array && _Reflect$getPrototypeOf(type.args[0].type) === Model) {
+              } else if (type.type === _type2['default'].Array && (0, _isPrototypeOf2['default'])(type.args[0].type, Model)) {
                 (function () {
                   var value = _this3.get(flatten[field].flatten);
 
                   if (value) {
-                    promises.push(new _Promise(function (ok, ko) {
+                    promises.push(new Promise(function (ok, ko) {
                       try {
                         type.args[0].type.find({ _id: { $in: value } }).then(function (docs) {
                           try {
@@ -387,7 +430,7 @@ var Model = (function (_ModelStatic) {
               _loop2(field);
             }
 
-            _Promise.all(promises).then(ok, ko);
+            Promise.all(promises).then(ok, ko);
           })();
         } catch (error) {
           ko(MungoModelError.rethrow(error, 'Could not populate', {
@@ -405,7 +448,11 @@ var Model = (function (_ModelStatic) {
       var schema = this.constructor.getSchema();
 
       for (var field in schema) {
-        if ('default' in schema[field] && !(field in this.$document)) {
+        var applyDefaultCheckers = ['default' in schema[field], !(field in this.$document) || this.$document[field] === null || typeof this.$document[field] === 'undefined'];
+
+        if (applyDefaultCheckers.every(function (i) {
+          return i;
+        })) {
           if (typeof schema[field]['default'] === 'function') {
             this.set(field, schema[field]['default']());
           } else {
@@ -415,6 +462,36 @@ var Model = (function (_ModelStatic) {
       }
 
       return this;
+    }
+
+    //----------------------------------------------------------------------------
+
+  }, {
+    key: 'required',
+    value: function required() {
+      var schema = this.constructor.getSchema();
+
+      var flatten = schema.flatten;
+
+      for (var field in flatten) {
+        if ('required' in flatten[field]) {
+
+          if (!/\./.test(field) && !(field in this.$document)) {
+            throw new MungoModelError('Missing field ' + field, {
+              code: MungoModelError.MISSING_REQUIRED_FIELD
+            });
+          }
+
+          var val = _schema2['default'].find(field, this.$document);
+
+          if (typeof val === 'undefined') {
+            throw new MungoModelError('Missing field ' + field, {
+              code: MungoModelError.MISSING_REQUIRED_FIELD,
+              document: this.$document
+            });
+          }
+        }
+      }
     }
   }]);
 

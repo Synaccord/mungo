@@ -1,20 +1,18 @@
 'use strict';
 
-var _get = require('babel-runtime/helpers/get')['default'];
-
-var _inherits = require('babel-runtime/helpers/inherits')['default'];
-
-var _createClass = require('babel-runtime/helpers/create-class')['default'];
-
-var _classCallCheck = require('babel-runtime/helpers/class-call-check')['default'];
-
-var _Promise = require('babel-runtime/core-js/promise')['default'];
-
-var _interopRequireDefault = require('babel-runtime/helpers/interop-require-default')['default'];
-
 Object.defineProperty(exports, '__esModule', {
   value: true
 });
+
+var _createClass = (function () { function defineProperties(target, props) { for (var i = 0; i < props.length; i++) { var descriptor = props[i]; descriptor.enumerable = descriptor.enumerable || false; descriptor.configurable = true; if ('value' in descriptor) descriptor.writable = true; Object.defineProperty(target, descriptor.key, descriptor); } } return function (Constructor, protoProps, staticProps) { if (protoProps) defineProperties(Constructor.prototype, protoProps); if (staticProps) defineProperties(Constructor, staticProps); return Constructor; }; })();
+
+var _get = function get(_x, _x2, _x3) { var _again = true; _function: while (_again) { var object = _x, property = _x2, receiver = _x3; desc = parent = getter = undefined; _again = false; if (object === null) object = Function.prototype; var desc = Object.getOwnPropertyDescriptor(object, property); if (desc === undefined) { var parent = Object.getPrototypeOf(object); if (parent === null) { return undefined; } else { _x = parent; _x2 = property; _x3 = receiver; _again = true; continue _function; } } else if ('value' in desc) { return desc.value; } else { var getter = desc.get; if (getter === undefined) { return undefined; } return getter.call(receiver); } } };
+
+function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { 'default': obj }; }
+
+function _classCallCheck(instance, Constructor) { if (!(instance instanceof Constructor)) { throw new TypeError('Cannot call a class as a function'); } }
+
+function _inherits(subClass, superClass) { if (typeof superClass !== 'function' && superClass !== null) { throw new TypeError('Super expression must either be null or a function, not ' + typeof superClass); } subClass.prototype = Object.create(superClass && superClass.prototype, { constructor: { value: subClass, enumerable: false, writable: true, configurable: true } }); if (superClass) Object.setPrototypeOf ? Object.setPrototypeOf(subClass, superClass) : subClass.__proto__ = superClass; }
 
 var _sequencer = require('sequencer');
 
@@ -57,7 +55,7 @@ var ModelMigrate = (function (_ModelType) {
       }, function () {
         return q.collection.indexes();
       }, function (dbIndexes) {
-        return new _Promise(function (ok, ko) {
+        return new Promise(function (ok, ko) {
           dbIndexes = dbIndexes.filter(function (dbIndex) {
             return dbIndex.name !== '_id_';
           });
@@ -67,7 +65,7 @@ var ModelMigrate = (function (_ModelType) {
           }
 
           var promises = indexes.map(function (index) {
-            return new _Promise(function (ok, ko) {
+            return new Promise(function (ok, ko) {
               var indexExists = dbIndexes.some(function (dbIndex) {
                 return dbIndex.name === index.name;
               });
@@ -75,12 +73,17 @@ var ModelMigrate = (function (_ModelType) {
               if (indexExists) {
                 return ok();
               } else {
+
+                if (index.options.force) {
+                  index.options.dropDups = true;
+                }
+
                 q.collection.createIndex(index.fields, index.options).then(ok, ko);
               }
             });
           });
 
-          _Promise.all(promises).then(ok, ko);
+          Promise.all(promises).then(ok, ko);
         });
       });
     }
@@ -107,7 +110,7 @@ var ModelMigrate = (function (_ModelType) {
       return (0, _sequencer2['default'])(function () {
         return _this.buildIndexes();
       }, function () {
-        return new _Promise(function (ok, ko) {
+        return new Promise(function (ok, ko) {
           {
             var _name = _this.name;
             var migrations = _this.migrations;

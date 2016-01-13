@@ -4,7 +4,7 @@ import mongodb              from 'mongodb';
 import Connection           from './connection';
 import Projection           from './projection';
 import prettify             from './prettify';
-import MungoError from './error';
+import MungoError           from './error';
 
 class MungoQueryError extends MungoError {}
 
@@ -92,7 +92,10 @@ class Query {
         .then(() => {
           const action = this.collection.find(query);
 
-          action.limit(projection.limit);
+          action
+            .limit(projection.limit)
+            .skip(projection.skip)
+            .sort(projection.sort);
 
           action.toArray()
             .then(documents => {
@@ -338,27 +341,32 @@ class Query {
 
       this.getCollection().then(
         () => {
-          let action = this.collection.findOneAndUpdate(
-            filter,
-            modifier,
-            options
-          );
+          let action = this.collection.updateOne(filter, modifier, options);
 
           action
-            .then(result => {
+            .then(ok, ko);
 
-              if ( ! result.value ) {
-
-                console.log(filter, modifier);
-
-                return ko(new MungoError(`Could not update ${model.name}`), { filter });
-              }
-
-              // console.log(prettify({[`<< Query {${model.name}#${model.version}} <= updateOne`]: { found : result.value}}));
-
-              this.findOne({ _id : result.value._id }).then(ok, ko);
-            })
-            .catch(ko);
+          // let action = this.collection.findOneAndUpdate(
+          //   filter,
+          //   modifier,
+          //   options
+          // );
+          //
+          // action
+          //   .then(result => {
+          //
+          //     if ( ! result.value ) {
+          //
+          //       console.log(filter, modifier, result);
+          //
+          //       return ko(new MungoQueryError(`Could not update ${model.name}`), { filter });
+          //     }
+          //
+          //     // console.log(prettify({[`<< Query {${model.name}#${model.version}} <= updateOne`]: { found : result.value}}));
+          //
+          //     this.findOne({ _id : result.value._id }).then(ok, ko);
+          //   })
+          //   .catch(ko);
         },
         ko
       );

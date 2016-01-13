@@ -1,5 +1,7 @@
 'use strict';
 
+import Type from './type';
+
 function prettify (prim, options = {}) {
   try {
     // console.log(require('util').inspect(options, { depth: null }));
@@ -126,6 +128,30 @@ function prettify (prim, options = {}) {
 
             if ( prim[f.key] instanceof require('mongodb').ObjectID ) {
               return str + padding + 'ObjectId'.magenta.italic + ` ${prim[f.key].toString()}`.grey;
+            }
+
+            if ( prim[f.key] instanceof require('./type') ) {
+              let ret = str + padding + 'Type'.magenta.italic + ` ${prim[f.key].getType().name}`.grey;
+
+              if ( prim[f.key].isSubdocument() ) {
+                ret += '\n' + prettify(
+                  prim[f.key].getSubdocument(),
+                  { tab : tab +'  '}
+                );
+              }
+
+              else if ( prim[f.key].isArray() ) {
+                ret += (' of ' + (prim[f.key].getArray().getType().name.italic)).grey;
+
+                if ( prim[f.key].getArray().isSubdocument() ) {
+                  ret += '\n' + prettify(
+                    prim[f.key].getArray().getSubdocument(),
+                    { tab : tab +'  '}
+                  );
+                }
+              }
+
+              return ret;
             }
           }
 

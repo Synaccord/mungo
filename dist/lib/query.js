@@ -1,22 +1,18 @@
 'use strict';
 
-var _get = require('babel-runtime/helpers/get')['default'];
-
-var _inherits = require('babel-runtime/helpers/inherits')['default'];
-
-var _classCallCheck = require('babel-runtime/helpers/class-call-check')['default'];
-
-var _createClass = require('babel-runtime/helpers/create-class')['default'];
-
-var _Promise = require('babel-runtime/core-js/promise')['default'];
-
-var _Object$assign = require('babel-runtime/core-js/object/assign')['default'];
-
-var _interopRequireDefault = require('babel-runtime/helpers/interop-require-default')['default'];
-
 Object.defineProperty(exports, '__esModule', {
   value: true
 });
+
+var _createClass = (function () { function defineProperties(target, props) { for (var i = 0; i < props.length; i++) { var descriptor = props[i]; descriptor.enumerable = descriptor.enumerable || false; descriptor.configurable = true; if ('value' in descriptor) descriptor.writable = true; Object.defineProperty(target, descriptor.key, descriptor); } } return function (Constructor, protoProps, staticProps) { if (protoProps) defineProperties(Constructor.prototype, protoProps); if (staticProps) defineProperties(Constructor, staticProps); return Constructor; }; })();
+
+var _get = function get(_x24, _x25, _x26) { var _again = true; _function: while (_again) { var object = _x24, property = _x25, receiver = _x26; desc = parent = getter = undefined; _again = false; if (object === null) object = Function.prototype; var desc = Object.getOwnPropertyDescriptor(object, property); if (desc === undefined) { var parent = Object.getPrototypeOf(object); if (parent === null) { return undefined; } else { _x24 = parent; _x25 = property; _x26 = receiver; _again = true; continue _function; } } else if ('value' in desc) { return desc.value; } else { var getter = desc.get; if (getter === undefined) { return undefined; } return getter.call(receiver); } } };
+
+function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { 'default': obj }; }
+
+function _classCallCheck(instance, Constructor) { if (!(instance instanceof Constructor)) { throw new TypeError('Cannot call a class as a function'); } }
+
+function _inherits(subClass, superClass) { if (typeof superClass !== 'function' && superClass !== null) { throw new TypeError('Super expression must either be null or a function, not ' + typeof superClass); } subClass.prototype = Object.create(superClass && superClass.prototype, { constructor: { value: subClass, enumerable: false, writable: true, configurable: true } }); if (superClass) Object.setPrototypeOf ? Object.setPrototypeOf(subClass, superClass) : subClass.__proto__ = superClass; }
 
 var _mongodb = require('mongodb');
 
@@ -67,7 +63,7 @@ var Query = (function () {
     value: function connect() {
       var _this = this;
 
-      return new _Promise(function (ok, ko) {
+      return new Promise(function (ok, ko) {
 
         if (_this.db) {
           return ok();
@@ -105,7 +101,7 @@ var Query = (function () {
     value: function getCollection() {
       var _this2 = this;
 
-      return new _Promise(function (ok, ko) {
+      return new Promise(function (ok, ko) {
         _this2.connect().then(function () {
           if (_this2.collection) {
             return ok();
@@ -139,11 +135,11 @@ var Query = (function () {
 
       // console.log(prettify({[`>>  Query {${this.model.name}#${this.model.version}} => find`] : { query, projection, options } }));
 
-      var promise = new _Promise(function (ok, ko) {
+      var promise = new Promise(function (ok, ko) {
         _this3.getCollection().then(function () {
           var action = _this3.collection.find(query);
 
-          action.limit(projection.limit);
+          action.limit(projection.limit).skip(projection.skip).sort(projection.sort);
 
           action.toArray().then(function (documents) {
 
@@ -184,11 +180,11 @@ var Query = (function () {
 
       projection = new _projection2['default'](projection);
 
-      _Object$assign(options, projection);
+      Object.assign(options, projection);
 
       // console.log(prettify({ [`>> ${this.model.name}#${this.model.version} => findOne`] : { query, projection, options }}));
 
-      return new _Promise(function (ok, ko) {
+      return new Promise(function (ok, ko) {
         _this4.getCollection().then(function () {
           try {
             var action = _this4.collection.findOne(query, options);
@@ -222,7 +218,7 @@ var Query = (function () {
 
       // console.log(prettify({ [`${this.model.name}.count()`] : query }));
 
-      return new _Promise(function (ok, ko) {
+      return new Promise(function (ok, ko) {
         _this5.getCollection().then(function () {
           try {
             var action = _this5.collection.count(query);
@@ -255,9 +251,9 @@ var Query = (function () {
       var projection = arguments.length <= 1 || arguments[1] === undefined ? {} : arguments[1];
       var options = arguments.length <= 2 || arguments[2] === undefined ? {} : arguments[2];
 
-      return new _Promise(function (ok, ko) {
+      return new Promise(function (ok, ko) {
 
-        projection = new _projection2['default'](_Object$assign({ limit: 0 }, projection));
+        projection = new _projection2['default'](Object.assign({ limit: 0 }, projection));
 
         // console.log(prettify({ [`>> Query {${this.model.name}#${this.model.version}} => deleteMany`] : {filter, projection, options}}));
 
@@ -288,9 +284,9 @@ var Query = (function () {
       var projection = arguments.length <= 1 || arguments[1] === undefined ? {} : arguments[1];
       var options = arguments.length <= 2 || arguments[2] === undefined ? {} : arguments[2];
 
-      return new _Promise(function (ok, ko) {
+      return new Promise(function (ok, ko) {
         try {
-          projection = new _projection2['default'](_Object$assign({ limit: 0 }, projection));
+          projection = new _projection2['default'](Object.assign({ limit: 0 }, projection));
 
           // console.log(prettify({ [`>> Query {${this.model.name}#${this.model.version}} => deleteOne`] : {filter, projection, options}}));
 
@@ -334,7 +330,7 @@ var Query = (function () {
       var docs = arguments.length <= 0 || arguments[0] === undefined ? [] : arguments[0];
       var options = arguments.length <= 1 || arguments[1] === undefined ? {} : arguments[1];
 
-      return new _Promise(function (ok, ko) {
+      return new Promise(function (ok, ko) {
         var model = _this8.model;
 
         // console.log(prettify({ [`>> Query {${model.name}#${model.version}} => insertMany`] : { docs, options }}));
@@ -362,7 +358,7 @@ var Query = (function () {
       var doc = arguments.length <= 0 || arguments[0] === undefined ? {} : arguments[0];
       var options = arguments.length <= 1 || arguments[1] === undefined ? {} : arguments[1];
 
-      return new _Promise(function (ok, ko) {
+      return new Promise(function (ok, ko) {
         var model = _this9.model;
 
         // console.log(prettify({ [`>> Query {${this.model.name}#${this.model.version}} => insertOne`] : { doc, options } }));
@@ -394,27 +390,37 @@ var Query = (function () {
       var modifier = arguments.length <= 1 || arguments[1] === undefined ? {} : arguments[1];
       var options = arguments.length <= 2 || arguments[2] === undefined ? {} : arguments[2];
 
-      return new _Promise(function (ok, ko) {
+      return new Promise(function (ok, ko) {
         var model = _this10.model;
 
         // console.log(prettify({ [`>> Query {${model.name}#${model.version}} => updateOne`] : { filter, modifier, options }}));
 
         _this10.getCollection().then(function () {
-          var action = _this10.collection.findOneAndUpdate(filter, modifier, options);
+          var action = _this10.collection.updateOne(filter, modifier, options);
 
-          action.then(function (result) {
+          action.then(ok, ko);
 
-            if (!result.value) {
-
-              console.log(filter, modifier);
-
-              return ko(new _error2['default']('Could not update ' + model.name), { filter: filter });
-            }
-
-            // console.log(prettify({[`<< Query {${model.name}#${model.version}} <= updateOne`]: { found : result.value}}));
-
-            _this10.findOne({ _id: result.value._id }).then(ok, ko);
-          })['catch'](ko);
+          // let action = this.collection.findOneAndUpdate(
+          //   filter,
+          //   modifier,
+          //   options
+          // );
+          //
+          // action
+          //   .then(result => {
+          //
+          //     if ( ! result.value ) {
+          //
+          //       console.log(filter, modifier, result);
+          //
+          //       return ko(new MungoQueryError(`Could not update ${model.name}`), { filter });
+          //     }
+          //
+          //     // console.log(prettify({[`<< Query {${model.name}#${model.version}} <= updateOne`]: { found : result.value}}));
+          //
+          //     this.findOne({ _id : result.value._id }).then(ok, ko);
+          //   })
+          //   .catch(ko);
         }, ko);
       });
     }
@@ -431,7 +437,7 @@ var Query = (function () {
       var modifier = arguments.length <= 1 || arguments[1] === undefined ? {} : arguments[1];
       var options = arguments.length <= 2 || arguments[2] === undefined ? {} : arguments[2];
 
-      return new _Promise(function (ok, ko) {
+      return new Promise(function (ok, ko) {
         try {
           // console.log(prettify({[`>> Query {${this.model.name}#${this.model.version}} => updateMany`]: {filter,modifier,options}}));
 

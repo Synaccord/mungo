@@ -59,6 +59,12 @@ class ModelStatic extends ModelQuery {
       this._schema = new Schema(this.schema, this.version);
     }
 
+    // legacy support
+
+    else if ( typeof this.schema === 'function' ) {
+      this._schema = new Schema(this.schema(), this.version);
+    }
+
     return this._schema;
   }
 

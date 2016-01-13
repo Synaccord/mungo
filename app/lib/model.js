@@ -1,15 +1,15 @@
 'use strict';
 
-require('babel-polyfill');
-
 import colors           from 'colors';
 import sequencer        from 'sequencer';
 import ModelStatic      from './model-static';
 import Document         from './document';
 import UpdateStatement  from './update-statement';
-import prettify from './prettify';
-import MungoError from './error';
-import Type from './type';
+import prettify         from './prettify';
+import MungoError       from './error';
+import Type             from './type';
+import isPrototypeOf    from './is-prototype-of';
+import Schema           from './schema';
 
 class MungoModelError extends MungoError {}
 
@@ -72,7 +72,9 @@ class Model extends ModelStatic {
 
     this.$document[field] = this.$document.parseField(field, value, schema[field]);
 
-    this.$changes[field] = this.$document[field];
+    if ( field !== '_id' ) {
+      this.$changes[field] = this.$document[field];
+    }
 
     const self = this;
 
@@ -106,11 +108,9 @@ class Model extends ModelStatic {
       this.$document[field] = this.$document.parseField(field, [], schema[field]);
     }
 
-    this.$document[field].push(this.$document.parseField(field, [value], schema[field]));
+    this.$document[field].push(this.$document.parseField(field, [value], schema[field])[0]);
 
-    Object.assign(this.$changes,
-      { [field] : this.$document[field].map(v => v) }
-    );
+    this.$changes[field] = this.$document[field];
 
     const self = this;
 
@@ -121,6 +121,33 @@ class Model extends ModelStatic {
     });
 
     return this;
+  }
+
+  //----------------------------------------------------------------------------
+
+  map (field, mapper) {
+
+    if ( typeof field === 'object' ) {
+      for( let i in field ) {
+        this.push(i, field[i]);
+      }
+      return this;
+    }
+
+    const schema = this.constructor.getSchema();
+
+    if ( ! ( field in schema ) ) {
+      throw new MungoModelError('Can not map to an unset field', { field, modelName : this.constructor.name });
+    }
+
+    if ( ! this.$document[field] ) {
+      this.$document[field] = this.$document.parseField(field, [], schema[field]);
+    }
+
+    const mapped = this.$document[field].map(mapper);
+
+    return this.set(field, mapped);
+
   }
 
   //----------------------------------------------------------------------------
@@ -176,6 +203,8 @@ class Model extends ModelStatic {
 
           this.setDefaults();
 
+          this.required();
+
           sequencer.pipe(
             () => sequencer(
               (Model.inserting() || []).map(fn => () => fn(this))
@@ -214,8 +243,20 @@ class Model extends ModelStatic {
 
   //----------------------------------------------------------------------------
 
-  toJSON () {
-    return JSON.parse(JSON.stringify(this.$document));
+  toJSON (options = {}) {
+    const serialized = JSON.parse(JSON.stringify(this.$document));
+
+    const schema = this.constructor.getSchema();
+
+    const { flatten } = schema;
+
+    for ( let field in flatten ) {
+      if ( flatten[field].private ) {
+        delete serialized[field];
+      }
+    }
+
+    return serialized;
   }
 
   //----------------------------------------------------------------------------
@@ -231,7 +272,7 @@ class Model extends ModelStatic {
         for ( let field in flatten ) {
           let { type } = flatten[field];
 
-          if ( Reflect.getPrototypeOf(type.type) === Model ) {
+          if ( isPrototypeOf(type.type, Model) ) {
 
             const value = this.get(flatten[field].flatten);
 
@@ -242,6 +283,7 @@ class Model extends ModelStatic {
                     .findById(value)
                     .then(doc => {
                       try {
+                        // console.log('populated', field, dic);
                         this.$populated[flatten[field].flatten] = doc;
                         ok();
                       }
@@ -258,7 +300,8 @@ class Model extends ModelStatic {
             }
           }
 
-          else if ( type.type === Type.Array && Reflect.getPrototypeOf(type.args[0].type) === Model ) {
+          else if ( type.type === Type.Array &&
+            isPrototypeOf(type.args[0].type, Model) ) {
             const value = this.get(flatten[field].flatten);
 
             if ( value ) {
@@ -301,7 +344,16 @@ class Model extends ModelStatic {
     const schema = this.constructor.getSchema();
 
     for ( let field in schema ) {
-      if ( ( 'default' in schema[field] ) && ! ( field in this.$document ) ) {
+      const applyDefaultCheckers = [
+        ( 'default' in schema[field] ),
+        (
+          ! ( field in this.$document ) ||
+          this.$document[field] === null ||
+          typeof this.$document[field] === 'undefined'
+        )
+      ];
+
+      if ( applyDefaultCheckers.every(i => i) ) {
         if ( typeof schema[field].default === 'function' ) {
           this.set(field, schema[field].default());
         }
@@ -312,6 +364,34 @@ class Model extends ModelStatic {
     }
 
     return this;
+  }
+
+  //----------------------------------------------------------------------------
+
+  required () {
+    const schema = this.constructor.getSchema();
+
+    const { flatten } = schema;
+
+    for ( let field in flatten ) {
+      if ( 'required' in flatten[field] ) {
+
+        if ( ! /\./.test(field) && ! ( field in this.$document ) ) {
+          throw new MungoModelError(`Missing field ${field}`, {
+            code : MungoModelError.MISSING_REQUIRED_FIELD,
+          });
+        }
+
+        const val = Schema.find(field, this.$document);
+
+        if ( typeof val === 'undefined' ) {
+          throw new MungoModelError(`Missing field ${field}`, {
+            code : MungoModelError.MISSING_REQUIRED_FIELD,
+            document : this.$document
+          });
+        }
+      }
+    }
   }
 
 }

@@ -41,6 +41,11 @@ class ModelMigrate extends ModelType {
           }
 
           else {
+
+            if ( index.options.force ) {
+              index.options.dropDups = true;
+            }
+
             q.collection.createIndex(index.fields, index.options)
               .then(ok, ko);
           }

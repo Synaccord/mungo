@@ -1,8 +1,10 @@
 'use strict';
 
 import Type from './type';
-import MungoError from './error';
 import prettify from './prettify';
+import MungoError from './error';
+
+class MungoFindStatementError extends MungoError {}
 
 class FindStatement {
 
@@ -102,7 +104,7 @@ class FindStatement {
         }
       }
       else {
-        parsed[field] = this.parseField(field, document[field], structure[field]);
+        parsed[field] = this.parseField(field, document[field], structure[field], structure);
       }
     }
 
@@ -117,116 +119,127 @@ class FindStatement {
    *  @return mixed
    **/
 
-  parseField (fieldName, fieldValue, fieldStructure) {
+  parseField (fieldName, fieldValue, fieldStructure, schema) {
+    try {
 
-    // console.log(prettify({'<<<<< FindStatement.parseField() >>>>>' : { fieldName, fieldValue, fieldStructure }}));
+      if ( /\./.test(fieldName) ) {
+        fieldStructure = schema.flatten[fieldName];
+      }
 
-    if ( fieldValue && typeof fieldValue === 'object' ) {
-      const key = Object.keys(fieldValue)[0],
-        value = fieldValue[key];
+      if ( fieldValue && typeof fieldValue === 'object' ) {
+        const key = Object.keys(fieldValue)[0],
+          value = fieldValue[key];
 
-      if ( FindStatement.operators.indexOf(key) > -1 ) {
-        switch ( key ) {
-          case '$lt'    :
-          case '$gt'    :
-          case '$gte'   :
-          case '$lte'   :
-          case '$size'  :
-          case '$slice' :
-            return { [key] : fieldStructure.type.convert(value) };
+        if ( FindStatement.operators.indexOf(key) > -1 ) {
+          switch ( key ) {
+            case '$lt'    :
+            case '$gt'    :
+            case '$gte'   :
+            case '$lte'   :
+            case '$size'  :
+            case '$slice' :
+              return { [key] : fieldStructure.type.convert(value) };
 
-          case '$eq'    :
-          case '$ne'    :
-            return { [key] : fieldStructure.type.convert(value) };
+            case '$eq'    :
+            case '$ne'    :
+              return { [key] : fieldStructure.type.convert(value) };
 
-          case '$in'    :
-          case '$nin'   :
-            return { [key] : value.map(v => fieldStructure.type.convert(v)) };
+            case '$in'    :
+            case '$nin'   :
+              return { [key] : value.map(v => fieldStructure.type.convert(v)) };
 
-          case '$not'   :
-          case '$elemMatch' :
-            return { [key] : this.parseField(fieldName, value, fieldStructure) };
+            case '$not'   :
+            case '$elemMatch' :
+              return { [key] : this.parseField(fieldName, value, fieldStructure) };
 
-          case '$exists'  :
-            return { [key] : Type.Boolean.convert(value) };
+            case '$exists'  :
+              return { [key] : Type.Boolean.convert(value) };
 
-          case '$type'  :
-          case '$where' :
-          case '$bitsAllSet' :
-          case '$bitsAnySet':
-          case '$bitsAllClear':
-          case '$bitsAnyClear':
-            return { [key] : value };
+            case '$type'  :
+            case '$where' :
+            case '$bitsAllSet' :
+            case '$bitsAnySet':
+            case '$bitsAllClear':
+            case '$bitsAnyClear':
+              return { [key] : value };
 
-          case '$mod'   :
-            if ( ! Array.isArray(value) ) {
-              throw new MungoError(
-                'FindStatement:$mod > value must be an Array',
-                { value }
-              );
-            }
-            return { [key] : value.map(value => Type.Number.convert(value)) };
+            case '$mod'   :
+              if ( ! Array.isArray(value) ) {
+                throw new MungoError(
+                  'FindStatement:$mod > value must be an Array',
+                  { value }
+                );
+              }
+              return { [key] : value.map(value => Type.Number.convert(value)) };
 
-          case '$regex' :
-            const parsed = { [key] : value };
-            if ( '$options' in fieldValue ) {
-              parsed.$options = fieldValue.$options;
-            }
-            return parsed;
+            case '$regex' :
+              const parsed = { [key] : value };
+              if ( '$options' in fieldValue ) {
+                parsed.$options = fieldValue.$options;
+              }
+              return parsed;
 
-          case '$text' :
-            let search = {};
+            case '$text' :
+              let search = {};
 
-            if ( typeof value === 'string' ) {
-              search.$search = value;
-            }
+              if ( typeof value === 'string' ) {
+                search.$search = value;
+              }
 
-            else if ( ! value || typeof value !== 'object' ) {
-              throw new MungoError(
-                'FindStatement:$text > value must be either a string or an object',
-                { value }
-              );
-            }
+              else if ( ! value || typeof value !== 'object' ) {
+                throw new MungoError(
+                  'FindStatement:$text > value must be either a string or an object',
+                  { value }
+                );
+              }
 
-            if ( typeof value === 'object' ) {
-              search = value;
-            }
+              if ( typeof value === 'object' ) {
+                search = value;
+              }
 
-            return { [key] : search };
+              return { [key] : search };
 
-          case '$geoWithin':
-          case '$geoIntersects':
-          case '$near':
-          case '$nearSphere':
+            case '$geoWithin':
+            case '$geoIntersects':
+            case '$near':
+            case '$nearSphere':
 
-            if ( ! value || typeof value !== 'object' ) {
-              throw new MungoError(
-                `FindStatement:${key} > value must be an object`,
-                { value }
-              );
-            }
+              if ( ! value || typeof value !== 'object' ) {
+                throw new MungoError(
+                  `FindStatement:${key} > value must be an object`,
+                  { value }
+                );
+              }
 
-            return { [key] : value };
+              return { [key] : value };
 
-          case '$all':
+            case '$all':
 
-            if ( ! Array.isArray(value) ) {
-              throw new MungoError(
-                `FindStatement:${key} > value must be an array`,
-                { value }
-              );
-            }
+              if ( ! Array.isArray(value) ) {
+                throw new MungoError(
+                  `FindStatement:${key} > value must be an array`,
+                  { value }
+                );
+              }
 
-            return { [key] : fieldStructure.type.convert(value) };
+              return { [key] : fieldStructure.type.convert(value) };
 
-          case '$comment':
-          case '$meta':
-            return { [key] : Type.String.convert(value) };
+            case '$comment':
+            case '$meta':
+              return { [key] : Type.String.convert(value) };
+          }
         }
       }
-    }
 
-    return fieldStructure.type.convert(fieldValue);
+      if ( ! fieldStructure || ! ( 'type' in fieldStructure ) ) {
+        console.log('parse field error', { fieldName, fieldValue, fieldStructure, schema });
+      }
+
+      return fieldStructure.type.convert(fieldValue);
+    }
+    catch ( error ) {
+      throw MungoFindStatementError.rethrow(error, 'Can not parse field of find statement', {fieldName, fieldValue, fieldStructure});
+    }
   }
 
 }

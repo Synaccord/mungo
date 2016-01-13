@@ -1,12 +1,15 @@
 'use strict';
 
-var _Object$assign = require('babel-runtime/core-js/object/assign')['default'];
-
-var _Object$keys = require('babel-runtime/core-js/object/keys')['default'];
-
 Object.defineProperty(exports, '__esModule', {
   value: true
 });
+
+function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { 'default': obj }; }
+
+var _type = require('./type');
+
+var _type2 = _interopRequireDefault(_type);
+
 function prettify(prim) {
   var options = arguments.length <= 1 || arguments[1] === undefined ? {} : arguments[1];
 
@@ -74,7 +77,7 @@ function prettify(prim) {
 
           var reOptions = {};
 
-          _Object$assign(reOptions, options, {
+          Object.assign(reOptions, options, {
             tab: tab + '',
             isArray: true
           });
@@ -115,7 +118,7 @@ function prettify(prim) {
             }
           }
 
-          if (!_Object$keys(prim).length) {
+          if (!Object.keys(prim).length) {
             return {
               v: {
                 v: tab + '{}'.bold.grey
@@ -125,7 +128,7 @@ function prettify(prim) {
 
           var reOptions = {};
 
-          _Object$assign(reOptions, options, {
+          Object.assign(reOptions, options, {
             tab: tab + '  ',
             isArray: false
           });
@@ -140,7 +143,7 @@ function prettify(prim) {
 
           return {
             v: {
-              v: _Object$keys(prim).map(function (key, index) {
+              v: Object.keys(prim).map(function (key, index) {
                 return { index: index, key: key, parsed: prettify(prim[key], reOptions) };
               }).map(function (f) {
                 var str = '';
@@ -167,11 +170,27 @@ function prettify(prim) {
 
                 var breakLine = false;
 
-                if (prim[f.key] && typeof prim[f.key] === 'object' && _Object$keys(prim[f.key]).length) {
+                if (prim[f.key] && typeof prim[f.key] === 'object' && Object.keys(prim[f.key]).length) {
                   breakLine = true;
 
                   if (prim[f.key] instanceof require('mongodb').ObjectID) {
                     return str + padding + 'ObjectId'.magenta.italic + (' ' + prim[f.key].toString()).grey;
+                  }
+
+                  if (prim[f.key] instanceof require('./type')) {
+                    var ret = str + padding + 'Type'.magenta.italic + (' ' + prim[f.key].getType().name).grey;
+
+                    if (prim[f.key].isSubdocument()) {
+                      ret += '\n' + prettify(prim[f.key].getSubdocument(), { tab: tab + '  ' });
+                    } else if (prim[f.key].isArray()) {
+                      ret += (' of ' + prim[f.key].getArray().getType().name.italic).grey;
+
+                      if (prim[f.key].getArray().isSubdocument()) {
+                        ret += '\n' + prettify(prim[f.key].getArray().getSubdocument(), { tab: tab + '  ' });
+                      }
+                    }
+
+                    return ret;
                   }
                 }
 

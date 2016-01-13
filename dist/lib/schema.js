@@ -1,18 +1,14 @@
 'use strict';
 
-var _createClass = require('babel-runtime/helpers/create-class')['default'];
-
-var _classCallCheck = require('babel-runtime/helpers/class-call-check')['default'];
-
-var _Object$keys = require('babel-runtime/core-js/object/keys')['default'];
-
-var _Object$assign = require('babel-runtime/core-js/object/assign')['default'];
-
-var _interopRequireDefault = require('babel-runtime/helpers/interop-require-default')['default'];
-
 Object.defineProperty(exports, '__esModule', {
   value: true
 });
+
+var _createClass = (function () { function defineProperties(target, props) { for (var i = 0; i < props.length; i++) { var descriptor = props[i]; descriptor.enumerable = descriptor.enumerable || false; descriptor.configurable = true; if ('value' in descriptor) descriptor.writable = true; Object.defineProperty(target, descriptor.key, descriptor); } } return function (Constructor, protoProps, staticProps) { if (protoProps) defineProperties(Constructor.prototype, protoProps); if (staticProps) defineProperties(Constructor, staticProps); return Constructor; }; })();
+
+function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { 'default': obj }; }
+
+function _classCallCheck(instance, Constructor) { if (!(instance instanceof Constructor)) { throw new TypeError('Cannot call a class as a function'); } }
 
 var _index = require('./index');
 
@@ -35,8 +31,8 @@ var Schema = (function () {
     get: function get() {
       var _this = this;
 
-      return _Object$keys(this.flatten).map(function (field) {
-        return _Object$assign(_this.flatten[field], { field: field });
+      return Object.keys(this.flatten).map(function (field) {
+        return Object.assign(_this.flatten[field], { field: field });
       }).filter(function (field) {
         return field.index;
       }).map(function (field) {
@@ -52,6 +48,33 @@ var Schema = (function () {
     //----------------------------------------------------------------------------
 
   }], [{
+    key: 'find',
+
+    //----------------------------------------------------------------------------
+
+    value: function find(flattenName, schema) {
+
+      // console.log('FIND', flattenName, schema);
+
+      var bits = flattenName.split(/\./);
+
+      while (bits.length) {
+        if (!schema) {
+          return undefined;
+        }
+
+        if (bits[0] in schema) {
+          schema = schema[bits.shift()];
+        } else if (Array.isArray(schema)) {
+          schema = schema[0];
+        } else {
+          return undefined;
+        }
+      }
+
+      return schema;
+    }
+  }, {
     key: 'defaultFields',
 
     //----------------------------------------------------------------------------
@@ -75,64 +98,57 @@ var Schema = (function () {
   function Schema() {
     var original = arguments.length <= 0 || arguments[0] === undefined ? {} : arguments[0];
     var version = arguments.length <= 1 || arguments[1] === undefined ? 0 : arguments[1];
+    var ns = arguments.length <= 2 || arguments[2] === undefined ? '' : arguments[2];
+    var options = arguments.length <= 3 || arguments[3] === undefined ? {} : arguments[3];
 
     _classCallCheck(this, Schema);
 
-    var normalized = _Object$assign({}, this.constructor.defaultFields, original);
+    var normalized = {};
 
-    normalized.__V['default'] = version;
+    if (options.defaultFields !== false) {
+      Object.assign(normalized, Schema.defaultFields);
+      normalized.__V['default'] = version;
+    }
 
-    var structure = this.makeStructure(normalized);
+    Object.assign(normalized, original);
+
+    // const structure = this.makeStructure(normalized);
+
+    var structure = {};
+
+    var setTypes = this.setTypes(normalized, ns);
+    var setNames = this.setNames(setTypes);
+    var setIndexes = this.setIndexes(setTypes, normalized, ns);
+    var setDefaults = this.setDefaults(setTypes, normalized, ns);
+    var setValidates = this.setValidates(setTypes, normalized, ns);
+    var setRequired = this.setRequired(setTypes, normalized, ns);
+    var setPrivates = this.setPrivates(setTypes, normalized, ns);
+
+    for (var field in setTypes) {
+      structure[field] = Object.assign({}, setTypes[field], setNames[field], setIndexes[field], setDefaults[field], setValidates[field], setRequired[field], setPrivates[field]);
+    }
+
+    if (ns) {
+      ns += '.';
+    }
 
     for (var field in structure) {
-      this[field] = structure[field];
+      this['' + field] = structure[field];
     }
   }
 
   //----------------------------------------------------------------------------
 
   _createClass(Schema, [{
-    key: 'makeStructure',
-    value: function makeStructure() {
-      var structure = arguments.length <= 0 || arguments[0] === undefined ? {} : arguments[0];
-
-      var normalized = {};
+    key: 'setNames',
+    value: function setNames(structure) {
+      var parsed = {};
 
       for (var field in structure) {
-        var _field = {
-          field: field,
-          type: this.setType(structure[field], field),
-          index: this.setIndex(structure[field], field),
-          'default': this.setDefault(structure[field], field),
-          validate: this.setValidate(structure[field], field),
-          required: this.setRequired(structure[field], field),
-          'private': this.setPrivate(structure[field], field)
-        };
-
-        if (!_field.index) {
-          delete _field.index;
-        }
-
-        if (typeof _field['default'] === 'undefined') {
-          delete _field['default'];
-        }
-
-        if (!_field.validate) {
-          delete _field.validate;
-        }
-
-        if (!_field.required) {
-          delete _field.required;
-        }
-
-        if (!_field['private']) {
-          delete _field['private'];
-        }
-
-        normalized[field] = _field;
+        parsed[field] = { field: field };
       }
 
-      return normalized;
+      return parsed;
     }
 
     //----------------------------------------------------------------------------
@@ -151,18 +167,18 @@ var Schema = (function () {
 
         var type = structure[field].type;
 
-        if (typeof type === 'function') {
+        if (type.isArray()) {
           flatten[_name] = structure[field];
-        } else if (Array.isArray(type)) {
-          if (typeof type[0] === 'function') {
-            flatten[_name] = structure[field];
-          } else if (typeof type[0] === 'object') {
-            flatten[_name] = structure[field];
-            _Object$assign(flatten, this.makeFlatten(type[0], _name));
+
+          if (type.getArray().isSubdocument()) {
+            Object.assign(flatten, this.makeFlatten(type.getArray().getSubdocument(), _name));
           }
-        } else if (typeof type === 'object') {
+        } else if (type.isSubdocument()) {
           flatten[_name] = structure[field];
-          _Object$assign(flatten, this.makeFlatten(type, _name));
+
+          Object.assign(flatten, this.makeFlatten(type.getSubdocument(), _name));
+        } else {
+          flatten[_name] = structure[field];
         }
       }
 
@@ -172,8 +188,26 @@ var Schema = (function () {
     //----------------------------------------------------------------------------
 
   }, {
+    key: 'setTypes',
+    value: function setTypes(structure, ns) {
+      var normalized = {};
+
+      for (var field in structure) {
+        var _name2 = (ns + '.' + field).replace(/^\./, '');
+
+        normalized[field] = {
+          type: this.setType(structure[field], _name2)
+        };
+      }
+
+      return normalized;
+    }
+
+    //----------------------------------------------------------------------------
+
+  }, {
     key: 'setType',
-    value: function setType(structure) {
+    value: function setType(structure, ns) {
 
       var type = undefined;
 
@@ -198,7 +232,7 @@ var Schema = (function () {
       // { field : [Function] }
 
       if (Array.isArray(structure)) {
-        return new _type2['default'](Array, this.setType(structure[0]));
+        return new _type2['default'](Array, this.setType(structure[0], ns));
       }
 
       // { field : Schema }
@@ -212,7 +246,7 @@ var Schema = (function () {
       if ('type' in structure) {
 
         if (Array.isArray(structure.type)) {
-          var parsed = this.setType(structure.type[0]);
+          var parsed = this.setType(structure.type[0], ns);
           return new _type2['default'](Array, parsed);
         }
 
@@ -220,7 +254,9 @@ var Schema = (function () {
       }
 
       if (structure && typeof structure === 'object') {
-        return new _type2['default'](_type2['default'].Subdocument, new Schema(structure));
+        return new _type2['default'](_type2['default'].Subdocument, new Schema(structure, 0, ns, {
+          defaultFields: false
+        }));
       }
 
       return new _type2['default'](_type2['default'].Mixed);
@@ -229,136 +265,134 @@ var Schema = (function () {
     //----------------------------------------------------------------------------
 
   }, {
-    key: 'setIndex',
-    value: function setIndex(structure, field) {
+    key: 'setIndexes',
+    value: function setIndexes(structure, normalized, ns) {
+      var parsed = {};
 
-      if (typeof structure === 'function' || Array.isArray(structure)) {
-        return false;
-      }
+      for (var field in structure) {
 
-      if (typeof structure === 'object') {
+        var _name3 = (ns + '.' + field).replace(/^\./, '');
 
-        if (structure instanceof _type2['default'].Object) {
-          return this.makeStructure(structure);
-        }
-
-        if ('index' in structure) {
-          return new _index2['default'](structure.index, field);
-        }
-
-        if ('unique' in structure) {
-          var index = new _index2['default'](structure.unique, field, { unique: true });
-          return index;
-        }
-
-        if ('indexWith' in structure) {
-          return new _index2['default'](true, field, { coumpound: structure.indexWith });
-        }
-
-        if ('uniqueWith' in structure) {
-          return new _index2['default'](true, field, { unique: true });
-        }
-      }
-    }
-
-    //----------------------------------------------------------------------------
-
-    /** @return Object */
-
-  }, {
-    key: 'setValidate',
-    value: function setValidate(structure, field) {
-      if (typeof structure === 'function' || Array.isArray(structure)) {
-        return false;
-      }
-
-      if (typeof structure === 'object') {
-
-        if (structure instanceof _type2['default'].Object) {
-          return this.makeStructure(structure);
-        }
-
-        if ('validate' in structure) {
-          var validate = structure.validate;
-
-          if (validate instanceof RegExp) {
-            return testRegex;
-          } else if (typeof validate === 'function') {
-            return validate;
+        if (structure[field].type.isArray()) {} else if (structure[field].type.isSubdocument()) {} else {
+          if ('index' in normalized[field]) {
+            if (normalized[field].index === true) {
+              parsed[field] = { index: new _index2['default'](true, _name3) };
+            } else if (typeof normalized[field].index === 'object') {
+              parsed[field] = { index: new _index2['default'](true, _name3, normalized[field].index) };
+            }
+          } else if ('unique' in normalized[field]) {
+            if (normalized[field].unique === true) {
+              parsed[field] = { index: new _index2['default'](true, _name3, { unique: true }) };
+            } else if (typeof normalized[field].unique === 'object') {
+              parsed[field] = { index: new _index2['default'](true, _name3, Object.assign({ unique: true }, normalized[field].unique)) };
+            }
+          } else if ('indexWith' in normalized[field]) {
+            parsed[field] = { index: new _index2['default'](true, _name3, { coumpound: normalized[field].indexWith }) };
+          } else if ('uniqueWith' in normalized[field]) {
+            parsed[field] = { index: new _index2['default'](true, _name3, { coumpound: normalized[field].uniqueWith }) };
           }
         }
       }
+
+      return parsed;
     }
 
     //----------------------------------------------------------------------------
 
-    /** @return boolean */
+  }, {
+    key: 'setDefaults',
+    value: function setDefaults(structure, normalized, ns) {
+
+      var parsed = {};
+
+      for (var field in structure) {
+
+        var _name4 = (ns + '.' + field).replace(/^\./, '');
+
+        if ('default' in normalized[field]) {
+          parsed[field] = { 'default': normalized[field]['default'] };
+        }
+      }
+
+      return parsed;
+    }
+
+    //----------------------------------------------------------------------------
 
   }, {
     key: 'setRequired',
-    value: function setRequired(structure, field) {
-      if (typeof structure === 'function' || Array.isArray(structure)) {
-        return false;
-      }
+    value: function setRequired(structure, normalized, ns) {
 
-      if (typeof structure === 'object') {
+      var parsed = {};
 
-        if (structure instanceof _type2['default'].Object) {
-          return this.makeStructure(structure);
-        }
+      for (var field in structure) {
 
-        if ('required' in structure) {
-          return structure.required;
-        }
-      }
-    }
+        var _name5 = (ns + '.' + field).replace(/^\./, '');
 
-    //----------------------------------------------------------------------------
-
-    /** @return boolean */
-
-  }, {
-    key: 'setPrivate',
-    value: function setPrivate(structure, field) {
-      if (typeof structure === 'function' || Array.isArray(structure)) {
-        return false;
-      }
-
-      if (typeof structure === 'object') {
-
-        if (structure instanceof _type2['default'].Object) {
-          return this.makeStructure(structure);
-        }
-
-        if ('private' in structure) {
-          return structure['private'];
+        if (structure[field].type.isArray()) {} else if (structure[field].type.isSubdocument()) {} else {
+          if ('required' in normalized[field]) {
+            parsed[field] = { required: normalized[field].required };
+          }
         }
       }
 
-      return false;
+      return parsed;
     }
 
     //----------------------------------------------------------------------------
 
   }, {
-    key: 'setDefault',
-    get: function get() {
+    key: 'setValidates',
+    value: function setValidates(structure, normalized, ns) {
 
-      return function (structure, field) {
-        if (typeof structure === 'function') {
-          return undefined;
-        }
+      var parsed = {};
 
-        if (Array.isArray(structure)) {
-          return undefined;
-        }
+      var _loop = function (field) {
 
-        if (typeof structure === 'object') {
-          if ('default' in structure) {
-            return structure['default'];
+        var name = (ns + '.' + field).replace(/^\./, '');
+
+        if (structure[field].type.isArray()) {} else if (structure[field].type.isSubdocument()) {} else {
+          if ('validate' in normalized[field]) {
+            if (normalized[field].validate instanceof RegExp) {
+              parsed[field] = {
+                validate: function validate(value) {
+                  return normalized[field].validate.test(value);
+                }
+              };
+            } else if (typeof normalized[field].validate === 'function') {
+              parsed[field] = { validate: normalized[field].validate };
+            }
           }
         }
       };
+
+      for (var field in structure) {
+        _loop(field);
+      }
+
+      return parsed;
+    }
+
+    //----------------------------------------------------------------------------
+
+  }, {
+    key: 'setPrivates',
+    value: function setPrivates(structure, normalized, ns) {
+
+      var parsed = {};
+
+      for (var field in structure) {
+
+        var _name6 = (ns + '.' + field).replace(/^\./, '');
+
+        if (structure[field].type.isArray()) {} else if (structure[field].type.isSubdocument()) {} else {
+          if ('private' in normalized[field]) {
+            parsed[field] = { 'private': normalized[field]['private'] };
+          }
+        }
+      }
+
+      return parsed;
     }
 
     //----------------------------------------------------------------------------
