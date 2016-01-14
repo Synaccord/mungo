@@ -374,6 +374,8 @@ var Model = (function (_ModelStatic) {
 
             var flatten = _constructor$getSchema.flatten;
 
+            // console.log('POPULATING'.bgMagenta, this.$document);
+
             var promises = [];
 
             var _loop2 = function (field) {
@@ -385,11 +387,14 @@ var Model = (function (_ModelStatic) {
                   var value = _this3.get(flatten[field].flatten);
 
                   if (value) {
+
+                    // console.log('POPULATING'.bgBlue, field, flatten[field].flatten, value);
+
                     promises.push(new Promise(function (ok, ko) {
                       try {
                         type.type.findById(value).then(function (doc) {
                           try {
-                            // console.log('populated', field, dic);
+                            // console.log('POPULATED'.bgGreen, flatten[field].flatten, doc);
                             _this3.$populated[flatten[field].flatten] = doc;
                             ok();
                           } catch (error) {

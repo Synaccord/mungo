@@ -267,6 +267,8 @@ class Model extends ModelStatic {
       try {
         const { flatten } = this.constructor.getSchema();
 
+        // console.log('POPULATING'.bgMagenta, this.$document);
+
         const promises = [];
 
         for ( let field in flatten ) {
@@ -277,13 +279,16 @@ class Model extends ModelStatic {
             const value = this.get(flatten[field].flatten);
 
             if ( value ) {
+
+              // console.log('POPULATING'.bgBlue, field, flatten[field].flatten, value);
+
               promises.push(new Promise((ok, ko) => {
                 try {
                   type.type
                     .findById(value)
                     .then(doc => {
                       try {
-                        // console.log('populated', field, dic);
+                        // console.log('POPULATED'.bgGreen, flatten[field].flatten, doc);
                         this.$populated[flatten[field].flatten] = doc;
                         ok();
                       }

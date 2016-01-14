@@ -35,6 +35,10 @@ class ModelType {
         return mongodb.ObjectID(value);
       }
 
+      if ( typeof value === 'object' && value._id ) {
+        return mongodb.ObjectID(value._id);
+      }
+
       const model = new this(value);
 
       model.set('_id', mongodb.ObjectID());

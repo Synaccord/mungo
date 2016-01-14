@@ -68,6 +68,10 @@ var ModelType = (function () {
           return _mongodb2['default'].ObjectID(value);
         }
 
+        if (typeof value === 'object' && value._id) {
+          return _mongodb2['default'].ObjectID(value._id);
+        }
+
         var model = new this(value);
 
         model.set('_id', _mongodb2['default'].ObjectID());

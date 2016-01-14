@@ -158,7 +158,7 @@ class ModelQuery extends ModelMigrate {
         filter = new FindStatement(filter, this);
       }
 
-      sequencer,pipe(
+      sequencer.pipe(
         () => this.findOne(filter),
 
         doc => sequencer.pipe(
@@ -368,7 +368,7 @@ class ModelQuery extends ModelMigrate {
 
             () => sequencer((this.updating() || []).map(fn => () => fn(doc))),
 
-            // Put hooks changes into modifiers
+            // Put hooks changes into modifiers and update
 
             () => new Promise((ok, ko) => {
 
@@ -382,14 +382,20 @@ class ModelQuery extends ModelMigrate {
                 Object.assign(_modifiers.$set, doc.$changes);
               }
 
-              this
-                .exec('updateOne', { _id : doc._id }, _modifiers)
-                .then(() => ok(doc))
+              sequencer
+                .pipe(
+                  () => this.exec('updateOne', { _id : doc._id }, _modifiers),
+
+                  () => this.findOne({ _id : doc._id })
+                )
+                .then(doc => ok(doc))
                 .catch(ko)
             })
-            
+
           )
           .then(doc => {
+
+
             ok(doc);
 
             sequencer((this.updated() || []).map(fn => () => fn(doc)))

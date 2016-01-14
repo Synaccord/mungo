@@ -11,6 +11,8 @@ class UpdateStatement {
     '$unset',
     '$push',
     '$inc',
+    '$incr',
+    '$increment',
     '$mul',
     '$rename'
   ]
@@ -54,6 +56,15 @@ class UpdateStatement {
     for ( let field in document ) {
 
       if ( UpdateStatement.operators.indexOf(field) > -1 ) {
+
+        // Aliases
+
+        let operator = field;
+
+        if ( field === '$incr' || field === '$increment' ) {
+          operator = '$inc';
+        }
+
         switch ( field ) {
           case '$inc'  :
           case '$mul' :

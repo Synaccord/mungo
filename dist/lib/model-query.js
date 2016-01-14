@@ -250,7 +250,7 @@ var ModelQuery = (function (_ModelMigrate) {
           filter = new _findStatement2['default'](filter, _this2);
         }
 
-        _sequencer2['default'], pipe(function () {
+        _sequencer2['default'].pipe(function () {
           return _this2.findOne(filter);
         }, function (doc) {
           return _sequencer2['default'].pipe(function () {
@@ -540,7 +540,7 @@ var ModelQuery = (function (_ModelMigrate) {
             }));
           },
 
-          // Put hooks changes into modifiers
+          // Put hooks changes into modifiers and update
 
           function () {
             return new Promise(function (ok, ko) {
@@ -555,11 +555,16 @@ var ModelQuery = (function (_ModelMigrate) {
                 Object.assign(_modifiers.$set, doc.$changes);
               }
 
-              _this8.exec('updateOne', { _id: doc._id }, _modifiers).then(function () {
+              _sequencer2['default'].pipe(function () {
+                return _this8.exec('updateOne', { _id: doc._id }, _modifiers);
+              }, function () {
+                return _this8.findOne({ _id: doc._id });
+              }).then(function (doc) {
                 return ok(doc);
               })['catch'](ko);
             });
           }).then(function (doc) {
+
             ok(doc);
 
             (0, _sequencer2['default'])((_this8.updated() || []).map(function (fn) {

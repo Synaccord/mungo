@@ -39,7 +39,7 @@ var MungoUpdateStatementError = (function (_MungoError) {
 var UpdateStatement = (function () {
   _createClass(UpdateStatement, null, [{
     key: 'operators',
-    value: ['$unset', '$push', '$inc', '$mul', '$rename'],
+    value: ['$unset', '$push', '$inc', '$incr', '$increment', '$mul', '$rename'],
 
     /** new UpdateStatement
      *  @arg object document
@@ -79,6 +79,15 @@ var UpdateStatement = (function () {
       for (var field in document) {
 
         if (UpdateStatement.operators.indexOf(field) > -1) {
+
+          // Aliases
+
+          var operator = field;
+
+          if (field === '$incr' || field === '$increment') {
+            operator = '$inc';
+          }
+
           switch (field) {
             case '$inc':
             case '$mul':

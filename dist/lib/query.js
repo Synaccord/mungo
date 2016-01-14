@@ -399,28 +399,6 @@ var Query = (function () {
           var action = _this10.collection.updateOne(filter, modifier, options);
 
           action.then(ok, ko);
-
-          // let action = this.collection.findOneAndUpdate(
-          //   filter,
-          //   modifier,
-          //   options
-          // );
-          //
-          // action
-          //   .then(result => {
-          //
-          //     if ( ! result.value ) {
-          //
-          //       console.log(filter, modifier, result);
-          //
-          //       return ko(new MungoQueryError(`Could not update ${model.name}`), { filter });
-          //     }
-          //
-          //     // console.log(prettify({[`<< Query {${model.name}#${model.version}} <= updateOne`]: { found : result.value}}));
-          //
-          //     this.findOne({ _id : result.value._id }).then(ok, ko);
-          //   })
-          //   .catch(ko);
         }, ko);
       });
     }
