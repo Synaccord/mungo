@@ -88,7 +88,11 @@ class FindStatement {
 
     for ( let field in document ) {
 
-      if ( FindStatement.operators.indexOf(field) > -1 ) {
+      if ( document[field] instanceof Promise ) {
+
+      }
+
+      else if ( FindStatement.operators.indexOf(field) > -1 ) {
         switch ( field ) {
           case '$or'  :
           case '$and' :

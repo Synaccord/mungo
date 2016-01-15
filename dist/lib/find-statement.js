@@ -91,7 +91,7 @@ var FindStatement = (function () {
 
       for (var field in document) {
 
-        if (FindStatement.operators.indexOf(field) > -1) {
+        if (document[field] instanceof Promise) {} else if (FindStatement.operators.indexOf(field) > -1) {
           switch (field) {
             case '$or':
             case '$and':

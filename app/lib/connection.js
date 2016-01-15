@@ -61,6 +61,14 @@ class Connection extends EventEmitter {
     return connection;
   }
 
+  static connectify (url) {
+    return new Promise((ok, ko) => {
+      this.connect(url)
+        .on('connected', ok)
+        .on('error', ko);
+    });
+  }
+
   //----------------------------------------------------------------------------
 
   /** @return Promise */

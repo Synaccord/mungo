@@ -261,7 +261,7 @@ class ModelQuery extends ModelMigrate {
         ok();
       }),
 
-      () => this.exec('findOne', filter, projection, options)
+      () => this.findOne(filter, projection, options)
 
     );
   }

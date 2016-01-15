@@ -386,7 +386,7 @@ var ModelQuery = (function (_ModelMigrate) {
           ok();
         });
       }, function () {
-        return _this5.exec('findOne', filter, projection, options);
+        return _this5.findOne(filter, projection, options);
       });
     }
 

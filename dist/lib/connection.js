@@ -105,6 +105,15 @@ var Connection = (function (_EventEmitter) {
 
       return connection;
     }
+  }, {
+    key: 'connectify',
+    value: function connectify(url) {
+      var _this3 = this;
+
+      return new Promise(function (ok, ko) {
+        _this3.connect(url).on('connected', ok).on('error', ko);
+      });
+    }
 
     //----------------------------------------------------------------------------
 

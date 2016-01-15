@@ -14,26 +14,57 @@ var _ = require('.');
 
 var _2 = _interopRequireDefault(_);
 
-var X = (function (_Mungo$Model) {
-  _inherits(X, _Mungo$Model);
+var _sequencer = require('sequencer');
 
-  function X() {
-    _classCallCheck(this, X);
+var _sequencer2 = _interopRequireDefault(_sequencer);
 
-    _get(Object.getPrototypeOf(X.prototype), 'constructor', this).apply(this, arguments);
+var A = (function (_Mungo$Model) {
+  _inherits(A, _Mungo$Model);
+
+  function A() {
+    _classCallCheck(this, A);
+
+    _get(Object.getPrototypeOf(A.prototype), 'constructor', this).apply(this, arguments);
   }
 
-  _createClass(X, null, [{
+  _createClass(A, null, [{
     key: 'schema',
-    value: {
-      emails: [{
-        address: String
-      }]
-    },
+    value: { name: String },
     enumerable: true
   }]);
 
-  return X;
+  return A;
 })(_2['default'].Model);
 
-console.log(_2['default'].Schema.find('emails.address', { emails: [{ address: 'foo' }] }));
+var B = (function (_Mungo$Model2) {
+  _inherits(B, _Mungo$Model2);
+
+  function B() {
+    _classCallCheck(this, B);
+
+    _get(Object.getPrototypeOf(B.prototype), 'constructor', this).apply(this, arguments);
+  }
+
+  _createClass(B, null, [{
+    key: 'schema',
+    get: function get() {
+      return { a: A };
+    }
+  }]);
+
+  return B;
+})(_2['default'].Model);
+
+_sequencer2['default'].pipe(function () {
+  return _2['default'].connectify('mongodb://localhost:4567/mungo2');
+}, function () {
+  return A.create({ name: 'A' });
+}, function (a) {
+  return B.create({ a: a });
+}, function (b) {
+  return B.findOne({ a: A.findOne({ name: 'A' }) });
+}).then(function (r) {
+  return console.log({ r: r });
+})['catch'](function (error) {
+  return console.log(error.stack);
+});
