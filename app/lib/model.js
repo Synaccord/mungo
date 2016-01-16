@@ -89,6 +89,23 @@ class Model extends ModelStatic {
 
   //----------------------------------------------------------------------------
 
+  increment (field, step = 1) {
+    if ( typeof field === 'object' ) {
+      for( let i in field ) {
+        this.increment(i, field[i]);
+      }
+      return this;
+    }
+
+    const schema = this.constructor.getSchema();
+
+    let current = +(this.$document || 0);
+
+    return this.set(field, current + step);
+  }
+
+  //----------------------------------------------------------------------------
+
   push (field, value) {
 
     if ( typeof field === 'object' ) {
