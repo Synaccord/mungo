@@ -92,6 +92,7 @@ Mungo.Schema = _libSchema2['default'];
 Mungo.Type = _libType2['default'];
 Mungo.Connection = _libConnection2['default'];
 Mungo.connect = _libConnection2['default'].connect.bind(_libConnection2['default']);
+Mungo.connectify = _libConnection2['default'].connectify.bind(_libConnection2['default']);
 Mungo.disconnect = _libConnection2['default'].disconnect.bind(_libConnection2['default']);
 Mungo.connections = _libConnection2['default'].connections;
 Mungo.Migration = _libMigration2['default'];

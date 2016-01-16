@@ -136,7 +136,9 @@ var _Subdocument = (function () {
       var converted = {};
 
       for (var field in subdoc) {
-        converted[field] = schema[field].type.convert(subdoc[field]);
+        if (field in schema) {
+          converted[field] = schema[field].type.convert(subdoc[field]);
+        }
       }
 
       return converted;

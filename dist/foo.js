@@ -29,7 +29,9 @@ var A = (function (_Mungo$Model) {
 
   _createClass(A, null, [{
     key: 'schema',
-    value: { name: String },
+    value: { references: [{
+        url: String, title: String
+      }] },
     enumerable: true
   }]);
 
@@ -47,9 +49,10 @@ var B = (function (_Mungo$Model2) {
 
   _createClass(B, null, [{
     key: 'schema',
-    get: function get() {
-      return { a: A };
-    }
+    value: {
+      url: String, title: String
+    },
+    enumerable: true
   }]);
 
   return B;
@@ -58,12 +61,14 @@ var B = (function (_Mungo$Model2) {
 _sequencer2['default'].pipe(function () {
   return _2['default'].connectify('mongodb://localhost:4567/mungo2');
 }, function () {
-  return A.create({ name: 'A' });
-}, function (a) {
-  return B.create({ a: a });
-}, function (b) {
-  return B.findOne({ a: A.findOne({ name: 'A' }) });
-}).then(function (r) {
+  return A.create({ references: [{
+      url: 'foo', title: 'hello', _id: 125
+    }] });
+}).
+// () => B.create({
+//   url : 'foo', title : 'hello', _id : 125
+// })
+then(function (r) {
   return console.log({ r: r });
 })['catch'](function (error) {
   return console.log(error.stack);

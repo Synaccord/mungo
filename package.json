@@ -1,6 +1,6 @@
 {
   "name": "mungo",
-  "version": "2.0.9",
+  "version": "2.0.10",
   "description": "Mungo ===",
   "main": "dist/index.js",
   "directories": {

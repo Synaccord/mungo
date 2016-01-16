@@ -34,6 +34,7 @@ Mungo.Schema                      =   Schema;
 Mungo.Type                        =   Type;
 Mungo.Connection                  =   Connection;
 Mungo.connect                     =   Connection.connect.bind(Connection);
+Mungo.connectify                  =   Connection.connectify.bind(Connection);
 Mungo.disconnect                  =   Connection.disconnect.bind(Connection);
 Mungo.connections                 =   Connection.connections;
 Mungo.Migration                   =   Migration;
