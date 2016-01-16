@@ -127,7 +127,15 @@ var UpdateStatement = (function () {
           if (!('$set' in parsed)) {
             parsed.$set = {};
           }
-          Object.assign(parsed.$set, _defineProperty({}, field, this.parseField(field, document[field], structure[field])));
+          var parsedField = undefined;
+
+          try {
+            parsedField = this.parseField(field, document[field], structure[field]);
+
+            Object.assign(parsed.$set, _defineProperty({}, field, parsedField));
+          } catch (error) {
+            console.log(' mungodb . new UpdateStatement > warning > Could not parse field', { field: field });
+          }
         }
       }
 
