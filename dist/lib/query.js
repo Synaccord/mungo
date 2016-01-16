@@ -266,6 +266,7 @@ var Query = (function () {
           }
 
           action.then(function (result) {
+            // console.log(result);
             ok();
           })['catch'](ko);
         }, ko);

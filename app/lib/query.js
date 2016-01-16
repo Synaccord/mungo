@@ -218,6 +218,7 @@ class Query {
 
           action
             .then(result => {
+              // console.log(result);
               ok();
             })
             .catch(ko)

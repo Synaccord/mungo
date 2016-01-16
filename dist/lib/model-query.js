@@ -221,18 +221,18 @@ var ModelQuery = (function (_ModelMigrate) {
             return new Promise(function (ok) {
               return ok(docs);
             });
-          }).then(function (docs) {
-            ok(docs);
+          });
+        }).then(function (docs) {
+          ok(docs);
 
-            Promise.all(docs.map(function (doc) {
-              return (0, _sequencer2['default'])((_this.removed() || []).map(function (fn) {
-                return function () {
-                  return fn(doc);
-                };
-              }));
+          Promise.all(docs.map(function (doc) {
+            return (0, _sequencer2['default'])((_this.removed() || []).map(function (fn) {
+              return function () {
+                return fn(doc);
+              };
             }));
-          })['catch'](ko);
-        });
+          }));
+        })['catch'](ko);
       });
     }
 

@@ -137,16 +137,16 @@ class ModelQuery extends ModelMigrate {
             () => new Promise(ok => ok(docs))
 
           )
-          .then(docs => {
-            ok(docs);
 
-            Promise.all(docs.map(doc => sequencer(
-              (this.removed() || []).map(fn => () => fn(doc))
-            )));
-          })
-          .catch(ko)
+      )
+      .then(docs => {
+        ok(docs);
 
-      );
+        Promise.all(docs.map(doc => sequencer(
+          (this.removed() || []).map(fn => () => fn(doc))
+        )));
+      })
+      .catch(ko);
     });
   }
 
