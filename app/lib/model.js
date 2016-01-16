@@ -278,6 +278,12 @@ class Model extends ModelStatic {
 
   //----------------------------------------------------------------------------
 
+  toString (options = {}) {
+    return JSON.stringify(this.toJSON(options));
+  }
+
+  //----------------------------------------------------------------------------
+
   populate (options = {}) {
 
     return new Promise((ok, ko) => {
