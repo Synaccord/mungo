@@ -99,7 +99,7 @@ class Model extends ModelStatic {
 
     const schema = this.constructor.getSchema();
 
-    let current = +(this.$document || 0);
+    let current = +(this.$document[field] || 0);
 
     return this.set(field, current + step);
   }

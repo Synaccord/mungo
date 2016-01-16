@@ -175,7 +175,7 @@ var Model = (function (_ModelStatic) {
 
       var schema = this.constructor.getSchema();
 
-      var current = +(this.$document || 0);
+      var current = +(this.$document[field] || 0);
 
       return this.set(field, current + step);
     }
