@@ -338,7 +338,7 @@ class Query {
 
       const { model } = this;
 
-      console.log(prettify({ [`>> Query {${model.name}#${model.version}} => updateOne`] : { filter, modifier, options }}));
+      // console.log(prettify({ [`>> Query {${model.name}#${model.version}} => updateOne`] : { filter, modifier, options }}));
 
       this.getCollection().then(
         () => {

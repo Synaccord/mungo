@@ -10,8 +10,6 @@ var _get = function get(_x24, _x25, _x26) { var _again = true; _function: while 
 
 function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { 'default': obj }; }
 
-function _defineProperty(obj, key, value) { if (key in obj) { Object.defineProperty(obj, key, { value: value, enumerable: true, configurable: true, writable: true }); } else { obj[key] = value; } return obj; }
-
 function _classCallCheck(instance, Constructor) { if (!(instance instanceof Constructor)) { throw new TypeError('Cannot call a class as a function'); } }
 
 function _inherits(subClass, superClass) { if (typeof superClass !== 'function' && superClass !== null) { throw new TypeError('Super expression must either be null or a function, not ' + typeof superClass); } subClass.prototype = Object.create(superClass && superClass.prototype, { constructor: { value: subClass, enumerable: false, writable: true, configurable: true } }); if (superClass) Object.setPrototypeOf ? Object.setPrototypeOf(subClass, superClass) : subClass.__proto__ = superClass; }
@@ -28,9 +26,9 @@ var _projection = require('./projection');
 
 var _projection2 = _interopRequireDefault(_projection);
 
-var _prettify2 = require('./prettify');
+var _prettify = require('./prettify');
 
-var _prettify3 = _interopRequireDefault(_prettify2);
+var _prettify2 = _interopRequireDefault(_prettify);
 
 var _error = require('./error');
 
@@ -396,7 +394,7 @@ var Query = (function () {
       return new Promise(function (ok, ko) {
         var model = _this10.model;
 
-        console.log((0, _prettify3['default'])(_defineProperty({}, '>> Query {' + model.name + '#' + model.version + '} => updateOne', { filter: filter, modifier: modifier, options: options })));
+        // console.log(prettify({ [`>> Query {${model.name}#${model.version}} => updateOne`] : { filter, modifier, options }}));
 
         _this10.getCollection().then(function () {
           var action = _this10.collection.updateOne(filter, modifier, options);

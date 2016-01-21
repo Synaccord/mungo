@@ -43,12 +43,6 @@ class UpdateStatement {
       for ( let field in parsed ) {
         this[field] = parsed[field];
       }
-
-      console.log();
-      console.log();
-      console.log(this, document);
-      console.log();
-      console.log();
     }
     catch ( error ) {
       throw MungoUpdateStatementError.rethrow(error, 'Could not parse document', { document, modelName : model.name });
