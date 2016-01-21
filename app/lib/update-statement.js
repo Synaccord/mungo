@@ -43,6 +43,12 @@ class UpdateStatement {
       for ( let field in parsed ) {
         this[field] = parsed[field];
       }
+
+      console.log();
+      console.log();
+      console.log(this, document);
+      console.log();
+      console.log();
     }
     catch ( error ) {
       throw MungoUpdateStatementError.rethrow(error, 'Could not parse document', { document, modelName : model.name });
@@ -65,23 +71,23 @@ class UpdateStatement {
           operator = '$inc';
         }
 
-        switch ( field ) {
+        switch ( operator ) {
           case '$inc'  :
           case '$mul' :
-            parsed[field] =  document[field];
+            parsed[operator] =  document[field];
             for ( let f in parsed[field] ) {
-              parsed[field][f] = this.parseField(f, parsed[field][f], structure[f]);
+              parsed[operator][f] = this.parseField(f, parsed[operator][f], structure[f]);
             }
             break;
 
           case '$rename' :
-            parsed[field] =  document[field];
+            parsed[operator] =  document[field];
             break;
 
           case '$push' :
-            parsed[field] = {};
+            parsed[operator] = {};
             for ( let i in document[field] ) {
-              parsed[field][i] = this.parseField(i, [document[field][i]], structure[i])[0];
+              parsed[operator][i] = this.parseField(i, [document[field][i]], structure[i])[0];
             }
             break;
 
@@ -120,7 +126,7 @@ class UpdateStatement {
           Object.assign(parsed.$set, { [field] : parsedField });
         }
         catch ( error ) {
-          console.log(' mungodb . new UpdateStatement > warning > Could not parse field', { field, document[field], structure[field] })
+          console.log(' mungodb . new UpdateStatement > warning > Could not parse field', { field, doc : document[field], structure : structure[field] })
         }
       }
     }

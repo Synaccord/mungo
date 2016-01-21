@@ -66,6 +66,12 @@ var UpdateStatement = (function () {
       for (var field in parsed) {
         this[field] = parsed[field];
       }
+
+      console.log();
+      console.log();
+      console.log(this, document);
+      console.log();
+      console.log();
     } catch (error) {
       throw MungoUpdateStatementError.rethrow(error, 'Could not parse document', { document: document, modelName: model.name });
     }
@@ -88,23 +94,23 @@ var UpdateStatement = (function () {
             operator = '$inc';
           }
 
-          switch (field) {
+          switch (operator) {
             case '$inc':
             case '$mul':
-              parsed[field] = document[field];
+              parsed[operator] = document[field];
               for (var f in parsed[field]) {
-                parsed[field][f] = this.parseField(f, parsed[field][f], structure[f]);
+                parsed[operator][f] = this.parseField(f, parsed[operator][f], structure[f]);
               }
               break;
 
             case '$rename':
-              parsed[field] = document[field];
+              parsed[operator] = document[field];
               break;
 
             case '$push':
-              parsed[field] = {};
+              parsed[operator] = {};
               for (var i in document[field]) {
-                parsed[field][i] = this.parseField(i, [document[field][i]], structure[i])[0];
+                parsed[operator][i] = this.parseField(i, [document[field][i]], structure[i])[0];
               }
               break;
 
@@ -134,7 +140,7 @@ var UpdateStatement = (function () {
 
             Object.assign(parsed.$set, _defineProperty({}, field, parsedField));
           } catch (error) {
-            console.log(' mungodb . new UpdateStatement > warning > Could not parse field', { field: field });
+            console.log(' mungodb . new UpdateStatement > warning > Could not parse field', { field: field, doc: document[field], structure: structure[field] });
           }
         }
       }
