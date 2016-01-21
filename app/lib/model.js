@@ -220,7 +220,12 @@ class Model extends ModelStatic {
 
           this.setDefaults();
 
-          this.required();
+          try {
+            this.required();
+          }
+          catch (error) {
+            return ko(error);
+          }
 
           sequencer.pipe(
             () => sequencer(

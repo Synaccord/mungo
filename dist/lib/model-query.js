@@ -421,10 +421,12 @@ var ModelQuery = (function (_ModelMigrate) {
         docs[_key4] = arguments[_key4];
       }
 
+      // console.log('insertMany', ...docs);
       return Promise.all(docs.map(function (doc) {
         if (!(doc instanceof _this6)) {
           doc = new _this6(doc);
         }
+        // console.log('new', doc);
         return doc;
       }).map(function (doc) {
         return new Promise(function (ok, ko) {

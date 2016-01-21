@@ -281,12 +281,14 @@ class ModelQuery extends ModelMigrate {
   //----------------------------------------------------------------------------
 
   static insertMany (...docs) {
+    // console.log('insertMany', ...docs);
     return Promise.all(
       docs
         .map(doc => {
           if ( ! ( doc instanceof this ) ) {
             doc = new this(doc);
           }
+          // console.log('new', doc);
           return doc;
         })
         .map(doc => new Promise((ok, ko) => {

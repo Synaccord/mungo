@@ -267,7 +267,7 @@ var Model = (function (_ModelStatic) {
 
       return new Promise(function (ok, ko) {
         try {
-          (function () {
+          var _ret2 = (function () {
             var Model = _this2.constructor;
 
             _this2.set('__V', Model.version);
@@ -313,7 +313,13 @@ var Model = (function (_ModelStatic) {
 
               _this2.setDefaults();
 
-              _this2.required();
+              try {
+                _this2.required();
+              } catch (error) {
+                return {
+                  v: ko(error)
+                };
+              }
 
               _sequencer2['default'].pipe(function () {
                 return (0, _sequencer2['default'])((Model.inserting() || []).map(function (fn) {
@@ -351,6 +357,8 @@ var Model = (function (_ModelStatic) {
               })['catch'](ko);
             }
           })();
+
+          if (typeof _ret2 === 'object') return _ret2.v;
         } catch (error) {
           ko(error);
         }
