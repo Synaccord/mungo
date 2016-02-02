@@ -295,12 +295,14 @@ var ModelQuery = (function (_ModelMigrate) {
           filter = new _findStatement2['default'](filter, _this3);
         }
 
-        _this3.exec('find', filter, projection, options).then(function (documents) {
-          documents = documents.map(function (doc) {
-            return new _this3(doc, true);
-          });
-          ok(documents);
-        })['catch'](ko);
+        process.nextTick(function () {
+          _this3.exec('find', filter, projection, options).then(function (documents) {
+            documents = documents.map(function (doc) {
+              return new _this3(doc, true);
+            });
+            ok(documents);
+          })['catch'](ko);
+        });
       });
 
       promise.limit = function (limit) {
@@ -310,6 +312,11 @@ var ModelQuery = (function (_ModelMigrate) {
 
       promise.skip = function (skip) {
         projection.skip = skip;
+        return promise;
+      };
+
+      promise.sort = function (sort) {
+        projection.sort = sort;
         return promise;
       };
 

@@ -188,13 +188,15 @@ class ModelQuery extends ModelMigrate {
         filter = new FindStatement(filter, this);
       }
 
-      this
-        .exec('find', filter, projection, options)
-        .then(documents => {
-          documents = documents.map(doc => new this(doc, true));
-          ok(documents);
-        })
-        .catch(ko);
+      process.nextTick(() => {
+        this
+          .exec('find', filter, projection, options)
+          .then(documents => {
+            documents = documents.map(doc => new this(doc, true));
+            ok(documents);
+          })
+          .catch(ko);
+      });
     });
 
     promise.limit = limit => {
@@ -204,6 +206,11 @@ class ModelQuery extends ModelMigrate {
 
     promise.skip = skip => {
       projection.skip = skip;
+      return promise;
+    };
+
+    promise.sort = sort => {
+      projection.sort = sort;
       return promise;
     };
 
