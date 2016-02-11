@@ -1,13 +1,13 @@
 {
   "name": "mungo",
-  "version": "2.0.16",
+  "version": "2.0.17",
   "description": "Mungo ===",
   "main": "dist/index.js",
   "directories": {
     "test": "test"
   },
   "scripts": {
-    "test": "echo test",
+    "test": "redtea dist/test",
     "babel": "babel --out-dir dist app",
     "babel-watch": "babel --watch --out-dir dist app"
   },

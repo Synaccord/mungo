@@ -132,7 +132,10 @@ var ModelStatic = function (_ModelQuery) {
   }, {
     key: 'collection',
     get: function get() {
-      return this.name.toLowerCase() + 's';
+      return this._collection || this.name.toLowerCase() + 's';
+    },
+    set: function set(collection) {
+      this._collection = collection;
     }
   }]);
 

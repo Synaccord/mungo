@@ -38,8 +38,14 @@ class ModelStatic extends ModelQuery {
 
   /** @return {String} */
 
+  static _collection;
+
   static get collection () {
-    return this.name.toLowerCase() + 's';
+    return this._collection || (this.name.toLowerCase() + 's');
+  }
+
+  static set collection (collection) {
+    this._collection = collection;
   }
 
   //----------------------------------------------------------------------------
