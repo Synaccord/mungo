@@ -42,7 +42,7 @@ class FindStatement {
     '$comment',
     '$meta',
     '$slice'
-  ]
+  ];
 
   /** new FindStatement
    *  @arg object document

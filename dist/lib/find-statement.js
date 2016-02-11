@@ -1,20 +1,12 @@
 'use strict';
 
-Object.defineProperty(exports, '__esModule', {
+Object.defineProperty(exports, "__esModule", {
   value: true
 });
 
-var _createClass = (function () { function defineProperties(target, props) { for (var i = 0; i < props.length; i++) { var descriptor = props[i]; descriptor.enumerable = descriptor.enumerable || false; descriptor.configurable = true; if ('value' in descriptor) descriptor.writable = true; Object.defineProperty(target, descriptor.key, descriptor); } } return function (Constructor, protoProps, staticProps) { if (protoProps) defineProperties(Constructor.prototype, protoProps); if (staticProps) defineProperties(Constructor, staticProps); return Constructor; }; })();
+var _typeof = typeof Symbol === "function" && typeof Symbol.iterator === "symbol" ? function (obj) { return typeof obj; } : function (obj) { return obj && typeof Symbol === "function" && obj.constructor === Symbol ? "symbol" : typeof obj; };
 
-var _get = function get(_x, _x2, _x3) { var _again = true; _function: while (_again) { var object = _x, property = _x2, receiver = _x3; desc = parent = getter = undefined; _again = false; if (object === null) object = Function.prototype; var desc = Object.getOwnPropertyDescriptor(object, property); if (desc === undefined) { var parent = Object.getPrototypeOf(object); if (parent === null) { return undefined; } else { _x = parent; _x2 = property; _x3 = receiver; _again = true; continue _function; } } else if ('value' in desc) { return desc.value; } else { var getter = desc.get; if (getter === undefined) { return undefined; } return getter.call(receiver); } } };
-
-function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { 'default': obj }; }
-
-function _defineProperty(obj, key, value) { if (key in obj) { Object.defineProperty(obj, key, { value: value, enumerable: true, configurable: true, writable: true }); } else { obj[key] = value; } return obj; }
-
-function _classCallCheck(instance, Constructor) { if (!(instance instanceof Constructor)) { throw new TypeError('Cannot call a class as a function'); } }
-
-function _inherits(subClass, superClass) { if (typeof superClass !== 'function' && superClass !== null) { throw new TypeError('Super expression must either be null or a function, not ' + typeof superClass); } subClass.prototype = Object.create(superClass && superClass.prototype, { constructor: { value: subClass, enumerable: false, writable: true, configurable: true } }); if (superClass) Object.setPrototypeOf ? Object.setPrototypeOf(subClass, superClass) : subClass.__proto__ = superClass; }
+var _createClass = function () { function defineProperties(target, props) { for (var i = 0; i < props.length; i++) { var descriptor = props[i]; descriptor.enumerable = descriptor.enumerable || false; descriptor.configurable = true; if ("value" in descriptor) descriptor.writable = true; Object.defineProperty(target, descriptor.key, descriptor); } } return function (Constructor, protoProps, staticProps) { if (protoProps) defineProperties(Constructor.prototype, protoProps); if (staticProps) defineProperties(Constructor, staticProps); return Constructor; }; }();
 
 var _type = require('./type');
 
@@ -28,40 +20,44 @@ var _error = require('./error');
 
 var _error2 = _interopRequireDefault(_error);
 
-var MungoFindStatementError = (function (_MungoError) {
+function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { default: obj }; }
+
+function _defineProperty(obj, key, value) { if (key in obj) { Object.defineProperty(obj, key, { value: value, enumerable: true, configurable: true, writable: true }); } else { obj[key] = value; } return obj; }
+
+function _classCallCheck(instance, Constructor) { if (!(instance instanceof Constructor)) { throw new TypeError("Cannot call a class as a function"); } }
+
+function _possibleConstructorReturn(self, call) { if (!self) { throw new ReferenceError("this hasn't been initialised - super() hasn't been called"); } return call && (typeof call === "object" || typeof call === "function") ? call : self; }
+
+function _inherits(subClass, superClass) { if (typeof superClass !== "function" && superClass !== null) { throw new TypeError("Super expression must either be null or a function, not " + typeof superClass); } subClass.prototype = Object.create(superClass && superClass.prototype, { constructor: { value: subClass, enumerable: false, writable: true, configurable: true } }); if (superClass) Object.setPrototypeOf ? Object.setPrototypeOf(subClass, superClass) : subClass.__proto__ = superClass; }
+
+var MungoFindStatementError = function (_MungoError) {
   _inherits(MungoFindStatementError, _MungoError);
 
   function MungoFindStatementError() {
     _classCallCheck(this, MungoFindStatementError);
 
-    _get(Object.getPrototypeOf(MungoFindStatementError.prototype), 'constructor', this).apply(this, arguments);
+    return _possibleConstructorReturn(this, Object.getPrototypeOf(MungoFindStatementError).apply(this, arguments));
   }
 
   return MungoFindStatementError;
-})(_error2['default']);
+}(_error2.default);
 
-var FindStatement = (function () {
-  _createClass(FindStatement, null, [{
-    key: 'operators',
-    value: ['$eq', '$gt', '$gte', '$lt', '$lte', '$ne', '$in', '$nin', '$or', '$and', '$not', '$nor', '$exists', '$type', '$mod', '$regex', '$options', '$text', '$where', '$geoWithin', '$geoIntersects', '$near', '$nearSphere', '$all', '$elemMatch', '$size', '$bitsAllSet', '$bitsAnySet', '$bitsAllClear', '$bitsAnyClear', '$comment', '$meta', '$slice'],
+var FindStatement = function () {
 
-    /** new FindStatement
-     *  @arg object document
-     *  @arg function model
-     **/
-
-    enumerable: true
-  }]);
+  /** new FindStatement
+   *  @arg object document
+   *  @arg function model
+   **/
 
   function FindStatement(document, model) {
     _classCallCheck(this, FindStatement);
 
     if (document.constructor !== Object) {
-      throw new _error2['default']('new FindStatement(document) > document must be an object', { document: document, model: model });
+      throw new _error2.default('new FindStatement(document) > document must be an object', { document: document, model: model });
     }
 
     if (typeof model !== 'function') {
-      throw new _error2['default']('new FindStatement(model) > model must be a class', { document: document, model: model });
+      throw new _error2.default('new FindStatement(model) > model must be a class', { document: document, model: model });
     }
 
     var parsed = this.parseAll(document, model.getSchema());
@@ -83,7 +79,7 @@ var FindStatement = (function () {
   _createClass(FindStatement, [{
     key: 'parseAll',
     value: function parseAll(document, structure) {
-      var _this = this;
+      var _this2 = this;
 
       // console.log(prettify({'<<<<< FindStatement.parseAll >>>>>' : { document, structure }}));
 
@@ -97,10 +93,10 @@ var FindStatement = (function () {
             case '$and':
             case '$nor':
               if (!Array.isArray(document[field])) {
-                throw new _error2['default'](field + ' is expecting an array', { got: document[field] });
+                throw new _error2.default(field + ' is expecting an array', { got: document[field] });
               }
               parsed[field] = document[field].map(function (v) {
-                return _this.parseAll(v, structure);
+                return _this2.parseAll(v, structure);
               });
               break;
           }
@@ -129,7 +125,7 @@ var FindStatement = (function () {
           fieldStructure = schema.flatten[fieldName];
         }
 
-        if (fieldValue && typeof fieldValue === 'object') {
+        if (fieldValue && (typeof fieldValue === 'undefined' ? 'undefined' : _typeof(fieldValue)) === 'object') {
           var key = Object.keys(fieldValue)[0],
               value = fieldValue[key];
 
@@ -158,7 +154,7 @@ var FindStatement = (function () {
                 return _defineProperty({}, key, this.parseField(fieldName, value, fieldStructure));
 
               case '$exists':
-                return _defineProperty({}, key, _type2['default'].Boolean.convert(value));
+                return _defineProperty({}, key, _type2.default.Boolean.convert(value));
 
               case '$type':
               case '$where':
@@ -170,10 +166,10 @@ var FindStatement = (function () {
 
               case '$mod':
                 if (!Array.isArray(value)) {
-                  throw new _error2['default']('FindStatement:$mod > value must be an Array', { value: value });
+                  throw new _error2.default('FindStatement:$mod > value must be an Array', { value: value });
                 }
                 return _defineProperty({}, key, value.map(function (value) {
-                  return _type2['default'].Number.convert(value);
+                  return _type2.default.Number.convert(value);
                 }));
 
               case '$regex':
@@ -188,11 +184,11 @@ var FindStatement = (function () {
 
                 if (typeof value === 'string') {
                   search.$search = value;
-                } else if (!value || typeof value !== 'object') {
-                  throw new _error2['default']('FindStatement:$text > value must be either a string or an object', { value: value });
+                } else if (!value || (typeof value === 'undefined' ? 'undefined' : _typeof(value)) !== 'object') {
+                  throw new _error2.default('FindStatement:$text > value must be either a string or an object', { value: value });
                 }
 
-                if (typeof value === 'object') {
+                if ((typeof value === 'undefined' ? 'undefined' : _typeof(value)) === 'object') {
                   search = value;
                 }
 
@@ -203,8 +199,8 @@ var FindStatement = (function () {
               case '$near':
               case '$nearSphere':
 
-                if (!value || typeof value !== 'object') {
-                  throw new _error2['default']('FindStatement:' + key + ' > value must be an object', { value: value });
+                if (!value || (typeof value === 'undefined' ? 'undefined' : _typeof(value)) !== 'object') {
+                  throw new _error2.default('FindStatement:' + key + ' > value must be an object', { value: value });
                 }
 
                 return _defineProperty({}, key, value);
@@ -212,14 +208,14 @@ var FindStatement = (function () {
               case '$all':
 
                 if (!Array.isArray(value)) {
-                  throw new _error2['default']('FindStatement:' + key + ' > value must be an array', { value: value });
+                  throw new _error2.default('FindStatement:' + key + ' > value must be an array', { value: value });
                 }
 
                 return _defineProperty({}, key, fieldStructure.type.convert(value));
 
               case '$comment':
               case '$meta':
-                return _defineProperty({}, key, _type2['default'].String.convert(value));
+                return _defineProperty({}, key, _type2.default.String.convert(value));
             }
           }
         }
@@ -236,7 +232,7 @@ var FindStatement = (function () {
   }]);
 
   return FindStatement;
-})();
+}();
 
-exports['default'] = FindStatement;
-module.exports = exports['default'];
+FindStatement.operators = ['$eq', '$gt', '$gte', '$lt', '$lte', '$ne', '$in', '$nin', '$or', '$and', '$not', '$nor', '$exists', '$type', '$mod', '$regex', '$options', '$text', '$where', '$geoWithin', '$geoIntersects', '$near', '$nearSphere', '$all', '$elemMatch', '$size', '$bitsAllSet', '$bitsAnySet', '$bitsAllClear', '$bitsAnyClear', '$comment', '$meta', '$slice'];
+exports.default = FindStatement;

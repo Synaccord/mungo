@@ -1,20 +1,12 @@
 'use strict';
 
-Object.defineProperty(exports, '__esModule', {
+Object.defineProperty(exports, "__esModule", {
   value: true
 });
 
-var _createClass = (function () { function defineProperties(target, props) { for (var i = 0; i < props.length; i++) { var descriptor = props[i]; descriptor.enumerable = descriptor.enumerable || false; descriptor.configurable = true; if ('value' in descriptor) descriptor.writable = true; Object.defineProperty(target, descriptor.key, descriptor); } } return function (Constructor, protoProps, staticProps) { if (protoProps) defineProperties(Constructor.prototype, protoProps); if (staticProps) defineProperties(Constructor, staticProps); return Constructor; }; })();
+var _typeof = typeof Symbol === "function" && typeof Symbol.iterator === "symbol" ? function (obj) { return typeof obj; } : function (obj) { return obj && typeof Symbol === "function" && obj.constructor === Symbol ? "symbol" : typeof obj; };
 
-var _get = function get(_x2, _x3, _x4) { var _again = true; _function: while (_again) { var object = _x2, property = _x3, receiver = _x4; desc = parent = getter = undefined; _again = false; if (object === null) object = Function.prototype; var desc = Object.getOwnPropertyDescriptor(object, property); if (desc === undefined) { var parent = Object.getPrototypeOf(object); if (parent === null) { return undefined; } else { _x2 = parent; _x3 = property; _x4 = receiver; _again = true; continue _function; } } else if ('value' in desc) { return desc.value; } else { var getter = desc.get; if (getter === undefined) { return undefined; } return getter.call(receiver); } } };
-
-function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { 'default': obj }; }
-
-function _toConsumableArray(arr) { if (Array.isArray(arr)) { for (var i = 0, arr2 = Array(arr.length); i < arr.length; i++) arr2[i] = arr[i]; return arr2; } else { return Array.from(arr); } }
-
-function _classCallCheck(instance, Constructor) { if (!(instance instanceof Constructor)) { throw new TypeError('Cannot call a class as a function'); } }
-
-function _inherits(subClass, superClass) { if (typeof superClass !== 'function' && superClass !== null) { throw new TypeError('Super expression must either be null or a function, not ' + typeof superClass); } subClass.prototype = Object.create(superClass && superClass.prototype, { constructor: { value: subClass, enumerable: false, writable: true, configurable: true } }); if (superClass) Object.setPrototypeOf ? Object.setPrototypeOf(subClass, superClass) : subClass.__proto__ = superClass; }
+var _createClass = function () { function defineProperties(target, props) { for (var i = 0; i < props.length; i++) { var descriptor = props[i]; descriptor.enumerable = descriptor.enumerable || false; descriptor.configurable = true; if ("value" in descriptor) descriptor.writable = true; Object.defineProperty(target, descriptor.key, descriptor); } } return function (Constructor, protoProps, staticProps) { if (protoProps) defineProperties(Constructor.prototype, protoProps); if (staticProps) defineProperties(Constructor, staticProps); return Constructor; }; }();
 
 var _mongodb = require('mongodb');
 
@@ -28,21 +20,31 @@ var _error = require('./error');
 
 var _error2 = _interopRequireDefault(_error);
 
-var MungoTypeError = (function (_MungoError) {
+function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { default: obj }; }
+
+function _toConsumableArray(arr) { if (Array.isArray(arr)) { for (var i = 0, arr2 = Array(arr.length); i < arr.length; i++) { arr2[i] = arr[i]; } return arr2; } else { return Array.from(arr); } }
+
+function _classCallCheck(instance, Constructor) { if (!(instance instanceof Constructor)) { throw new TypeError("Cannot call a class as a function"); } }
+
+function _possibleConstructorReturn(self, call) { if (!self) { throw new ReferenceError("this hasn't been initialised - super() hasn't been called"); } return call && (typeof call === "object" || typeof call === "function") ? call : self; }
+
+function _inherits(subClass, superClass) { if (typeof superClass !== "function" && superClass !== null) { throw new TypeError("Super expression must either be null or a function, not " + typeof superClass); } subClass.prototype = Object.create(superClass && superClass.prototype, { constructor: { value: subClass, enumerable: false, writable: true, configurable: true } }); if (superClass) Object.setPrototypeOf ? Object.setPrototypeOf(subClass, superClass) : subClass.__proto__ = superClass; }
+
+var MungoTypeError = function (_MungoError) {
   _inherits(MungoTypeError, _MungoError);
 
   function MungoTypeError() {
     _classCallCheck(this, MungoTypeError);
 
-    _get(Object.getPrototypeOf(MungoTypeError.prototype), 'constructor', this).apply(this, arguments);
+    return _possibleConstructorReturn(this, Object.getPrototypeOf(MungoTypeError).apply(this, arguments));
   }
 
-  //------------------------------------------------------------------------------
-
   return MungoTypeError;
-})(_error2['default']);
+}(_error2.default);
 
-var _Object = (function () {
+//------------------------------------------------------------------------------
+
+var _Object = function () {
   function _Object() {
     var object = arguments.length <= 0 || arguments[0] === undefined ? {} : arguments[0];
 
@@ -51,16 +53,16 @@ var _Object = (function () {
     Object.assign(this, object);
   }
 
-  //------------------------------------------------------------------------------
-
   /** Boolean */
+
   _createClass(_Object, null, [{
     key: 'validate',
     value: function validate(value) {
-      return value && typeof value === 'object' && value.constructor === Object;
+      return value && (typeof value === 'undefined' ? 'undefined' : _typeof(value)) === 'object' && value.constructor === Object;
     }
 
-    /** Mixed */ }, {
+    /** Mixed */
+  }, {
     key: 'convert',
     value: function convert(value) {
       return value;
@@ -68,14 +70,14 @@ var _Object = (function () {
   }]);
 
   return _Object;
-})();
+}();
 
-var _Array = (function () {
+//------------------------------------------------------------------------------
+
+var _Array = function () {
   function _Array() {
     _classCallCheck(this, _Array);
   }
-
-  //------------------------------------------------------------------------------
 
   _createClass(_Array, null, [{
     key: 'convert',
@@ -121,14 +123,14 @@ var _Array = (function () {
   }]);
 
   return _Array;
-})();
+}();
 
-var _Subdocument = (function () {
+//------------------------------------------------------------------------------
+
+var _Subdocument = function () {
   function _Subdocument() {
     _classCallCheck(this, _Subdocument);
   }
-
-  //------------------------------------------------------------------------------
 
   _createClass(_Subdocument, null, [{
     key: 'convert',
@@ -159,14 +161,14 @@ var _Subdocument = (function () {
   }]);
 
   return _Subdocument;
-})();
+}();
 
-var _Mixed = (function () {
+//------------------------------------------------------------------------------
+
+var _Mixed = function () {
   function _Mixed() {
     _classCallCheck(this, _Mixed);
   }
-
-  //------------------------------------------------------------------------------
 
   _createClass(_Mixed, null, [{
     key: 'validate',
@@ -181,14 +183,14 @@ var _Mixed = (function () {
   }]);
 
   return _Mixed;
-})();
+}();
 
-var _String = (function () {
+//------------------------------------------------------------------------------
+
+var _String = function () {
   function _String() {
     _classCallCheck(this, _String);
   }
-
-  //------------------------------------------------------------------------------
 
   _createClass(_String, null, [{
     key: 'validate',
@@ -206,14 +208,14 @@ var _String = (function () {
   }]);
 
   return _String;
-})();
+}();
 
-var _Number = (function () {
+//------------------------------------------------------------------------------
+
+var _Number = function () {
   function _Number() {
     _classCallCheck(this, _Number);
   }
-
-  //------------------------------------------------------------------------------
 
   _createClass(_Number, null, [{
     key: 'validate',
@@ -228,14 +230,14 @@ var _Number = (function () {
   }]);
 
   return _Number;
-})();
+}();
 
-var _Boolean = (function () {
+//------------------------------------------------------------------------------
+
+var _Boolean = function () {
   function _Boolean() {
     _classCallCheck(this, _Boolean);
   }
-
-  //------------------------------------------------------------------------------
 
   _createClass(_Boolean, null, [{
     key: 'validate',
@@ -250,14 +252,14 @@ var _Boolean = (function () {
   }]);
 
   return _Boolean;
-})();
+}();
 
-var _Date = (function () {
+//------------------------------------------------------------------------------
+
+var _Date = function () {
   function _Date() {
     _classCallCheck(this, _Date);
   }
-
-  //------------------------------------------------------------------------------
 
   _createClass(_Date, null, [{
     key: 'validate',
@@ -276,23 +278,23 @@ var _Date = (function () {
   }]);
 
   return _Date;
-})();
+}();
 
-var _ObjectID = (function (_mongodb$ObjectID) {
+//------------------------------------------------------------------------------
+
+var _ObjectID = function (_mongodb$ObjectID) {
   _inherits(_ObjectID, _mongodb$ObjectID);
 
   function _ObjectID() {
     _classCallCheck(this, _ObjectID);
 
-    _get(Object.getPrototypeOf(_ObjectID.prototype), 'constructor', this).apply(this, arguments);
+    return _possibleConstructorReturn(this, Object.getPrototypeOf(_ObjectID).apply(this, arguments));
   }
-
-  //------------------------------------------------------------------------------
 
   _createClass(_ObjectID, null, [{
     key: 'validate',
     value: function validate(value) {
-      return value instanceof _mongodb2['default'].ObjectID;
+      return value instanceof _mongodb2.default.ObjectID;
     }
   }, {
     key: 'convert',
@@ -305,14 +307,14 @@ var _ObjectID = (function (_mongodb$ObjectID) {
         }
 
         if (typeof value === 'string') {
-          return _mongodb2['default'].ObjectID(value);
+          return _mongodb2.default.ObjectID(value);
         }
 
-        if (value instanceof _mongodb2['default'].ObjectID) {
+        if (value instanceof _mongodb2.default.ObjectID) {
           return value;
         }
 
-        if (value && typeof value === 'object') {
+        if (value && (typeof value === 'undefined' ? 'undefined' : _typeof(value)) === 'object') {
 
           if (value.$in) {
             return { $in: value.$in.map(function (value) {
@@ -321,7 +323,7 @@ var _ObjectID = (function (_mongodb$ObjectID) {
           }
 
           if (value._id) {
-            return _mongodb2['default'].ObjectID(value._id);
+            return _mongodb2.default.ObjectID(value._id);
           }
         }
       } catch (error) {
@@ -331,14 +333,14 @@ var _ObjectID = (function (_mongodb$ObjectID) {
   }]);
 
   return _ObjectID;
-})(_mongodb2['default'].ObjectID);
+}(_mongodb2.default.ObjectID);
 
-var _Geo = (function () {
+//------------------------------------------------------------------------------
+
+var _Geo = function () {
   function _Geo() {
     _classCallCheck(this, _Geo);
   }
-
-  //------------------------------------------------------------------------------
 
   _createClass(_Geo, null, [{
     key: 'validate',
@@ -350,16 +352,16 @@ var _Geo = (function () {
     value: function convert(value) {
       return new Type(Array, Number).convert(value);
     }
-  }, {
-    key: 'MongoDBType',
-    value: '2d',
-    enumerable: true
   }]);
 
   return _Geo;
-})();
+}();
 
-var Type = (function () {
+//------------------------------------------------------------------------------
+
+_Geo.MongoDBType = '2d';
+
+var Type = function () {
   _createClass(Type, [{
     key: 'getType',
     value: function getType() {
@@ -432,46 +434,6 @@ var Type = (function () {
           return type;
       }
     }
-  }, {
-    key: 'Object',
-    value: _Object,
-    enumerable: true
-  }, {
-    key: 'ObjectID',
-    value: _ObjectID,
-    enumerable: true
-  }, {
-    key: 'Mixed',
-    value: _Mixed,
-    enumerable: true
-  }, {
-    key: 'String',
-    value: _String,
-    enumerable: true
-  }, {
-    key: 'Number',
-    value: _Number,
-    enumerable: true
-  }, {
-    key: 'Boolean',
-    value: _Boolean,
-    enumerable: true
-  }, {
-    key: 'Date',
-    value: _Date,
-    enumerable: true
-  }, {
-    key: 'Array',
-    value: _Array,
-    enumerable: true
-  }, {
-    key: 'Subdocument',
-    value: _Subdocument,
-    enumerable: true
-  }, {
-    key: 'Geo',
-    value: _Geo,
-    enumerable: true
   }]);
 
   function Type(type) {
@@ -489,7 +451,16 @@ var Type = (function () {
   }
 
   return Type;
-})();
+}();
 
-exports['default'] = Type;
-module.exports = exports['default'];
+Type.Object = _Object;
+Type.ObjectID = _ObjectID;
+Type.Mixed = _Mixed;
+Type.String = _String;
+Type.Number = _Number;
+Type.Boolean = _Boolean;
+Type.Date = _Date;
+Type.Array = _Array;
+Type.Subdocument = _Subdocument;
+Type.Geo = _Geo;
+exports.default = Type;

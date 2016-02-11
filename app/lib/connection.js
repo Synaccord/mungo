@@ -2,7 +2,7 @@
 
 import mongodb from 'mongodb';
 import { EventEmitter } from 'events';
-import sequencer from 'sequencer';
+import sequencer from 'promise-sequencer';
 import prettify from './prettify';
 
 class Connection extends EventEmitter {
@@ -11,11 +11,11 @@ class Connection extends EventEmitter {
 
   /** @type [Connection] */
 
-  static connections  =   []
+  static connections  =   [];
 
-  static url          =   'mongodb://@localhost'
+  static url          =   'mongodb://@localhost';
 
-  static events       =   new EventEmitter()
+  static events       =   new EventEmitter();
 
   //----------------------------------------------------------------------------
 
@@ -85,9 +85,9 @@ class Connection extends EventEmitter {
 
   //----------------------------------------------------------------------------
 
-  connected   =   false
+  connected   =   false;
 
-  db          =   null
+  db          =   null;
 
   //----------------------------------------------------------------------------
 

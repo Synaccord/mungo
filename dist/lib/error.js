@@ -1,44 +1,36 @@
 'use strict';
 
-Object.defineProperty(exports, '__esModule', {
+Object.defineProperty(exports, "__esModule", {
   value: true
 });
 
-var _createClass = (function () { function defineProperties(target, props) { for (var i = 0; i < props.length; i++) { var descriptor = props[i]; descriptor.enumerable = descriptor.enumerable || false; descriptor.configurable = true; if ('value' in descriptor) descriptor.writable = true; Object.defineProperty(target, descriptor.key, descriptor); } } return function (Constructor, protoProps, staticProps) { if (protoProps) defineProperties(Constructor.prototype, protoProps); if (staticProps) defineProperties(Constructor, staticProps); return Constructor; }; })();
+var _createClass = function () { function defineProperties(target, props) { for (var i = 0; i < props.length; i++) { var descriptor = props[i]; descriptor.enumerable = descriptor.enumerable || false; descriptor.configurable = true; if ("value" in descriptor) descriptor.writable = true; Object.defineProperty(target, descriptor.key, descriptor); } } return function (Constructor, protoProps, staticProps) { if (protoProps) defineProperties(Constructor.prototype, protoProps); if (staticProps) defineProperties(Constructor, staticProps); return Constructor; }; }();
 
-var _get = function get(_x3, _x4, _x5) { var _again = true; _function: while (_again) { var object = _x3, property = _x4, receiver = _x5; desc = parent = getter = undefined; _again = false; if (object === null) object = Function.prototype; var desc = Object.getOwnPropertyDescriptor(object, property); if (desc === undefined) { var parent = Object.getPrototypeOf(object); if (parent === null) { return undefined; } else { _x3 = parent; _x4 = property; _x5 = receiver; _again = true; continue _function; } } else if ('value' in desc) { return desc.value; } else { var getter = desc.get; if (getter === undefined) { return undefined; } return getter.call(receiver); } } };
+function _classCallCheck(instance, Constructor) { if (!(instance instanceof Constructor)) { throw new TypeError("Cannot call a class as a function"); } }
 
-function _classCallCheck(instance, Constructor) { if (!(instance instanceof Constructor)) { throw new TypeError('Cannot call a class as a function'); } }
+function _possibleConstructorReturn(self, call) { if (!self) { throw new ReferenceError("this hasn't been initialised - super() hasn't been called"); } return call && (typeof call === "object" || typeof call === "function") ? call : self; }
 
-function _inherits(subClass, superClass) { if (typeof superClass !== 'function' && superClass !== null) { throw new TypeError('Super expression must either be null or a function, not ' + typeof superClass); } subClass.prototype = Object.create(superClass && superClass.prototype, { constructor: { value: subClass, enumerable: false, writable: true, configurable: true } }); if (superClass) Object.setPrototypeOf ? Object.setPrototypeOf(subClass, superClass) : subClass.__proto__ = superClass; }
+function _inherits(subClass, superClass) { if (typeof superClass !== "function" && superClass !== null) { throw new TypeError("Super expression must either be null or a function, not " + typeof superClass); } subClass.prototype = Object.create(superClass && superClass.prototype, { constructor: { value: subClass, enumerable: false, writable: true, configurable: true } }); if (superClass) Object.setPrototypeOf ? Object.setPrototypeOf(subClass, superClass) : subClass.__proto__ = superClass; }
 
-var ExtendableError = (function (_Error) {
+var ExtendableError = function (_Error) {
   _inherits(ExtendableError, _Error);
 
   function ExtendableError(message) {
     _classCallCheck(this, ExtendableError);
 
-    _get(Object.getPrototypeOf(ExtendableError.prototype), 'constructor', this).call(this, message);
-    this.name = this.constructor.name;
-    this.message = message;
-    Error.captureStackTrace(this, this.constructor.name);
+    var _this = _possibleConstructorReturn(this, Object.getPrototypeOf(ExtendableError).call(this, message));
+
+    _this.name = _this.constructor.name;
+    _this.message = message;
+    Error.captureStackTrace(_this, _this.constructor.name);
+    return _this;
   }
 
   return ExtendableError;
-})(Error);
+}(Error);
 
-var MungoError = (function (_ExtendableError) {
+var MungoError = function (_ExtendableError) {
   _inherits(MungoError, _ExtendableError);
-
-  _createClass(MungoError, null, [{
-    key: 'MISSING_REQUIRED_FIELD',
-    value: 1,
-    enumerable: true
-  }, {
-    key: 'DISTINCT_ARRAY_CONSTRAINT',
-    value: 2,
-    enumerable: true
-  }]);
 
   function MungoError(message) {
     var options = arguments.length <= 1 || arguments[1] === undefined ? {} : arguments[1];
@@ -52,16 +44,17 @@ var MungoError = (function (_ExtendableError) {
     } catch (e) {
       msg = message;
     } finally {
-      _get(Object.getPrototypeOf(MungoError.prototype), 'constructor', this).call(this, msg);
+      var _this2 = _possibleConstructorReturn(this, Object.getPrototypeOf(MungoError).call(this, msg));
     }
 
-    this.originalMessage = message;
+    _this2.originalMessage = message;
 
     if ('code' in options) {
-      this.code = options.code;
+      _this2.code = options.code;
     }
 
-    this.options = options;
+    _this2.options = options;
+    return _this2;
   }
 
   _createClass(MungoError, null, [{
@@ -88,7 +81,8 @@ var MungoError = (function (_ExtendableError) {
   }]);
 
   return MungoError;
-})(ExtendableError);
+}(ExtendableError);
 
-exports['default'] = MungoError;
-module.exports = exports['default'];
+MungoError.MISSING_REQUIRED_FIELD = 1;
+MungoError.DISTINCT_ARRAY_CONSTRAINT = 2;
+exports.default = MungoError;

@@ -2,12 +2,12 @@
 
 import Model                from './model';
 import MigrationModel       from '../models/migration';
-import sequencer            from 'sequencer';
+import sequencer            from 'promise-sequencer';
 import prettify             from './prettify';
 
 class Migration extends Model {
 
-  static model = MigrationModel
+  static model = MigrationModel;
 
   //----------------------------------------------------------------------------
 

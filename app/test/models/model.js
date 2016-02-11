@@ -26,7 +26,7 @@ class Foo2 extends Mungo.Model {}
 
 class Foo1 extends Mungo.Model {
 
-  static version = 5
+  static version = 5;
 
   static get schema () {
     const schema = {};
@@ -43,7 +43,7 @@ class Foo1 extends Mungo.Model {
     );
 
     return schema;
-  }
+  };
 
 }
 

@@ -206,7 +206,7 @@ class _ObjectID extends mongodb.ObjectID {
 //------------------------------------------------------------------------------
 
 class _Geo {
-  static MongoDBType = '2d'
+  static MongoDBType = '2d';
 
   static validate (value) {
     return new Type(Array, Number).validate(value);
@@ -220,25 +220,25 @@ class _Geo {
 //------------------------------------------------------------------------------
 
 class Type {
-  static Object         =   _Object
+  static Object         =   _Object;
 
-  static ObjectID       =   _ObjectID
+  static ObjectID       =   _ObjectID;
 
-  static Mixed          =   _Mixed
+  static Mixed          =   _Mixed;
 
-  static String         =   _String
+  static String         =   _String;
 
-  static Number         =   _Number
+  static Number         =   _Number;
 
-  static Boolean        =   _Boolean
+  static Boolean        =   _Boolean;
 
-  static Date           =   _Date
+  static Date           =   _Date;
 
-  static Array          =   _Array
+  static Array          =   _Array;
 
-  static Subdocument    =   _Subdocument
+  static Subdocument    =   _Subdocument;
 
-  static Geo            =   _Geo
+  static Geo            =   _Geo;
 
   static associate(type) {
     switch ( type ) {
@@ -252,7 +252,7 @@ class Type {
     }
   }
 
-  args = []
+  args = [];
 
   getType() {
     return this.type;

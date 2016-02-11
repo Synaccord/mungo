@@ -6,9 +6,9 @@ import Schema         from '../lib/schema';
 
 class Migration extends Model {
 
-  static version = 2
+  static version = 2;
 
-  static collection = 'mungo_migrations'
+  static collection = 'mungo_migrations';
 
   static schema = {
     collection  :   {
@@ -28,7 +28,7 @@ class Migration extends Model {
       get       :   Object,
       set       :   Object
     })
-  }
+  };
 }
 
 export default Migration;

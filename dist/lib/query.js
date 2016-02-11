@@ -1,18 +1,10 @@
 'use strict';
 
-Object.defineProperty(exports, '__esModule', {
+Object.defineProperty(exports, "__esModule", {
   value: true
 });
 
-var _createClass = (function () { function defineProperties(target, props) { for (var i = 0; i < props.length; i++) { var descriptor = props[i]; descriptor.enumerable = descriptor.enumerable || false; descriptor.configurable = true; if ('value' in descriptor) descriptor.writable = true; Object.defineProperty(target, descriptor.key, descriptor); } } return function (Constructor, protoProps, staticProps) { if (protoProps) defineProperties(Constructor.prototype, protoProps); if (staticProps) defineProperties(Constructor, staticProps); return Constructor; }; })();
-
-var _get = function get(_x24, _x25, _x26) { var _again = true; _function: while (_again) { var object = _x24, property = _x25, receiver = _x26; desc = parent = getter = undefined; _again = false; if (object === null) object = Function.prototype; var desc = Object.getOwnPropertyDescriptor(object, property); if (desc === undefined) { var parent = Object.getPrototypeOf(object); if (parent === null) { return undefined; } else { _x24 = parent; _x25 = property; _x26 = receiver; _again = true; continue _function; } } else if ('value' in desc) { return desc.value; } else { var getter = desc.get; if (getter === undefined) { return undefined; } return getter.call(receiver); } } };
-
-function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { 'default': obj }; }
-
-function _classCallCheck(instance, Constructor) { if (!(instance instanceof Constructor)) { throw new TypeError('Cannot call a class as a function'); } }
-
-function _inherits(subClass, superClass) { if (typeof superClass !== 'function' && superClass !== null) { throw new TypeError('Super expression must either be null or a function, not ' + typeof superClass); } subClass.prototype = Object.create(superClass && superClass.prototype, { constructor: { value: subClass, enumerable: false, writable: true, configurable: true } }); if (superClass) Object.setPrototypeOf ? Object.setPrototypeOf(subClass, superClass) : subClass.__proto__ = superClass; }
+var _createClass = function () { function defineProperties(target, props) { for (var i = 0; i < props.length; i++) { var descriptor = props[i]; descriptor.enumerable = descriptor.enumerable || false; descriptor.configurable = true; if ("value" in descriptor) descriptor.writable = true; Object.defineProperty(target, descriptor.key, descriptor); } } return function (Constructor, protoProps, staticProps) { if (protoProps) defineProperties(Constructor.prototype, protoProps); if (staticProps) defineProperties(Constructor, staticProps); return Constructor; }; }();
 
 var _mongodb = require('mongodb');
 
@@ -34,19 +26,27 @@ var _error = require('./error');
 
 var _error2 = _interopRequireDefault(_error);
 
-var MungoQueryError = (function (_MungoError) {
+function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { default: obj }; }
+
+function _classCallCheck(instance, Constructor) { if (!(instance instanceof Constructor)) { throw new TypeError("Cannot call a class as a function"); } }
+
+function _possibleConstructorReturn(self, call) { if (!self) { throw new ReferenceError("this hasn't been initialised - super() hasn't been called"); } return call && (typeof call === "object" || typeof call === "function") ? call : self; }
+
+function _inherits(subClass, superClass) { if (typeof superClass !== "function" && superClass !== null) { throw new TypeError("Super expression must either be null or a function, not " + typeof superClass); } subClass.prototype = Object.create(superClass && superClass.prototype, { constructor: { value: subClass, enumerable: false, writable: true, configurable: true } }); if (superClass) Object.setPrototypeOf ? Object.setPrototypeOf(subClass, superClass) : subClass.__proto__ = superClass; }
+
+var MungoQueryError = function (_MungoError) {
   _inherits(MungoQueryError, _MungoError);
 
   function MungoQueryError() {
     _classCallCheck(this, MungoQueryError);
 
-    _get(Object.getPrototypeOf(MungoQueryError.prototype), 'constructor', this).apply(this, arguments);
+    return _possibleConstructorReturn(this, Object.getPrototypeOf(MungoQueryError).apply(this, arguments));
   }
 
   return MungoQueryError;
-})(_error2['default']);
+}(_error2.default);
 
-var Query = (function () {
+var Query = function () {
 
   //----------------------------------------------------------------------------
 
@@ -61,15 +61,15 @@ var Query = (function () {
   _createClass(Query, [{
     key: 'connect',
     value: function connect() {
-      var _this = this;
+      var _this2 = this;
 
       return new Promise(function (ok, ko) {
 
-        if (_this.db) {
+        if (_this2.db) {
           return ok();
         }
 
-        var aliveConnections = _connection2['default'].connections.filter(function (conn) {
+        var aliveConnections = _connection2.default.connections.filter(function (conn) {
           return !conn.disconnected;
         });
 
@@ -77,17 +77,17 @@ var Query = (function () {
 
         if (connection) {
           if (connection.connected) {
-            _this.db = connection.db;
+            _this2.db = connection.db;
           } else {
             connection.on('connected', function (connection) {
-              _this.db = connection.db;
+              _this2.db = connection.db;
             });
           }
 
           ok();
         } else {
-          _connection2['default'].events.on('connected', function (connection) {
-            _this.db = connection.db;
+          _connection2.default.events.on('connected', function (connection) {
+            _this2.db = connection.db;
             return ok();
           });
         }
@@ -99,15 +99,15 @@ var Query = (function () {
   }, {
     key: 'getCollection',
     value: function getCollection() {
-      var _this2 = this;
+      var _this3 = this;
 
       return new Promise(function (ok, ko) {
-        _this2.connect().then(function () {
-          if (_this2.collection) {
+        _this3.connect().then(function () {
+          if (_this3.collection) {
             return ok();
           }
 
-          _this2.collection = _this2.db.collection(_this2.model.collection);
+          _this3.collection = _this3.db.collection(_this3.model.collection);
 
           // console.log(prettify({ collection : this.collection.collectionName }));
 
@@ -125,19 +125,20 @@ var Query = (function () {
     value: function find() {
       var query = arguments.length <= 0 || arguments[0] === undefined ? {} : arguments[0];
 
-      var _this3 = this;
+      var _this4 = this;
 
       var projection = arguments.length <= 1 || arguments[1] === undefined ? {} : arguments[1];
       var options = arguments.length <= 2 || arguments[2] === undefined ? {} : arguments[2];
       var model = this.model;
 
-      projection = new _projection2['default'](projection);
+
+      projection = new _projection2.default(projection);
 
       // console.log(prettify({[`>>  Query {${this.model.name}#${this.model.version}} => find`] : { query, projection, options } }));
 
       var promise = new Promise(function (ok, ko) {
-        _this3.getCollection().then(function () {
-          var action = _this3.collection.find(query);
+        _this4.getCollection().then(function () {
+          var action = _this4.collection.find(query);
 
           action.limit(projection.limit).skip(projection.skip).sort(projection.sort);
 
@@ -148,8 +149,8 @@ var Query = (function () {
             // console.log(prettify({ [`<<  Query {${this.model.name}#${this.model.version}} <= find`] : { found : documents } }));
 
             ok(documents);
-          })['catch'](ko);
-        })['catch'](ko);
+          }).catch(ko);
+        }).catch(ko);
       });
 
       promise.limit = function (limit) {
@@ -172,22 +173,23 @@ var Query = (function () {
     value: function findOne() {
       var query = arguments.length <= 0 || arguments[0] === undefined ? {} : arguments[0];
 
-      var _this4 = this;
+      var _this5 = this;
 
       var projection = arguments.length <= 1 || arguments[1] === undefined ? {} : arguments[1];
       var options = arguments.length <= 2 || arguments[2] === undefined ? {} : arguments[2];
       var model = this.model;
 
-      projection = new _projection2['default'](projection);
+
+      projection = new _projection2.default(projection);
 
       Object.assign(options, projection);
 
       // console.log(prettify({ [`>> ${this.model.name}#${this.model.version} => findOne`] : { query, projection, options }}));
 
       return new Promise(function (ok, ko) {
-        _this4.getCollection().then(function () {
+        _this5.getCollection().then(function () {
           try {
-            var action = _this4.collection.findOne(query, options);
+            var action = _this5.collection.findOne(query, options);
 
             action.then(function (document) {
               try {
@@ -198,11 +200,11 @@ var Query = (function () {
               } catch (error) {
                 ko(error);
               }
-            })['catch'](ko);
+            }).catch(ko);
           } catch (error) {
             ko(error);
           }
-        })['catch'](ko);
+        }).catch(ko);
       });
     }
 
@@ -211,7 +213,7 @@ var Query = (function () {
   }, {
     key: 'count',
     value: function count() {
-      var _this5 = this;
+      var _this6 = this;
 
       var query = arguments.length <= 0 || arguments[0] === undefined ? {} : arguments[0];
       var model = this.model;
@@ -219,9 +221,9 @@ var Query = (function () {
       // console.log(prettify({ [`${this.model.name}.count()`] : query }));
 
       return new Promise(function (ok, ko) {
-        _this5.getCollection().then(function () {
+        _this6.getCollection().then(function () {
           try {
-            var action = _this5.collection.count(query);
+            var action = _this6.collection.count(query);
 
             action.then(function (count) {
               try {
@@ -231,11 +233,11 @@ var Query = (function () {
               } catch (error) {
                 ko(error);
               }
-            })['catch'](ko);
+            }).catch(ko);
           } catch (error) {
             ko(error);
           }
-        })['catch'](ko);
+        }).catch(ko);
       });
     }
 
@@ -246,29 +248,29 @@ var Query = (function () {
     value: function deleteMany() {
       var filter = arguments.length <= 0 || arguments[0] === undefined ? {} : arguments[0];
 
-      var _this6 = this;
+      var _this7 = this;
 
       var projection = arguments.length <= 1 || arguments[1] === undefined ? {} : arguments[1];
       var options = arguments.length <= 2 || arguments[2] === undefined ? {} : arguments[2];
 
       return new Promise(function (ok, ko) {
 
-        projection = new _projection2['default'](Object.assign({ limit: 0 }, projection));
+        projection = new _projection2.default(Object.assign({ limit: 0 }, projection));
 
         // console.log(prettify({ [`>> Query {${this.model.name}#${this.model.version}} => deleteMany`] : {filter, projection, options}}));
 
-        _this6.getCollection().then(function () {
+        _this7.getCollection().then(function () {
 
           var action = undefined;
 
           if (!projection.limit) {
-            action = _this6.collection.deleteMany(filter);
+            action = _this7.collection.deleteMany(filter);
           }
 
           action.then(function (result) {
             // console.log(result);
             ok();
-          })['catch'](ko);
+          }).catch(ko);
         }, ko);
       });
     }
@@ -280,23 +282,23 @@ var Query = (function () {
     value: function deleteOne() {
       var filter = arguments.length <= 0 || arguments[0] === undefined ? {} : arguments[0];
 
-      var _this7 = this;
+      var _this8 = this;
 
       var projection = arguments.length <= 1 || arguments[1] === undefined ? {} : arguments[1];
       var options = arguments.length <= 2 || arguments[2] === undefined ? {} : arguments[2];
 
       return new Promise(function (ok, ko) {
         try {
-          projection = new _projection2['default'](Object.assign({ limit: 0 }, projection));
+          projection = new _projection2.default(Object.assign({ limit: 0 }, projection));
 
           // console.log(prettify({ [`>> Query {${this.model.name}#${this.model.version}} => deleteOne`] : {filter, projection, options}}));
 
-          _this7.getCollection().then(function () {
+          _this8.getCollection().then(function () {
             try {
               var action = undefined;
 
               if (!projection.limit) {
-                action = _this7.collection.deleteOne(filter);
+                action = _this8.collection.deleteOne(filter);
               }
 
               action.then(function (result) {
@@ -310,11 +312,11 @@ var Query = (function () {
                 } catch (error) {
                   ko(error);
                 }
-              })['catch'](ko);
+              }).catch(ko);
             } catch (error) {
               ko(error);
             }
-          })['catch'](ko);
+          }).catch(ko);
         } catch (error) {
           ko(error);
         }
@@ -326,25 +328,25 @@ var Query = (function () {
   }, {
     key: 'insertMany',
     value: function insertMany() {
-      var _this8 = this;
+      var _this9 = this;
 
       var docs = arguments.length <= 0 || arguments[0] === undefined ? [] : arguments[0];
       var options = arguments.length <= 1 || arguments[1] === undefined ? {} : arguments[1];
 
       return new Promise(function (ok, ko) {
-        var model = _this8.model;
+        var model = _this9.model;
 
         // console.log(prettify({ [`>> Query {${model.name}#${model.version}} => insertMany`] : { docs, options }}));
 
-        _this8.getCollection().then(function () {
+        _this9.getCollection().then(function () {
 
-          var action = _this8.collection.insertMany(docs);
+          var action = _this9.collection.insertMany(docs);
 
           action.then(function (res) {
             ok(res.ops.map(function (op) {
               return new model(op, true);
             }));
-          })['catch'](ko);
+          }).catch(ko);
         }, ko);
       });
     }
@@ -354,18 +356,18 @@ var Query = (function () {
   }, {
     key: 'insertOne',
     value: function insertOne() {
-      var _this9 = this;
+      var _this10 = this;
 
       var doc = arguments.length <= 0 || arguments[0] === undefined ? {} : arguments[0];
       var options = arguments.length <= 1 || arguments[1] === undefined ? {} : arguments[1];
 
       return new Promise(function (ok, ko) {
-        var model = _this9.model;
+        var model = _this10.model;
 
         // console.log(prettify({ [`>> Query {${this.model.name}#${this.model.version}} => insertOne`] : { doc, options } }));
 
-        _this9.getCollection().then(function () {
-          var action = _this9.collection.insertOne(doc);
+        _this10.getCollection().then(function () {
+          var action = _this10.collection.insertOne(doc);
 
           action.then(function (inserted) {
 
@@ -374,8 +376,8 @@ var Query = (function () {
             // console.log(prettify({ [`<< Query {${this.model.name}#${this.model.version}} <= insertOne`] : { ops:  inserted.ops } }));
 
             ok(inserted.ops[0]);
-          })['catch'](ko);
-        })['catch'](ko);
+          }).catch(ko);
+        }).catch(ko);
       });
     }
 
@@ -386,18 +388,18 @@ var Query = (function () {
     value: function updateOne() {
       var filter = arguments.length <= 0 || arguments[0] === undefined ? {} : arguments[0];
 
-      var _this10 = this;
+      var _this11 = this;
 
       var modifier = arguments.length <= 1 || arguments[1] === undefined ? {} : arguments[1];
       var options = arguments.length <= 2 || arguments[2] === undefined ? {} : arguments[2];
 
       return new Promise(function (ok, ko) {
-        var model = _this10.model;
+        var model = _this11.model;
 
         // console.log(prettify({ [`>> Query {${model.name}#${model.version}} => updateOne`] : { filter, modifier, options }}));
 
-        _this10.getCollection().then(function () {
-          var action = _this10.collection.updateOne(filter, modifier, options);
+        _this11.getCollection().then(function () {
+          var action = _this11.collection.updateOne(filter, modifier, options);
 
           action.then(ok, ko);
         }, ko);
@@ -411,7 +413,7 @@ var Query = (function () {
     value: function updateMany() {
       var filter = arguments.length <= 0 || arguments[0] === undefined ? {} : arguments[0];
 
-      var _this11 = this;
+      var _this12 = this;
 
       var modifier = arguments.length <= 1 || arguments[1] === undefined ? {} : arguments[1];
       var options = arguments.length <= 2 || arguments[2] === undefined ? {} : arguments[2];
@@ -420,8 +422,8 @@ var Query = (function () {
         try {
           // console.log(prettify({[`>> Query {${this.model.name}#${this.model.version}} => updateMany`]: {filter,modifier,options}}));
 
-          _this11.getCollection().then(function () {
-            var action = _this11.collection.updateMany(filter, modifier, options);
+          _this12.getCollection().then(function () {
+            var action = _this12.collection.updateMany(filter, modifier, options);
 
             action.then(ok, ko);
           }, ko);
@@ -433,7 +435,6 @@ var Query = (function () {
   }]);
 
   return Query;
-})();
+}();
 
-exports['default'] = Query;
-module.exports = exports['default'];
+exports.default = Query;

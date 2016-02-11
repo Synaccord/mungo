@@ -14,7 +14,7 @@ class Foo1 extends Mungo.Model {
     C : {
       D : Number
     }
-  }
+  };
 
 }
 

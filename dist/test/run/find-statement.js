@@ -1,18 +1,8 @@
 'use strict';
 
-Object.defineProperty(exports, '__esModule', {
+Object.defineProperty(exports, "__esModule", {
   value: true
 });
-
-var _createClass = (function () { function defineProperties(target, props) { for (var i = 0; i < props.length; i++) { var descriptor = props[i]; descriptor.enumerable = descriptor.enumerable || false; descriptor.configurable = true; if ('value' in descriptor) descriptor.writable = true; Object.defineProperty(target, descriptor.key, descriptor); } } return function (Constructor, protoProps, staticProps) { if (protoProps) defineProperties(Constructor.prototype, protoProps); if (staticProps) defineProperties(Constructor, staticProps); return Constructor; }; })();
-
-var _get = function get(_x, _x2, _x3) { var _again = true; _function: while (_again) { var object = _x, property = _x2, receiver = _x3; desc = parent = getter = undefined; _again = false; if (object === null) object = Function.prototype; var desc = Object.getOwnPropertyDescriptor(object, property); if (desc === undefined) { var parent = Object.getPrototypeOf(object); if (parent === null) { return undefined; } else { _x = parent; _x2 = property; _x3 = receiver; _again = true; continue _function; } } else if ('value' in desc) { return desc.value; } else { var getter = desc.get; if (getter === undefined) { return undefined; } return getter.call(receiver); } } };
-
-function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { 'default': obj }; }
-
-function _classCallCheck(instance, Constructor) { if (!(instance instanceof Constructor)) { throw new TypeError('Cannot call a class as a function'); } }
-
-function _inherits(subClass, superClass) { if (typeof superClass !== 'function' && superClass !== null) { throw new TypeError('Super expression must either be null or a function, not ' + typeof superClass); } subClass.prototype = Object.create(superClass && superClass.prototype, { constructor: { value: subClass, enumerable: false, writable: true, configurable: true } }); if (superClass) Object.setPrototypeOf ? Object.setPrototypeOf(subClass, superClass) : subClass.__proto__ = superClass; }
 
 var _redtea = require('redtea');
 
@@ -26,37 +16,42 @@ var _ = require('../..');
 
 var _2 = _interopRequireDefault(_);
 
-var FindStatement = _2['default'].FindStatement;
+function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { default: obj }; }
 
-var Foo1 = (function (_Mungo$Model) {
+function _classCallCheck(instance, Constructor) { if (!(instance instanceof Constructor)) { throw new TypeError("Cannot call a class as a function"); } }
+
+function _possibleConstructorReturn(self, call) { if (!self) { throw new ReferenceError("this hasn't been initialised - super() hasn't been called"); } return call && (typeof call === "object" || typeof call === "function") ? call : self; }
+
+function _inherits(subClass, superClass) { if (typeof superClass !== "function" && superClass !== null) { throw new TypeError("Super expression must either be null or a function, not " + typeof superClass); } subClass.prototype = Object.create(superClass && superClass.prototype, { constructor: { value: subClass, enumerable: false, writable: true, configurable: true } }); if (superClass) Object.setPrototypeOf ? Object.setPrototypeOf(subClass, superClass) : subClass.__proto__ = superClass; }
+
+var FindStatement = _2.default.FindStatement;
+
+var Foo1 = function (_Mungo$Model) {
   _inherits(Foo1, _Mungo$Model);
 
   function Foo1() {
     _classCallCheck(this, Foo1);
 
-    _get(Object.getPrototypeOf(Foo1.prototype), 'constructor', this).apply(this, arguments);
+    return _possibleConstructorReturn(this, Object.getPrototypeOf(Foo1).apply(this, arguments));
   }
 
-  _createClass(Foo1, null, [{
-    key: 'schema',
-    value: {
-      A: String,
-      B: String,
-      C: {
-        D: Number
-      }
-    },
-    enumerable: true
-  }]);
-
   return Foo1;
-})(_2['default'].Model);
+}(_2.default.Model);
+
+Foo1.schema = {
+  A: String,
+  B: String,
+  C: {
+    D: Number
+  }
+};
+
 
 function testFindStatement(props) {
 
   var locals = {};
 
-  return (0, _redtea2['default'])('Test Find Statement', function (it) {
+  return (0, _redtea2.default)('Test Find Statement', function (it) {
 
     it('Parse simple find statement', function (it) {
       it('should create a document', function () {
@@ -94,5 +89,4 @@ function testFindStatement(props) {
   });
 }
 
-exports['default'] = testFindStatement;
-module.exports = exports['default'];
+exports.default = testFindStatement;

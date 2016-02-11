@@ -9,7 +9,7 @@ const { Schema, Type } = Mungo;
 
 class Foo1 extends Mungo.Model {
 
-  static version = 476
+  static version = 476;
 
   static schema = {
     // A : String,
@@ -50,7 +50,7 @@ class Foo1 extends Mungo.Model {
         "type"        :   [Number],
         "default"     :   []
       }
-  }
+  };
 
 }
 

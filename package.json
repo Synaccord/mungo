@@ -1,6 +1,6 @@
 {
   "name": "mungo",
-  "version": "2.0.15",
+  "version": "2.0.16",
   "description": "Mungo ===",
   "main": "dist/index.js",
   "directories": {
@@ -8,16 +8,16 @@
   },
   "scripts": {
     "test": "echo test",
-    "transpile": "babel app --modules common --stage 0 --optional runtime --out-dir dist",
-    "hot-transpile": "rm -rf dist; babel app --modules common --stage 0 --optional runtime --watch --out-dir dist"
+    "babel": "babel --out-dir dist app",
+    "babel-watch": "babel --watch --out-dir dist app"
   },
   "author": "",
   "license": "ISC",
   "devDependencies": {
-    "babel": "^5.8.23",
-    "babel-runtime": "^5.8.25",
-    "mocha": "^2.3.3",
-    "redtea": "^3.2.5",
+    "babel-cli": "^6.5.1",
+    "babel-preset-es2015": "^6.5.0",
+    "babel-preset-stage-0": "^6.5.0",
+    "redtea": "^3.4.1",
     "should": "^7.1.0"
   },
   "dependencies": {
@@ -26,6 +26,6 @@
     "kerberos": "0.0.17",
     "lodash": "^3.10.1",
     "mongodb": "^2.1.0",
-    "sequencer": "github:co2-git/sequencer"
+    "promise-sequencer": "^2.0.1"
   }
 }

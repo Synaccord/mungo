@@ -1,22 +1,14 @@
 'use strict';
 
-Object.defineProperty(exports, '__esModule', {
+Object.defineProperty(exports, "__esModule", {
   value: true
 });
 
-var _createClass = (function () { function defineProperties(target, props) { for (var i = 0; i < props.length; i++) { var descriptor = props[i]; descriptor.enumerable = descriptor.enumerable || false; descriptor.configurable = true; if ('value' in descriptor) descriptor.writable = true; Object.defineProperty(target, descriptor.key, descriptor); } } return function (Constructor, protoProps, staticProps) { if (protoProps) defineProperties(Constructor.prototype, protoProps); if (staticProps) defineProperties(Constructor, staticProps); return Constructor; }; })();
+var _createClass = function () { function defineProperties(target, props) { for (var i = 0; i < props.length; i++) { var descriptor = props[i]; descriptor.enumerable = descriptor.enumerable || false; descriptor.configurable = true; if ("value" in descriptor) descriptor.writable = true; Object.defineProperty(target, descriptor.key, descriptor); } } return function (Constructor, protoProps, staticProps) { if (protoProps) defineProperties(Constructor.prototype, protoProps); if (staticProps) defineProperties(Constructor, staticProps); return Constructor; }; }();
 
-var _get = function get(_x, _x2, _x3) { var _again = true; _function: while (_again) { var object = _x, property = _x2, receiver = _x3; desc = parent = getter = undefined; _again = false; if (object === null) object = Function.prototype; var desc = Object.getOwnPropertyDescriptor(object, property); if (desc === undefined) { var parent = Object.getPrototypeOf(object); if (parent === null) { return undefined; } else { _x = parent; _x2 = property; _x3 = receiver; _again = true; continue _function; } } else if ('value' in desc) { return desc.value; } else { var getter = desc.get; if (getter === undefined) { return undefined; } return getter.call(receiver); } } };
+var _promiseSequencer = require('promise-sequencer');
 
-function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { 'default': obj }; }
-
-function _classCallCheck(instance, Constructor) { if (!(instance instanceof Constructor)) { throw new TypeError('Cannot call a class as a function'); } }
-
-function _inherits(subClass, superClass) { if (typeof superClass !== 'function' && superClass !== null) { throw new TypeError('Super expression must either be null or a function, not ' + typeof superClass); } subClass.prototype = Object.create(superClass && superClass.prototype, { constructor: { value: subClass, enumerable: false, writable: true, configurable: true } }); if (superClass) Object.setPrototypeOf ? Object.setPrototypeOf(subClass, superClass) : subClass.__proto__ = superClass; }
-
-var _sequencer = require('sequencer');
-
-var _sequencer2 = _interopRequireDefault(_sequencer);
+var _promiseSequencer2 = _interopRequireDefault(_promiseSequencer);
 
 var _modelType = require('./model-type');
 
@@ -26,17 +18,26 @@ var _query = require('./query');
 
 var _query2 = _interopRequireDefault(_query);
 
-var ModelMigrate = (function (_ModelType) {
+function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { default: obj }; }
+
+function _classCallCheck(instance, Constructor) { if (!(instance instanceof Constructor)) { throw new TypeError("Cannot call a class as a function"); } }
+
+function _possibleConstructorReturn(self, call) { if (!self) { throw new ReferenceError("this hasn't been initialised - super() hasn't been called"); } return call && (typeof call === "object" || typeof call === "function") ? call : self; }
+
+function _inherits(subClass, superClass) { if (typeof superClass !== "function" && superClass !== null) { throw new TypeError("Super expression must either be null or a function, not " + typeof superClass); } subClass.prototype = Object.create(superClass && superClass.prototype, { constructor: { value: subClass, enumerable: false, writable: true, configurable: true } }); if (superClass) Object.setPrototypeOf ? Object.setPrototypeOf(subClass, superClass) : subClass.__proto__ = superClass; }
+
+var ModelMigrate = function (_ModelType) {
   _inherits(ModelMigrate, _ModelType);
 
   function ModelMigrate() {
     _classCallCheck(this, ModelMigrate);
 
-    _get(Object.getPrototypeOf(ModelMigrate.prototype), 'constructor', this).apply(this, arguments);
+    return _possibleConstructorReturn(this, Object.getPrototypeOf(ModelMigrate).apply(this, arguments));
   }
 
   _createClass(ModelMigrate, null, [{
     key: 'buildIndexes',
+
 
     //----------------------------------------------------------------------------
 
@@ -48,9 +49,10 @@ var ModelMigrate = (function (_ModelType) {
       var name = this.name;
       var indexes = this.indexes;
 
-      var q = new _query2['default'](this);
 
-      return (0, _sequencer2['default'])(function () {
+      var q = new _query2.default(this);
+
+      return (0, _promiseSequencer2.default)(function () {
         return q.getCollection();
       }, function () {
         return q.collection.indexes();
@@ -101,21 +103,22 @@ var ModelMigrate = (function (_ModelType) {
   }, {
     key: 'migrate',
     value: function migrate() {
-      var _this = this;
+      var _this2 = this;
 
       for (var _len = arguments.length, versions = Array(_len), _key = 0; _key < _len; _key++) {
         versions[_key] = arguments[_key];
       }
 
-      return (0, _sequencer2['default'])(function () {
-        return _this.buildIndexes();
+      return (0, _promiseSequencer2.default)(function () {
+        return _this2.buildIndexes();
       }, function () {
         return new Promise(function (ok, ko) {
           {
-            var _name = _this.name;
-            var migrations = _this.migrations;
+            var name = _this2.name;
+            var migrations = _this2.migrations;
 
-            var currentVersion = _this.version;
+
+            var currentVersion = _this2.version;
 
             if (!migrations) {
               return ok();
@@ -123,7 +126,7 @@ var ModelMigrate = (function (_ModelType) {
 
             var pipe = [];
 
-            var _loop = function (_version) {
+            var _loop = function _loop(_version) {
               _version = +_version;
 
               var migration = migrations[_version];
@@ -134,7 +137,7 @@ var ModelMigrate = (function (_ModelType) {
 
               if (_version <= currentVersion) {
                 pipe.push(function () {
-                  return migration['do']();
+                  return migration.do();
                 });
               }
               version = _version;
@@ -146,7 +149,7 @@ var ModelMigrate = (function (_ModelType) {
               if (_ret === 'continue') continue;
             }
 
-            (0, _sequencer2['default'])(pipe).then(ok, ko);
+            (0, _promiseSequencer2.default)(pipe).then(ok, ko);
           }
         });
       });
@@ -157,7 +160,6 @@ var ModelMigrate = (function (_ModelType) {
   }]);
 
   return ModelMigrate;
-})(_modelType2['default']);
+}(_modelType2.default);
 
-exports['default'] = ModelMigrate;
-module.exports = exports['default'];
+exports.default = ModelMigrate;

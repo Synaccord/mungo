@@ -1,18 +1,10 @@
 'use strict';
 
-Object.defineProperty(exports, '__esModule', {
+Object.defineProperty(exports, "__esModule", {
   value: true
 });
 
-var _createClass = (function () { function defineProperties(target, props) { for (var i = 0; i < props.length; i++) { var descriptor = props[i]; descriptor.enumerable = descriptor.enumerable || false; descriptor.configurable = true; if ('value' in descriptor) descriptor.writable = true; Object.defineProperty(target, descriptor.key, descriptor); } } return function (Constructor, protoProps, staticProps) { if (protoProps) defineProperties(Constructor.prototype, protoProps); if (staticProps) defineProperties(Constructor, staticProps); return Constructor; }; })();
-
-var _get = function get(_x, _x2, _x3) { var _again = true; _function: while (_again) { var object = _x, property = _x2, receiver = _x3; desc = parent = getter = undefined; _again = false; if (object === null) object = Function.prototype; var desc = Object.getOwnPropertyDescriptor(object, property); if (desc === undefined) { var parent = Object.getPrototypeOf(object); if (parent === null) { return undefined; } else { _x = parent; _x2 = property; _x3 = receiver; _again = true; continue _function; } } else if ('value' in desc) { return desc.value; } else { var getter = desc.get; if (getter === undefined) { return undefined; } return getter.call(receiver); } } };
-
-function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { 'default': obj }; }
-
-function _classCallCheck(instance, Constructor) { if (!(instance instanceof Constructor)) { throw new TypeError('Cannot call a class as a function'); } }
-
-function _inherits(subClass, superClass) { if (typeof superClass !== 'function' && superClass !== null) { throw new TypeError('Super expression must either be null or a function, not ' + typeof superClass); } subClass.prototype = Object.create(superClass && superClass.prototype, { constructor: { value: subClass, enumerable: false, writable: true, configurable: true } }); if (superClass) Object.setPrototypeOf ? Object.setPrototypeOf(subClass, superClass) : subClass.__proto__ = superClass; }
+var _createClass = function () { function defineProperties(target, props) { for (var i = 0; i < props.length; i++) { var descriptor = props[i]; descriptor.enumerable = descriptor.enumerable || false; descriptor.configurable = true; if ("value" in descriptor) descriptor.writable = true; Object.defineProperty(target, descriptor.key, descriptor); } } return function (Constructor, protoProps, staticProps) { if (protoProps) defineProperties(Constructor.prototype, protoProps); if (staticProps) defineProperties(Constructor, staticProps); return Constructor; }; }();
 
 var _mongodb = require('mongodb');
 
@@ -20,28 +12,46 @@ var _mongodb2 = _interopRequireDefault(_mongodb);
 
 var _events = require('events');
 
-var _sequencer = require('sequencer');
+var _promiseSequencer = require('promise-sequencer');
 
-var _sequencer2 = _interopRequireDefault(_sequencer);
+var _promiseSequencer2 = _interopRequireDefault(_promiseSequencer);
 
 var _prettify = require('./prettify');
 
 var _prettify2 = _interopRequireDefault(_prettify);
 
-var Connection = (function (_EventEmitter) {
+function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { default: obj }; }
+
+function _classCallCheck(instance, Constructor) { if (!(instance instanceof Constructor)) { throw new TypeError("Cannot call a class as a function"); } }
+
+function _possibleConstructorReturn(self, call) { if (!self) { throw new ReferenceError("this hasn't been initialised - super() hasn't been called"); } return call && (typeof call === "object" || typeof call === "function") ? call : self; }
+
+function _inherits(subClass, superClass) { if (typeof superClass !== "function" && superClass !== null) { throw new TypeError("Super expression must either be null or a function, not " + typeof superClass); } subClass.prototype = Object.create(superClass && superClass.prototype, { constructor: { value: subClass, enumerable: false, writable: true, configurable: true } }); if (superClass) Object.setPrototypeOf ? Object.setPrototypeOf(subClass, superClass) : subClass.__proto__ = superClass; }
+
+var Connection = function (_EventEmitter) {
   _inherits(Connection, _EventEmitter);
 
   function Connection() {
+    var _Object$getPrototypeO;
+
+    var _temp, _this, _ret;
+
     _classCallCheck(this, Connection);
 
-    _get(Object.getPrototypeOf(Connection.prototype), 'constructor', this).apply(this, arguments);
+    for (var _len = arguments.length, args = Array(_len), _key = 0; _key < _len; _key++) {
+      args[_key] = arguments[_key];
+    }
 
-    this.connected = false;
-    this.db = null;
+    return _ret = (_temp = (_this = _possibleConstructorReturn(this, (_Object$getPrototypeO = Object.getPrototypeOf(Connection)).call.apply(_Object$getPrototypeO, [this].concat(args))), _this), _this.connected = false, _this.db = null, _temp), _possibleConstructorReturn(_this, _ret);
   }
+
+  //----------------------------------------------------------------------------
+
+  /** @type [Connection] */
 
   _createClass(Connection, [{
     key: 'disconnect',
+
 
     //----------------------------------------------------------------------------
 
@@ -50,15 +60,15 @@ var Connection = (function (_EventEmitter) {
     //----------------------------------------------------------------------------
 
     value: function disconnect() {
-      var _this = this;
+      var _this2 = this;
 
-      return (0, _sequencer2['default'])(function () {
-        return _this.db.close();
+      return (0, _promiseSequencer2.default)(function () {
+        return _this2.db.close();
       }, function () {
         return new Promise(function (ok, ko) {
-          _this.connected = false;
-          _this.disconnected = true;
-          _this.emit('disconnected');
+          _this2.connected = false;
+          _this2.disconnected = true;
+          _this2.emit('disconnected');
           ok();
         });
       });
@@ -68,6 +78,7 @@ var Connection = (function (_EventEmitter) {
 
   }], [{
     key: 'connect',
+
 
     //----------------------------------------------------------------------------
 
@@ -80,17 +91,17 @@ var Connection = (function (_EventEmitter) {
      */
 
     value: function connect(url) {
-      var _this2 = this;
+      var _this3 = this;
 
       url = url || this.url;
 
-      console.log((0, _prettify2['default'])('Connecting to ' + url));
+      console.log((0, _prettify2.default)('Connecting to ' + url));
 
       var connection = new Connection();
 
       connection.index = this.connections.push(connection);
 
-      _sequencer2['default'].promisify(_mongodb2['default'].MongoClient.connect, [url], _mongodb2['default'].MongoClient).then(function (db) {
+      _promiseSequencer2.default.promisify(_mongodb2.default.MongoClient.connect, [url], _mongodb2.default.MongoClient).then(function (db) {
         connection.connected = true;
 
         connection.db = db;
@@ -98,8 +109,8 @@ var Connection = (function (_EventEmitter) {
         console.log(('Connected to ' + url).green);
 
         connection.emit('connected', connection);
-        _this2.events.emit('connected', connection);
-      })['catch'](function (error) {
+        _this3.events.emit('connected', connection);
+      }).catch(function (error) {
         connection.emit('error', error);
       });
 
@@ -108,10 +119,10 @@ var Connection = (function (_EventEmitter) {
   }, {
     key: 'connectify',
     value: function connectify(url) {
-      var _this3 = this;
+      var _this4 = this;
 
       return new Promise(function (ok, ko) {
-        _this3.connect(url).on('connected', ok).on('error', ko);
+        _this4.connect(url).on('connected', ok).on('error', ko);
       });
     }
 
@@ -133,27 +144,12 @@ var Connection = (function (_EventEmitter) {
 
     //----------------------------------------------------------------------------
 
-  }, {
-    key: 'connections',
-
-    //----------------------------------------------------------------------------
-
-    /** @type [Connection] */
-
-    value: [],
-    enumerable: true
-  }, {
-    key: 'url',
-    value: 'mongodb://@localhost',
-    enumerable: true
-  }, {
-    key: 'events',
-    value: new _events.EventEmitter(),
-    enumerable: true
   }]);
 
   return Connection;
-})(_events.EventEmitter);
+}(_events.EventEmitter);
 
-exports['default'] = Connection;
-module.exports = exports['default'];
+Connection.connections = [];
+Connection.url = 'mongodb://@localhost';
+Connection.events = new _events.EventEmitter();
+exports.default = Connection;

@@ -1,20 +1,22 @@
 'use strict';
 
-Object.defineProperty(exports, '__esModule', {
+Object.defineProperty(exports, "__esModule", {
   value: true
 });
 
-function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { 'default': obj }; }
+var _typeof = typeof Symbol === "function" && typeof Symbol.iterator === "symbol" ? function (obj) { return typeof obj; } : function (obj) { return obj && typeof Symbol === "function" && obj.constructor === Symbol ? "symbol" : typeof obj; };
 
 var _type = require('./type');
 
 var _type2 = _interopRequireDefault(_type);
 
+function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { default: obj }; }
+
 function prettify(prim) {
   var options = arguments.length <= 1 || arguments[1] === undefined ? {} : arguments[1];
 
   try {
-    var _ret = (function () {
+    var _ret = function () {
       // console.log(require('util').inspect(options, { depth: null }));
 
       var tab = options.tab || '';
@@ -66,7 +68,7 @@ function prettify(prim) {
       }
 
       if (Array.isArray(prim)) {
-        var _ret2 = (function () {
+        var _ret2 = function () {
           if (!prim.length) {
             return {
               v: {
@@ -96,13 +98,13 @@ function prettify(prim) {
               }).join('\n')
             }
           };
-        })();
+        }();
 
-        if (typeof _ret2 === 'object') return _ret2.v;
+        if ((typeof _ret2 === 'undefined' ? 'undefined' : _typeof(_ret2)) === "object") return _ret2.v;
       }
 
-      if (typeof prim === 'object') {
-        var _ret3 = (function () {
+      if ((typeof prim === 'undefined' ? 'undefined' : _typeof(prim)) === 'object') {
+        var _ret3 = function () {
 
           if ('plugins' in options && 'objects' in options.plugins) {
 
@@ -170,7 +172,7 @@ function prettify(prim) {
 
                 var breakLine = false;
 
-                if (prim[f.key] && typeof prim[f.key] === 'object' && Object.keys(prim[f.key]).length) {
+                if (prim[f.key] && _typeof(prim[f.key]) === 'object' && Object.keys(prim[f.key]).length) {
                   breakLine = true;
 
                   if (prim[f.key] instanceof require('mongodb').ObjectID) {
@@ -208,13 +210,13 @@ function prettify(prim) {
               }).join('\n')
             }
           };
-        })();
+        }();
 
-        if (typeof _ret3 === 'object') return _ret3.v;
+        if ((typeof _ret3 === 'undefined' ? 'undefined' : _typeof(_ret3)) === "object") return _ret3.v;
       }
-    })();
+    }();
 
-    if (typeof _ret === 'object') return _ret.v;
+    if ((typeof _ret === 'undefined' ? 'undefined' : _typeof(_ret)) === "object") return _ret.v;
   } catch (error) {
     var tab = options.tab || '';
 
@@ -226,10 +228,9 @@ function prettify(prim) {
 }
 
 prettify.styles = {
-  'null': {
+  null: {
     color: 'grey'
   }
 };
 
-exports['default'] = prettify;
-module.exports = exports['default'];
+exports.default = prettify;

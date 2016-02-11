@@ -11,9 +11,9 @@ class ExtendableError extends Error {
 
 class MungoError extends ExtendableError {
 
-  static MISSING_REQUIRED_FIELD = 1
+  static MISSING_REQUIRED_FIELD = 1;
 
-  static DISTINCT_ARRAY_CONSTRAINT = 2
+  static DISTINCT_ARRAY_CONSTRAINT = 2;
 
   constructor (message, options = {}) {
     let msg;

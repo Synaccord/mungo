@@ -2,11 +2,11 @@
 
 class Index {
 
-  v = 1
+  v = 1;
 
-  fields = {}
+  fields = {};
 
-  options = {}
+  options = {};
 
   get name () {
     const names = [];

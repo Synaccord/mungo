@@ -15,7 +15,7 @@ class UpdateStatement {
     '$increment',
     '$mul',
     '$rename'
-  ]
+  ];
 
   /** new UpdateStatement
    *  @arg object document

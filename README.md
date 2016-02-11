@@ -15,7 +15,7 @@ npm install mungo
 import Mungo from 'mungo';
 
 class User extends Mungo.Model {
-  static schema = { username : String }
+  static schema = { username : String };
 }
 
 // Connect to MongoDB
@@ -98,7 +98,7 @@ Mungo
 
 ```js
 class User extends Mungo.Model {
-  static schema = { username : String, score : Number }
+  static schema = { username : String, score : Number };
 }
 ```
 
@@ -150,11 +150,11 @@ Use the name of the model you want to refer :
 
 ```js
 class Team extends Mungo.Model {
-  static schema = { "name" : String }
+  static schema = { "name" : String };
 }
 
 class Player extends Mungo.Model {
-  static schema = { "team" : Team }
+  static schema = { "team" : Team };
 }
 ```
 
@@ -164,7 +164,7 @@ If your model uses references to other models that also refer it (cyclic depende
 
 ```js
 static get schema () {
-  return { "team" : Team }
+  return { "team" : Team };
 }
 ```
 

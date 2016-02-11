@@ -1,7 +1,7 @@
 'use strict';
 
 import colors           from 'colors';
-import sequencer        from 'sequencer';
+import sequencer        from 'promise-sequencer';
 import ModelStatic      from './model-static';
 import Document         from './document';
 import UpdateStatement  from './update-statement';
@@ -15,9 +15,9 @@ class MungoModelError extends MungoError {}
 
 class Model extends ModelStatic {
 
-  $changes = {}
+  $changes = {};
 
-  $populated = {}
+  $populated = {};
 
   //----------------------------------------------------------------------------
 
@@ -27,11 +27,11 @@ class Model extends ModelStatic {
 
   //----------------------------------------------------------------------------
 
-  $document = {}
+  $document = {};
 
   //----------------------------------------------------------------------------
 
-  $original = {}
+  $original = {};
 
   //----------------------------------------------------------------------------
 

@@ -1,14 +1,12 @@
 'use strict';
 
-Object.defineProperty(exports, '__esModule', {
+Object.defineProperty(exports, "__esModule", {
   value: true
 });
 
-var _createClass = (function () { function defineProperties(target, props) { for (var i = 0; i < props.length; i++) { var descriptor = props[i]; descriptor.enumerable = descriptor.enumerable || false; descriptor.configurable = true; if ('value' in descriptor) descriptor.writable = true; Object.defineProperty(target, descriptor.key, descriptor); } } return function (Constructor, protoProps, staticProps) { if (protoProps) defineProperties(Constructor.prototype, protoProps); if (staticProps) defineProperties(Constructor, staticProps); return Constructor; }; })();
+var _typeof = typeof Symbol === "function" && typeof Symbol.iterator === "symbol" ? function (obj) { return typeof obj; } : function (obj) { return obj && typeof Symbol === "function" && obj.constructor === Symbol ? "symbol" : typeof obj; };
 
-function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { 'default': obj }; }
-
-function _classCallCheck(instance, Constructor) { if (!(instance instanceof Constructor)) { throw new TypeError('Cannot call a class as a function'); } }
+var _createClass = function () { function defineProperties(target, props) { for (var i = 0; i < props.length; i++) { var descriptor = props[i]; descriptor.enumerable = descriptor.enumerable || false; descriptor.configurable = true; if ("value" in descriptor) descriptor.writable = true; Object.defineProperty(target, descriptor.key, descriptor); } } return function (Constructor, protoProps, staticProps) { if (protoProps) defineProperties(Constructor.prototype, protoProps); if (staticProps) defineProperties(Constructor, staticProps); return Constructor; }; }();
 
 var _index = require('./index');
 
@@ -18,13 +16,18 @@ var _type = require('./type');
 
 var _type2 = _interopRequireDefault(_type);
 
+function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { default: obj }; }
+
+function _classCallCheck(instance, Constructor) { if (!(instance instanceof Constructor)) { throw new TypeError("Cannot call a class as a function"); } }
+
 function testRegex(regex, value) {
   return regex.test(value);
 }
 
-var Schema = (function () {
+var Schema = function () {
   _createClass(Schema, [{
     key: 'indexes',
+
 
     //----------------------------------------------------------------------------
 
@@ -50,6 +53,7 @@ var Schema = (function () {
   }], [{
     key: 'find',
 
+
     //----------------------------------------------------------------------------
 
     value: function find(flattenName, schema) {
@@ -74,25 +78,9 @@ var Schema = (function () {
 
       return schema;
     }
-  }, {
-    key: 'defaultFields',
 
     //----------------------------------------------------------------------------
 
-    value: {
-      _id: _type2['default'].ObjectID,
-
-      __v: {
-        type: Number,
-        'default': 0
-      },
-
-      __V: {
-        type: Number,
-        'default': 0
-      }
-    },
-    enumerable: true
   }]);
 
   function Schema() {
@@ -107,7 +95,7 @@ var Schema = (function () {
 
     if (options.defaultFields !== false) {
       Object.assign(normalized, Schema.defaultFields);
-      normalized.__V['default'] = version;
+      normalized.__V.default = version;
     }
 
     Object.assign(normalized, original);
@@ -161,24 +149,25 @@ var Schema = (function () {
       var flatten = {};
 
       for (var field in structure) {
-        var _name = (ns + '.' + field).replace(/^\./, '');
+        var name = (ns + '.' + field).replace(/^\./, '');
 
-        structure[field].flatten = _name;
+        structure[field].flatten = name;
 
         var type = structure[field].type;
 
+
         if (type.isArray()) {
-          flatten[_name] = structure[field];
+          flatten[name] = structure[field];
 
           if (type.getArray().isSubdocument()) {
-            Object.assign(flatten, this.makeFlatten(type.getArray().getSubdocument(), _name));
+            Object.assign(flatten, this.makeFlatten(type.getArray().getSubdocument(), name));
           }
         } else if (type.isSubdocument()) {
-          flatten[_name] = structure[field];
+          flatten[name] = structure[field];
 
-          Object.assign(flatten, this.makeFlatten(type.getSubdocument(), _name));
+          Object.assign(flatten, this.makeFlatten(type.getSubdocument(), name));
         } else {
-          flatten[_name] = structure[field];
+          flatten[name] = structure[field];
         }
       }
 
@@ -193,10 +182,10 @@ var Schema = (function () {
       var normalized = {};
 
       for (var field in structure) {
-        var _name2 = (ns + '.' + field).replace(/^\./, '');
+        var name = (ns + '.' + field).replace(/^\./, '');
 
         normalized[field] = {
-          type: this.setType(structure[field], _name2)
+          type: this.setType(structure[field], name)
         };
       }
 
@@ -214,31 +203,31 @@ var Schema = (function () {
       // no field
 
       if (!structure) {
-        return new _type2['default'](_type2['default'].Mixed);
+        return new _type2.default(_type2.default.Mixed);
       }
 
       // { field : new Type() }
 
-      if (structure instanceof _type2['default']) {
+      if (structure instanceof _type2.default) {
         return structure;
       }
 
       // { field : Function }
 
       if (typeof structure === 'function') {
-        return new _type2['default'](structure);
+        return new _type2.default(structure);
       }
 
       // { field : [Function] }
 
       if (Array.isArray(structure)) {
-        return new _type2['default'](Array, this.setType(structure[0], ns));
+        return new _type2.default(Array, this.setType(structure[0], ns));
       }
 
       // { field : Schema }
 
       if (structure instanceof this.constructor) {
-        return new _type2['default'](_type2['default'].Subdocument, structure);
+        return new _type2.default(_type2.default.Subdocument, structure);
       }
 
       // { field : {} }
@@ -247,19 +236,19 @@ var Schema = (function () {
 
         if (Array.isArray(structure.type)) {
           var parsed = this.setType(structure.type[0], ns);
-          return new _type2['default'](Array, parsed);
+          return new _type2.default(Array, parsed);
         }
 
-        return new _type2['default'](structure.type);
+        return new _type2.default(structure.type);
       }
 
-      if (structure && typeof structure === 'object') {
-        return new _type2['default'](_type2['default'].Subdocument, new Schema(structure, 0, ns, {
+      if (structure && (typeof structure === 'undefined' ? 'undefined' : _typeof(structure)) === 'object') {
+        return new _type2.default(_type2.default.Subdocument, new Schema(structure, 0, ns, {
           defaultFields: false
         }));
       }
 
-      return new _type2['default'](_type2['default'].Mixed);
+      return new _type2.default(_type2.default.Mixed);
     }
 
     //----------------------------------------------------------------------------
@@ -271,25 +260,25 @@ var Schema = (function () {
 
       for (var field in structure) {
 
-        var _name3 = (ns + '.' + field).replace(/^\./, '');
+        var name = (ns + '.' + field).replace(/^\./, '');
 
         if (structure[field].type.isArray()) {} else if (structure[field].type.isSubdocument()) {} else {
           if ('index' in normalized[field]) {
             if (normalized[field].index === true) {
-              parsed[field] = { index: new _index2['default'](true, _name3) };
-            } else if (typeof normalized[field].index === 'object') {
-              parsed[field] = { index: new _index2['default'](true, _name3, normalized[field].index) };
+              parsed[field] = { index: new _index2.default(true, name) };
+            } else if (_typeof(normalized[field].index) === 'object') {
+              parsed[field] = { index: new _index2.default(true, name, normalized[field].index) };
             }
           } else if ('unique' in normalized[field]) {
             if (normalized[field].unique === true) {
-              parsed[field] = { index: new _index2['default'](true, _name3, { unique: true }) };
-            } else if (typeof normalized[field].unique === 'object') {
-              parsed[field] = { index: new _index2['default'](true, _name3, Object.assign({ unique: true }, normalized[field].unique)) };
+              parsed[field] = { index: new _index2.default(true, name, { unique: true }) };
+            } else if (_typeof(normalized[field].unique) === 'object') {
+              parsed[field] = { index: new _index2.default(true, name, Object.assign({ unique: true }, normalized[field].unique)) };
             }
           } else if ('indexWith' in normalized[field]) {
-            parsed[field] = { index: new _index2['default'](true, _name3, { coumpound: normalized[field].indexWith }) };
+            parsed[field] = { index: new _index2.default(true, name, { coumpound: normalized[field].indexWith }) };
           } else if ('uniqueWith' in normalized[field]) {
-            parsed[field] = { index: new _index2['default'](true, _name3, { coumpound: normalized[field].uniqueWith }) };
+            parsed[field] = { index: new _index2.default(true, name, { coumpound: normalized[field].uniqueWith }) };
           }
         }
       }
@@ -307,10 +296,10 @@ var Schema = (function () {
 
       for (var field in structure) {
 
-        var _name4 = (ns + '.' + field).replace(/^\./, '');
+        var name = (ns + '.' + field).replace(/^\./, '');
 
         if ('default' in normalized[field]) {
-          parsed[field] = { 'default': normalized[field]['default'] };
+          parsed[field] = { default: normalized[field].default };
         }
       }
 
@@ -327,7 +316,7 @@ var Schema = (function () {
 
       for (var field in structure) {
 
-        var _name5 = (ns + '.' + field).replace(/^\./, '');
+        var name = (ns + '.' + field).replace(/^\./, '');
 
         if (structure[field].type.isArray()) {} else if (structure[field].type.isSubdocument()) {} else {
           if ('required' in normalized[field]) {
@@ -347,7 +336,7 @@ var Schema = (function () {
 
       var parsed = {};
 
-      var _loop = function (field) {
+      var _loop = function _loop(field) {
 
         var name = (ns + '.' + field).replace(/^\./, '');
 
@@ -383,11 +372,11 @@ var Schema = (function () {
 
       for (var field in structure) {
 
-        var _name6 = (ns + '.' + field).replace(/^\./, '');
+        var name = (ns + '.' + field).replace(/^\./, '');
 
         if (structure[field].type.isArray()) {} else if (structure[field].type.isSubdocument()) {} else {
           if ('private' in normalized[field]) {
-            parsed[field] = { 'private': normalized[field]['private'] };
+            parsed[field] = { private: normalized[field].private };
           }
         }
       }
@@ -400,7 +389,19 @@ var Schema = (function () {
   }]);
 
   return Schema;
-})();
+}();
 
-exports['default'] = Schema;
-module.exports = exports['default'];
+Schema.defaultFields = {
+  _id: _type2.default.ObjectID,
+
+  __v: {
+    type: Number,
+    default: 0
+  },
+
+  __V: {
+    type: Number,
+    default: 0
+  }
+};
+exports.default = Schema;

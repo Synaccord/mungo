@@ -5,7 +5,7 @@ import Document                   from './document';
 import FindStatement              from './find-statement';
 import UpdateStatement            from './update-statement';
 import ModelMigrate               from './model-migrate';
-import sequencer                  from 'sequencer';
+import sequencer                  from 'promise-sequencer';
 import prettify                   from './prettify';
 import MungoError                 from './error';
 
@@ -33,7 +33,7 @@ function normalizeModifier (modifier, model) {
 
 class ModelQuery extends ModelMigrate {
 
-  static isFromDB = true
+  static isFromDB = true;
 
   //----------------------------------------------------------------------------
 
