@@ -429,4 +429,6 @@ class Model extends ModelStatic {
 
 }
 
+Model.MungoModelError = MungoModelError;
+
 export default Model;

@@ -540,4 +540,6 @@ var Model = function (_ModelStatic) {
   return Model;
 }(_modelStatic2.default);
 
+Model.MungoModelError = MungoModelError;
+
 exports.default = Model;
