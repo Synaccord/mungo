@@ -396,7 +396,7 @@ var Type = function () {
     value: function convert(value) {
 
       if (typeof this.type.convert !== 'function') {
-        console.log('Type has no convert', this.type.convert);
+        console.log('Type has no convert', this.type);
       }
 
       try {
