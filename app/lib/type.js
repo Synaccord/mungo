@@ -281,7 +281,14 @@ class Type {
   convert(value) {
 
     if ( typeof this.type.convert !== 'function' ) {
-      console.log('Type has no convert', this.type.convert);
+      throw MungoTypeError.rethrow(
+        new Error('Can not convert type'),
+        'Can not convert type',
+        {
+          type : this.type.name,
+          convert : this.type.convert
+        }
+      );
     }
 
     try {
