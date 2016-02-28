@@ -8,6 +8,10 @@ var _typeof = typeof Symbol === "function" && typeof Symbol.iterator === "symbol
 
 var _createClass = function () { function defineProperties(target, props) { for (var i = 0; i < props.length; i++) { var descriptor = props[i]; descriptor.enumerable = descriptor.enumerable || false; descriptor.configurable = true; if ("value" in descriptor) descriptor.writable = true; Object.defineProperty(target, descriptor.key, descriptor); } } return function (Constructor, protoProps, staticProps) { if (protoProps) defineProperties(Constructor.prototype, protoProps); if (staticProps) defineProperties(Constructor, staticProps); return Constructor; }; }();
 
+var _mongodb = require('mongodb');
+
+var _mongodb2 = _interopRequireDefault(_mongodb);
+
 var _type = require('./type');
 
 var _type2 = _interopRequireDefault(_type);
@@ -87,7 +91,35 @@ var FindStatement = function () {
 
       for (var field in document) {
 
-        if (document[field] instanceof Promise) {} else if (FindStatement.operators.indexOf(field) > -1) {
+        if (document[field] instanceof Promise) {} else if (typeof document[field] === 'function') {
+          var $type = undefined;
+
+          switch (document[field]) {
+            case Number:
+              $type = 1;
+              break;
+            case String:case _type2.default.String:
+              $type = 2;
+              break;
+            case Object:case _type2.default.Object:
+              $type = 3;
+              break;
+            case Array:case _type2.default.Array:
+              $type = 4;
+              break;
+            case _mongodb2.default.ObjectId:case _type2.default.ObjectId:
+              $type = 7;
+              break;
+            case Boolean:case _type2.default.Boolean:
+              $type = 8;
+              break;
+            case Date:case _type2.default.Date:
+              $type = 9;
+              break;
+          }
+
+          parsed[field] = $type;
+        } else if (FindStatement.operators.indexOf(field) > -1) {
           switch (field) {
             case '$or':
             case '$and':
@@ -104,6 +136,8 @@ var FindStatement = function () {
           parsed[field] = this.parseField(field, document[field], structure[field], structure);
         }
       }
+
+      console.log({ parsed: parsed });
 
       return parsed;
     }

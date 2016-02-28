@@ -1,5 +1,6 @@
 'use strict';
 
+import mongodb from 'mongodb';
 import Type from './type';
 import prettify from './prettify';
 import MungoError from './error';
@@ -92,6 +93,36 @@ class FindStatement {
 
       }
 
+      else if ( typeof document[field] === 'function' ) {
+        let $type;
+
+        switch ( document[field] ) {
+          case Number:
+            $type = 1;
+            break;
+          case String: case Type.String :
+            $type = 2;
+            break;
+          case Object: case Type.Object :
+            $type = 3;
+            break;
+          case Array: case Type.Array :
+            $type = 4;
+            break;
+          case mongodb.ObjectId: case Type.ObjectId :
+            $type = 7;
+            break;
+          case Boolean: case Type.Boolean :
+            $type = 8;
+            break;
+          case Date: case Type.Date :
+            $type = 9;
+            break;
+        }
+
+        parsed[field] = $type;
+      }
+
       else if ( FindStatement.operators.indexOf(field) > -1 ) {
         switch ( field ) {
           case '$or'  :
@@ -111,6 +142,8 @@ class FindStatement {
         parsed[field] = this.parseField(field, document[field], structure[field], structure);
       }
     }
+
+    console.log({ parsed });
 
     return parsed;
   }
