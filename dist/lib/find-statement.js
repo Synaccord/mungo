@@ -137,8 +137,6 @@ var FindStatement = function () {
         }
       }
 
-      console.log({ parsed: parsed });
-
       return parsed;
     }
 

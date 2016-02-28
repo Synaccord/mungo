@@ -143,8 +143,6 @@ class FindStatement {
       }
     }
 
-    console.log({ parsed });
-
     return parsed;
   }
 
