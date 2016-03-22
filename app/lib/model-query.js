@@ -68,6 +68,8 @@ class ModelQuery extends ModelMigrate {
       filter = new FindStatement(filter, this);
     }
 
+    delete filter.$projection;
+
     return this.exec('count', filter, options);
   }
 
@@ -119,6 +121,15 @@ class ModelQuery extends ModelMigrate {
         filter = new FindStatement(filter, this);
       }
 
+      Object.assign(projection, filter.$projection);
+
+      delete filter.$projection;
+
+      const delProjection = query => {
+        delete query.$projection;
+        return query;
+      }
+
       sequencer
         .pipe(
 
@@ -131,7 +142,7 @@ class ModelQuery extends ModelMigrate {
             ))),
 
             () => this.exec('deleteMany',
-              new FindStatement({ _id : { $in : docs } }, this)
+              delProjection(new FindStatement({ _id : { $in : docs } }, this))
             ),
 
             () => new Promise(ok => ok(docs))
@@ -158,6 +169,13 @@ class ModelQuery extends ModelMigrate {
         filter = new FindStatement(filter, this);
       }
 
+      delete filter.$projection;
+
+      const delProjection = query => {
+        delete query.$projection;
+        return query;
+      }
+
       sequencer.pipe(
         () => this.findOne(filter),
 
@@ -165,7 +183,7 @@ class ModelQuery extends ModelMigrate {
 
           () => sequencer((this.removing() || []).map(fn => () => fn(doc))),
 
-          () => this.exec('deleteOne', new FindStatement({ _id : doc }, this)),
+          () => this.exec('deleteOne', delProjection(new FindStatement({ _id : doc }, this))),
 
           () => new Promise(ok => ok(doc))
 
@@ -244,6 +262,8 @@ class ModelQuery extends ModelMigrate {
         filter = new FindStatement(filter, this);
       }
 
+      delete filter.$projection;
+
       this
         .exec('findOne', filter)
         .then(document => {
@@ -262,6 +282,10 @@ class ModelQuery extends ModelMigrate {
     if ( ! ( filter instanceof FindStatement ) ) {
       filter = new FindStatement(filter, this);
     }
+
+    Object.assign(projection, filter.$projection);
+
+    delete filter.$projection;
 
     return sequencer.pipe(
 
@@ -361,6 +385,8 @@ class ModelQuery extends ModelMigrate {
         filter = new FindStatement(filter, this);
       }
 
+      delete filter.$projection;
+
       if ( ! ( modifier instanceof UpdateStatement ) ) {
         modifier = new UpdateStatement(modifier, this);
       }
@@ -446,6 +472,8 @@ class ModelQuery extends ModelMigrate {
       if ( ! ( filter instanceof FindStatement ) ) {
         filter = new FindStatement(filter, this);
       }
+
+      delete filter.$projection;
 
       if ( ! ( modifier instanceof UpdateStatement ) ) {
         modifier = new UpdateStatement(modifier, this);

@@ -135,6 +135,8 @@ var ModelQuery = function (_ModelMigrate) {
         filter = new _findStatement2.default(filter, this);
       }
 
+      delete filter.$projection;
+
       return this.exec('count', filter, options);
     }
 
@@ -201,6 +203,15 @@ var ModelQuery = function (_ModelMigrate) {
           filter = new _findStatement2.default(filter, _this3);
         }
 
+        Object.assign(projection, filter.$projection);
+
+        delete filter.$projection;
+
+        var delProjection = function delProjection(query) {
+          delete query.$projection;
+          return query;
+        };
+
         _promiseSequencer2.default.pipe(function () {
           return _this3.find(filter, projection, options);
         }, function (docs) {
@@ -213,7 +224,7 @@ var ModelQuery = function (_ModelMigrate) {
               }));
             }));
           }, function () {
-            return _this3.exec('deleteMany', new _findStatement2.default({ _id: { $in: docs } }, _this3));
+            return _this3.exec('deleteMany', delProjection(new _findStatement2.default({ _id: { $in: docs } }, _this3)));
           }, function () {
             return new Promise(function (ok) {
               return ok(docs);
@@ -247,6 +258,13 @@ var ModelQuery = function (_ModelMigrate) {
           filter = new _findStatement2.default(filter, _this4);
         }
 
+        delete filter.$projection;
+
+        var delProjection = function delProjection(query) {
+          delete query.$projection;
+          return query;
+        };
+
         _promiseSequencer2.default.pipe(function () {
           return _this4.findOne(filter);
         }, function (doc) {
@@ -257,7 +275,7 @@ var ModelQuery = function (_ModelMigrate) {
               };
             }));
           }, function () {
-            return _this4.exec('deleteOne', new _findStatement2.default({ _id: doc }, _this4));
+            return _this4.exec('deleteOne', delProjection(new _findStatement2.default({ _id: doc }, _this4)));
           }, function () {
             return new Promise(function (ok) {
               return ok(doc);
@@ -361,6 +379,8 @@ var ModelQuery = function (_ModelMigrate) {
           filter = new _findStatement2.default(filter, _this6);
         }
 
+        delete filter.$projection;
+
         _this6.exec('findOne', filter).then(function (document) {
           if (!document) {
             return ok();
@@ -385,6 +405,10 @@ var ModelQuery = function (_ModelMigrate) {
       if (!(filter instanceof _findStatement2.default)) {
         filter = new _findStatement2.default(filter, this);
       }
+
+      Object.assign(projection, filter.$projection);
+
+      delete filter.$projection;
 
       return _promiseSequencer2.default.pipe(function () {
         return _this7.exec('count', filter);
@@ -525,6 +549,8 @@ var ModelQuery = function (_ModelMigrate) {
           filter = new _findStatement2.default(filter, _this10);
         }
 
+        delete filter.$projection;
+
         if (!(modifier instanceof _updateStatement2.default)) {
           modifier = new _updateStatement2.default(modifier, _this10);
         }
@@ -623,6 +649,8 @@ var ModelQuery = function (_ModelMigrate) {
         if (!(filter instanceof _findStatement2.default)) {
           filter = new _findStatement2.default(filter, _this11);
         }
+
+        delete filter.$projection;
 
         if (!(modifier instanceof _updateStatement2.default)) {
           modifier = new _updateStatement2.default(modifier, _this11);
