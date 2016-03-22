@@ -42,7 +42,8 @@ class FindStatement {
     '$bitsAnyClear',
     '$comment',
     '$meta',
-    '$slice'
+    '$slice',
+    '$sort'
   ];
 
   /** new FindStatement
@@ -83,9 +84,9 @@ class FindStatement {
 
   parseAll (document, structure) {
 
-    // console.log(prettify({'<<<<< FindStatement.parseAll >>>>>' : { document, structure }}));
-
-    const parsed = {};
+    const parsed = {
+      $projection : {}
+    };
 
     for ( let field in document ) {
 
@@ -135,6 +136,10 @@ class FindStatement {
               );
             }
             parsed[field] = document[field].map(v => this.parseAll(v, structure));
+            break;
+
+          case '$sort' :
+            parsed.$projection.sort = document.$sort;
             break;
         }
       }

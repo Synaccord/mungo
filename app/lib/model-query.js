@@ -188,6 +188,10 @@ class ModelQuery extends ModelMigrate {
         filter = new FindStatement(filter, this);
       }
 
+      Object.assign(projection, filter.$projection);
+
+      delete filter.$projection;
+
       process.nextTick(() => {
         this
           .exec('find', filter, projection, options)
