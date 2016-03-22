@@ -85,9 +85,9 @@ var FindStatement = function () {
     value: function parseAll(document, structure) {
       var _this2 = this;
 
-      // console.log(prettify({'<<<<< FindStatement.parseAll >>>>>' : { document, structure }}));
-
-      var parsed = {};
+      var parsed = {
+        $projection: {}
+      };
 
       for (var field in document) {
 
@@ -130,6 +130,10 @@ var FindStatement = function () {
               parsed[field] = document[field].map(function (v) {
                 return _this2.parseAll(v, structure);
               });
+              break;
+
+            case '$sort':
+              parsed.$projection.sort = document.$sort;
               break;
           }
         } else {
@@ -266,5 +270,5 @@ var FindStatement = function () {
   return FindStatement;
 }();
 
-FindStatement.operators = ['$eq', '$gt', '$gte', '$lt', '$lte', '$ne', '$in', '$nin', '$or', '$and', '$not', '$nor', '$exists', '$type', '$mod', '$regex', '$options', '$text', '$where', '$geoWithin', '$geoIntersects', '$near', '$nearSphere', '$all', '$elemMatch', '$size', '$bitsAllSet', '$bitsAnySet', '$bitsAllClear', '$bitsAnyClear', '$comment', '$meta', '$slice'];
+FindStatement.operators = ['$eq', '$gt', '$gte', '$lt', '$lte', '$ne', '$in', '$nin', '$or', '$and', '$not', '$nor', '$exists', '$type', '$mod', '$regex', '$options', '$text', '$where', '$geoWithin', '$geoIntersects', '$near', '$nearSphere', '$all', '$elemMatch', '$size', '$bitsAllSet', '$bitsAnySet', '$bitsAllClear', '$bitsAnyClear', '$comment', '$meta', '$slice', '$sort'];
 exports.default = FindStatement;

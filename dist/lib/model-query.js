@@ -292,6 +292,10 @@ var ModelQuery = function (_ModelMigrate) {
           filter = new _findStatement2.default(filter, _this5);
         }
 
+        Object.assign(projection, filter.$projection);
+
+        delete filter.$projection;
+
         process.nextTick(function () {
           _this5.exec('find', filter, projection, options).then(function (documents) {
             documents = documents.map(function (doc) {
