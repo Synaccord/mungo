@@ -270,18 +270,13 @@ var Model = function (_ModelStatic) {
 
             _this3.set('__V', Model.version);
 
-            // console.log(prettify({ [`>> Model {${Model.name}@#${Model.version}} save()`] : {
-            //   model : Model.name,
-            //   document : this.$document,
-            //   fromDB : this.$fromDB,
-            //   changes : this.$changes
-            // }}));
-
             if (_this3.$fromDB) {
               (function () {
 
                 if (!_this3.get('__v')) {
                   _this3.set('__v', 0);
+                } else {
+                  _this3.increment('__v', 1);
                 }
 
                 var modifier = new _updateStatement2.default(_this3.$changes, Model);

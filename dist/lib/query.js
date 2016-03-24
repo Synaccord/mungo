@@ -381,6 +381,15 @@ var Query = function () {
 
     //----------------------------------------------------------------------------
 
+    /**   Update One Document
+     *
+     *    @arg      {Object}    filter={}     - Getter
+     *    @arg      {Object}    modifier={}   - Setter
+     *    @arg      {Object}    options={}
+     */
+
+    //----------------------------------------------------------------------------
+
   }, {
     key: 'updateOne',
     value: function updateOne() {
@@ -394,7 +403,6 @@ var Query = function () {
       return new Promise(function (ok, ko) {
         var model = _this11.model;
 
-        // console.log(prettify({ [`>> Query {${model.name}#${model.version}} => updateOne`] : { filter, modifier, options }}));
 
         _this11.getCollection().then(function () {
           var action = _this11.collection.updateOne(filter, modifier, options);

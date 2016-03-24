@@ -182,17 +182,14 @@ class Model extends ModelStatic {
 
         this.set('__V', Model.version);
 
-        // console.log(prettify({ [`>> Model {${Model.name}@#${Model.version}} save()`] : {
-        //   model : Model.name,
-        //   document : this.$document,
-        //   fromDB : this.$fromDB,
-        //   changes : this.$changes
-        // }}));
-
         if ( this.$fromDB ) {
 
           if ( ! this.get('__v') ) {
             this.set('__v', 0);
+          }
+
+          else {
+            this.increment('__v', 1);
           }
 
           const modifier = new UpdateStatement(this.$changes, Model);

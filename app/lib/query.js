@@ -331,12 +331,19 @@ class Query {
 
   //----------------------------------------------------------------------------
 
+  /**   Update One Document
+   *
+   *    @arg      {Object}    filter={}     - Getter
+   *    @arg      {Object}    modifier={}   - Setter
+   *    @arg      {Object}    options={}
+   */
+
+  //----------------------------------------------------------------------------
+
   updateOne (filter = {}, modifier = {}, options = {}) {
     return new Promise((ok, ko) => {
 
       const { model } = this;
-
-      // console.log(prettify({ [`>> Query {${model.name}#${model.version}} => updateOne`] : { filter, modifier, options }}));
 
       this.getCollection().then(
         () => {

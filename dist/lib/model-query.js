@@ -116,10 +116,10 @@ var ModelQuery = function (_ModelMigrate) {
 
     //----------------------------------------------------------------------------
 
-    /** Count
+    /** Count documents in collection
      *
-     *  @arg        object      query
-     *  @arg        object      options
+     *  @arg        {Object}      filter={}       - Get filter
+     *  @arg        {Object}      options={}
      *  @return     {Promise}
      */
 
@@ -653,6 +653,16 @@ var ModelQuery = function (_ModelMigrate) {
 
     //----------------------------------------------------------------------------
 
+    /**   Update Many - Update more than 1 document at a time
+     *
+     *    @arg  {FindStatement}|{Object}      filter={}       - Get filter
+     *    @arg  {UpdateStatement}|{Object}    modifier={}     - Set filter
+     *    @arg  {Object}                      options={}      - Optional settings
+     *    @return   {Promise}
+    */
+
+    //----------------------------------------------------------------------------
+
   }, {
     key: 'updateMany',
     value: function updateMany() {
@@ -662,9 +672,6 @@ var ModelQuery = function (_ModelMigrate) {
 
       var modifier = arguments.length <= 1 || arguments[1] === undefined ? {} : arguments[1];
       var options = arguments.length <= 2 || arguments[2] === undefined ? {} : arguments[2];
-
-
-      // console.log(prettify({[`ModelQuery ${this.name}#${this.version} updateMany`]: {filter,modifier,options}}));
 
       return new Promise(function (ok, ko) {
 
@@ -718,7 +725,20 @@ var ModelQuery = function (_ModelMigrate) {
                 }
 
                 _this11.exec('updateOne', { _id: doc._id }, _modifiers).then(function () {
-                  return ok(doc);
+
+                  if (_modifiers.$set) {
+                    for (var set in _modifiers.$set) {
+                      doc.set(set, _modifiers.$set[set]);
+                    }
+                  }
+
+                  if (_modifiers.$inc) {
+                    for (var inc in _modifiers.$inc) {
+                      doc.increment(inc, _modifiers.$inc[inc]);
+                    }
+                  }
+
+                  ok(doc);
                 }).catch(ko);
               });
             }));

@@ -54,10 +54,10 @@ class ModelQuery extends ModelMigrate {
 
   //----------------------------------------------------------------------------
 
-  /** Count
+  /** Count documents in collection
    *
-   *  @arg        object      query
-   *  @arg        object      options
+   *  @arg        {Object}      filter={}       - Get filter
+   *  @arg        {Object}      options={}
    *  @return     {Promise}
    */
 
@@ -484,10 +484,17 @@ class ModelQuery extends ModelMigrate {
 
   //----------------------------------------------------------------------------
 
+  /**   Update Many - Update more than 1 document at a time
+   *
+   *    @arg  {FindStatement}|{Object}      filter={}       - Get filter
+   *    @arg  {UpdateStatement}|{Object}    modifier={}     - Set filter
+   *    @arg  {Object}                      options={}      - Optional settings
+   *    @return   {Promise}
+  */
+
+  //----------------------------------------------------------------------------
+
   static updateMany (filter = {}, modifier = {}, options = {}) {
-
-    // console.log(prettify({[`ModelQuery ${this.name}#${this.version} updateMany`]: {filter,modifier,options}}));
-
     return new Promise((ok, ko) => {
 
       if ( ! ( filter instanceof FindStatement ) ) {
@@ -532,7 +539,22 @@ class ModelQuery extends ModelMigrate {
 
             this
               .exec('updateOne', { _id : doc._id }, _modifiers)
-              .then(() => ok(doc))
+              .then(() => {
+
+                if ( _modifiers.$set ) {
+                  for ( const set in _modifiers.$set ) {
+                    doc.set(set, _modifiers.$set[set]);
+                  }
+                }
+
+                if ( _modifiers.$inc ) {
+                  for ( const inc in _modifiers.$inc ) {
+                    doc.increment(inc, _modifiers.$inc[inc]);
+                  }
+                }
+
+                ok(doc);
+              })
               .catch(ko)
           })))
         )

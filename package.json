@@ -1,6 +1,6 @@
 {
   "name": "mungo",
-  "version": "2.2.0",
+  "version": "2.3.0",
   "description": "Mungo ===",
   "main": "dist/index.js",
   "directories": {
@@ -9,7 +9,8 @@
   "scripts": {
     "test": "redtea dist/test",
     "babel": "babel --out-dir dist app",
-    "babel-watch": "babel --watch --out-dir dist app"
+    "babel-watch": "babel --watch --out-dir dist app",
+    "prepublish" : "npm run babel && npm test"
   },
   "author": "",
   "license": "ISC",
