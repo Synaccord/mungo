@@ -698,15 +698,9 @@ var ModelQuery = function (_ModelMigrate) {
 
           // Apply before hooks
 
-          function () {
-            return Promise.all(docs.map(function (doc) {
-              return (0, _promiseSequencer2.default)((_this11.updating() || []).map(function (fn) {
-                return function () {
-                  return fn(doc);
-                };
-              }));
-            }));
-          },
+          // () => Promise.all(docs.map(doc =>
+          //   sequencer((this.updating() || []).map(fn => () => fn(doc)))
+          // )),
 
           // Put hooks changes into modifiers
 
@@ -724,22 +718,39 @@ var ModelQuery = function (_ModelMigrate) {
                   Object.assign(_modifiers.$set, doc.$changes);
                 }
 
-                _this11.exec('updateOne', { _id: doc._id }, _modifiers).then(function () {
-
-                  if (_modifiers.$set) {
-                    for (var set in _modifiers.$set) {
-                      doc.set(set, _modifiers.$set[set]);
-                    }
+                if (_modifiers.$set) {
+                  for (var set in _modifiers.$set) {
+                    doc.set(set, _modifiers.$set[set]);
                   }
+                }
 
-                  if (_modifiers.$inc) {
-                    for (var inc in _modifiers.$inc) {
-                      doc.increment(inc, _modifiers.$inc[inc]);
-                    }
+                if (_modifiers.$inc) {
+                  for (var inc in _modifiers.$inc) {
+                    doc.increment(inc, _modifiers.$inc[inc]);
                   }
+                }
 
-                  ok(doc);
-                }).catch(ko);
+                doc.save().then(ok, ko);
+
+                // this
+                //   .exec('updateOne', { _id : doc._id }, _modifiers)
+                //   .then(() => {
+                //
+                //     if ( _modifiers.$set ) {
+                //       for ( const set in _modifiers.$set ) {
+                //         doc.set(set, _modifiers.$set[set]);
+                //       }
+                //     }
+                //
+                //     if ( _modifiers.$inc ) {
+                //       for ( const inc in _modifiers.$inc ) {
+                //         doc.increment(inc, _modifiers.$inc[inc]);
+                //       }
+                //     }
+                //
+                //     ok(doc);
+                //   })
+                //   .catch(ko)
               });
             }));
           });

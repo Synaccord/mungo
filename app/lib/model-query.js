@@ -519,9 +519,9 @@ class ModelQuery extends ModelMigrate {
 
           // Apply before hooks
 
-          () => Promise.all(docs.map(doc =>
-            sequencer((this.updating() || []).map(fn => () => fn(doc)))
-          )),
+          // () => Promise.all(docs.map(doc =>
+          //   sequencer((this.updating() || []).map(fn => () => fn(doc)))
+          // )),
 
           // Put hooks changes into modifiers
 
@@ -537,25 +537,39 @@ class ModelQuery extends ModelMigrate {
               Object.assign(_modifiers.$set, doc.$changes);
             }
 
-            this
-              .exec('updateOne', { _id : doc._id }, _modifiers)
-              .then(() => {
+            if ( _modifiers.$set ) {
+              for ( const set in _modifiers.$set ) {
+                doc.set(set, _modifiers.$set[set]);
+              }
+            }
 
-                if ( _modifiers.$set ) {
-                  for ( const set in _modifiers.$set ) {
-                    doc.set(set, _modifiers.$set[set]);
-                  }
-                }
+            if ( _modifiers.$inc ) {
+              for ( const inc in _modifiers.$inc ) {
+                doc.increment(inc, _modifiers.$inc[inc]);
+              }
+            }
 
-                if ( _modifiers.$inc ) {
-                  for ( const inc in _modifiers.$inc ) {
-                    doc.increment(inc, _modifiers.$inc[inc]);
-                  }
-                }
+            doc.save().then(ok, ko);
 
-                ok(doc);
-              })
-              .catch(ko)
+            // this
+            //   .exec('updateOne', { _id : doc._id }, _modifiers)
+            //   .then(() => {
+            //
+            //     if ( _modifiers.$set ) {
+            //       for ( const set in _modifiers.$set ) {
+            //         doc.set(set, _modifiers.$set[set]);
+            //       }
+            //     }
+            //
+            //     if ( _modifiers.$inc ) {
+            //       for ( const inc in _modifiers.$inc ) {
+            //         doc.increment(inc, _modifiers.$inc[inc]);
+            //       }
+            //     }
+            //
+            //     ok(doc);
+            //   })
+            //   .catch(ko)
           })))
         )
       )

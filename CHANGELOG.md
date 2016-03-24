@@ -14,3 +14,7 @@
 # 2.3.1
 
 - increment document's version if 0
+
+# 2.3.2
+
+- Test updating hook

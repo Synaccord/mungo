@@ -271,36 +271,32 @@ var Model = function (_ModelStatic) {
             _this3.set('__V', Model.version);
 
             if (_this3.$fromDB) {
-              (function () {
 
-                if (typeof _this3.get('__v') === 'undefined') {
-                  _this3.set('__v', 0);
-                } else {
-                  _this3.increment('__v', 1);
-                }
+              if (typeof _this3.get('__v') === 'undefined') {
+                _this3.set('__v', 0);
+              } else if (!('__v' in _this3.$changes)) {
+                _this3.increment('__v', 1);
+              }
 
-                var modifier = new _updateStatement2.default(_this3.$changes, Model);
+              (0, _promiseSequencer2.default)(function () {
+                return (0, _promiseSequencer2.default)((Model.updating() || []).map(function (fn) {
+                  return function () {
+                    return fn(_this3);
+                  };
+                }));
+              }, function () {
+                return Model.exec('updateOne', { _id: _this3.get('_id') }, new _updateStatement2.default(_this3.$changes, Model));
+              }).then(function () {
+                ok(_this3);
 
-                (0, _promiseSequencer2.default)(function () {
-                  return (0, _promiseSequencer2.default)((Model.updating() || []).map(function (fn) {
-                    return function () {
-                      return fn(_this3);
-                    };
-                  }));
-                }, function () {
-                  return Model.exec('updateOne', { _id: _this3.get('_id') }, modifier);
-                }).then(function () {
-                  ok(_this3);
-
-                  (0, _promiseSequencer2.default)((Model.updated() || []).map(function (fn) {
-                    return function () {
-                      return fn(_this3);
-                    };
-                  })).then(function () {
-                    _this3.$changes = {};
-                  });
-                }).catch(ko);
-              })();
+                (0, _promiseSequencer2.default)((Model.updated() || []).map(function (fn) {
+                  return function () {
+                    return fn(_this3);
+                  };
+                })).then(function () {
+                  _this3.$changes = {};
+                });
+              }).catch(ko);
             } else {
               _this3.set('__v', 0);
 

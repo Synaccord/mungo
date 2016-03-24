@@ -188,17 +188,15 @@ class Model extends ModelStatic {
             this.set('__v', 0);
           }
 
-          else {
+          else if ( ! ( '__v' in this.$changes ) ) {
             this.increment('__v', 1);
           }
-
-          const modifier = new UpdateStatement(this.$changes, Model);
 
           sequencer(
 
             () => sequencer((Model.updating() || []).map(fn => () => fn(this))),
 
-            () => Model.exec('updateOne', { _id : this.get('_id') }, modifier)
+            () => Model.exec('updateOne', { _id : this.get('_id') }, new UpdateStatement(this.$changes, Model))
 
           )
 
