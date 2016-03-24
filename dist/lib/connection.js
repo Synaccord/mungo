@@ -95,8 +95,6 @@ var Connection = function (_EventEmitter) {
 
       url = url || this.url;
 
-      console.log((0, _prettify2.default)('Connecting to ' + url));
-
       var connection = new Connection();
 
       connection.index = this.connections.push(connection);
@@ -105,8 +103,6 @@ var Connection = function (_EventEmitter) {
         connection.connected = true;
 
         connection.db = db;
-
-        console.log(('Connected to ' + url).green);
 
         connection.emit('connected', connection);
         _this3.events.emit('connected', connection);

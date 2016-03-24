@@ -256,24 +256,45 @@ class ModelQuery extends ModelMigrate {
 
   //----------------------------------------------------------------------------
 
-  static findOne (filter = {}) {
-    return new Promise((ok, ko) => {
-      if ( ! ( filter instanceof FindStatement ) ) {
-        filter = new FindStatement(filter, this);
-      }
+  static findOne (filter = {}, projection = {}) {
+    if ( ! ( filter instanceof FindStatement ) ) {
+      filter = new FindStatement(filter, this);
+    }
 
-      delete filter.$projection;
+    Object.assign(projection, filter.$projection);
 
-      this
-        .exec('findOne', filter)
-        .then(document => {
-          if ( ! document ) {
-            return ok();
-          }
-          ok(new this(document, this.isFromDB));
-        })
-        .catch(ko);
-    })
+    delete filter.$projection;
+
+    const promise = new Promise((ok, ko) => {
+      process.nextTick(() => {
+        this
+          .exec('findOne', filter, projection)
+          .then(document => {
+            if ( ! document ) {
+              return ok();
+            }
+            ok(new this(document, this.isFromDB));
+          })
+          .catch(ko);
+      });
+    });
+
+    promise.limit = limit => {
+      projection.limit = limit;
+      return promise;
+    };
+
+    promise.skip = skip => {
+      projection.skip = skip;
+      return promise;
+    };
+
+    promise.sort = sort => {
+      projection.sort = sort;
+      return promise;
+    };
+
+    return promise;
   }
 
   //----------------------------------------------------------------------------

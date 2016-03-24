@@ -184,8 +184,6 @@ var Query = function () {
 
       Object.assign(options, projection);
 
-      // console.log(prettify({ [`>> ${this.model.name}#${this.model.version} => findOne`] : { query, projection, options }}));
-
       return new Promise(function (ok, ko) {
         _this5.getCollection().then(function () {
           try {

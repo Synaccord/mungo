@@ -31,8 +31,6 @@ class Connection extends EventEmitter {
 
     url = url || this.url;
 
-    console.log(prettify(`Connecting to ${url}`));
-
     const connection = new Connection();
 
     connection.index = this.connections.push(connection);
@@ -49,8 +47,6 @@ class Connection extends EventEmitter {
         connection.connected = true;
 
         connection.db = db;
-
-        console.log(`Connected to ${url}`.green);
 
         connection.emit('connected', connection);
         this.events.emit('connected', connection);

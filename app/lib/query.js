@@ -134,8 +134,6 @@ class Query {
 
     Object.assign(options, projection);
 
-    // console.log(prettify({ [`>> ${this.model.name}#${this.model.version} => findOne`] : { query, projection, options }}));
-
     return new Promise((ok, ko) => {
       this.getCollection()
         .then(() => {

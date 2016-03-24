@@ -373,21 +373,43 @@ var ModelQuery = function (_ModelMigrate) {
       var _this6 = this;
 
       var filter = arguments.length <= 0 || arguments[0] === undefined ? {} : arguments[0];
+      var projection = arguments.length <= 1 || arguments[1] === undefined ? {} : arguments[1];
 
-      return new Promise(function (ok, ko) {
-        if (!(filter instanceof _findStatement2.default)) {
-          filter = new _findStatement2.default(filter, _this6);
-        }
+      if (!(filter instanceof _findStatement2.default)) {
+        filter = new _findStatement2.default(filter, this);
+      }
 
-        delete filter.$projection;
+      Object.assign(projection, filter.$projection);
 
-        _this6.exec('findOne', filter).then(function (document) {
-          if (!document) {
-            return ok();
-          }
-          ok(new _this6(document, _this6.isFromDB));
-        }).catch(ko);
+      delete filter.$projection;
+
+      var promise = new Promise(function (ok, ko) {
+        process.nextTick(function () {
+          _this6.exec('findOne', filter, projection).then(function (document) {
+            if (!document) {
+              return ok();
+            }
+            ok(new _this6(document, _this6.isFromDB));
+          }).catch(ko);
+        });
       });
+
+      promise.limit = function (limit) {
+        projection.limit = limit;
+        return promise;
+      };
+
+      promise.skip = function (skip) {
+        projection.skip = skip;
+        return promise;
+      };
+
+      promise.sort = function (sort) {
+        projection.sort = sort;
+        return promise;
+      };
+
+      return promise;
     }
 
     //----------------------------------------------------------------------------
