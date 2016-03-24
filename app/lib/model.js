@@ -184,7 +184,7 @@ class Model extends ModelStatic {
 
         if ( this.$fromDB ) {
 
-          if ( ! this.get('__v') ) {
+          if ( typeof this.get('__v') === 'undefined' ) {
             this.set('__v', 0);
           }
 

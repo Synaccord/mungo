@@ -273,7 +273,7 @@ var Model = function (_ModelStatic) {
             if (_this3.$fromDB) {
               (function () {
 
-                if (!_this3.get('__v')) {
+                if (typeof _this3.get('__v') === 'undefined') {
                   _this3.set('__v', 0);
                 } else {
                   _this3.increment('__v', 1);

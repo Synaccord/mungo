@@ -54,20 +54,46 @@ function test(props = {}) {
     });
 
     it('Indirect update', it => {
-      it('Update document by fetching it', () => new Promise((pass, fail) => {
-        Foo.findOne()
-          .then(doc => {
-            locals.doc = doc;
-            doc.set('number', 100).save().then(pass, fail);
-          })
-          .catch(fail);
-      }));
+      it('Find one', it => {
+        it('Update document by fetching it', () => new Promise((pass, fail) => {
+          Foo.findOne()
+            .then(doc => {
+              locals.doc = doc;
+              doc.set('number', 100).save().then(pass, fail);
+            })
+            .catch(fail);
+        }));
 
-      it('Document\'s version should be 2', it => {
-        it('Fetch document', () => Foo.findOne().then(doc => { locals.doc = doc }));
+        it('Document\'s version should be 2', it => {
+          it('Fetch document', () => Foo.findOne().then(doc => { locals.doc = doc }));
 
-        it('__v should be 2', () => {
-          locals.doc.should.have.property('__v').which.is.exactly(2);
+          it('__v should be 2', () => {
+            locals.doc.should.have.property('__v').which.is.exactly(2);
+          });
+        });
+      });
+
+      it('Find', it => {
+        it('Empty collection', () => Foo.remove());
+
+        it(`Create { number : 10 }`, () => Foo.insert({ number : 10 }));
+
+        it('Update document by fetching it', () => new Promise((pass, fail) => {
+          Foo.find()
+            .then(docs => {
+              Promise
+                .all(docs.map(doc => doc.set('number', 100).save()))
+                .then(pass, fail);
+            })
+            .catch(fail);
+        }));
+
+        it('Document\'s version should be 1', it => {
+          it('Fetch document', () => Foo.findOne().then(doc => { locals.doc = doc }));
+
+          it('__v should be 1', () => {
+            locals.doc.should.have.property('__v').which.is.exactly(1);
+          });
         });
       });
     });

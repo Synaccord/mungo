@@ -103,24 +103,58 @@ function test() {
     });
 
     it('Indirect update', function (it) {
-      it('Update document by fetching it', function () {
-        return new Promise(function (pass, fail) {
-          Foo.findOne().then(function (doc) {
-            locals.doc = doc;
-            doc.set('number', 100).save().then(pass, fail);
-          }).catch(fail);
-        });
-      });
-
-      it('Document\'s version should be 2', function (it) {
-        it('Fetch document', function () {
-          return Foo.findOne().then(function (doc) {
-            locals.doc = doc;
+      it('Find one', function (it) {
+        it('Update document by fetching it', function () {
+          return new Promise(function (pass, fail) {
+            Foo.findOne().then(function (doc) {
+              locals.doc = doc;
+              doc.set('number', 100).save().then(pass, fail);
+            }).catch(fail);
           });
         });
 
-        it('__v should be 2', function () {
-          locals.doc.should.have.property('__v').which.is.exactly(2);
+        it('Document\'s version should be 2', function (it) {
+          it('Fetch document', function () {
+            return Foo.findOne().then(function (doc) {
+              locals.doc = doc;
+            });
+          });
+
+          it('__v should be 2', function () {
+            locals.doc.should.have.property('__v').which.is.exactly(2);
+          });
+        });
+      });
+
+      it('Find', function (it) {
+        it('Empty collection', function () {
+          return Foo.remove();
+        });
+
+        it('Create { number : 10 }', function () {
+          return Foo.insert({ number: 10 });
+        });
+
+        it('Update document by fetching it', function () {
+          return new Promise(function (pass, fail) {
+            Foo.find().then(function (docs) {
+              Promise.all(docs.map(function (doc) {
+                return doc.set('number', 100).save();
+              })).then(pass, fail);
+            }).catch(fail);
+          });
+        });
+
+        it('Document\'s version should be 1', function (it) {
+          it('Fetch document', function () {
+            return Foo.findOne().then(function (doc) {
+              locals.doc = doc;
+            });
+          });
+
+          it('__v should be 1', function () {
+            locals.doc.should.have.property('__v').which.is.exactly(1);
+          });
         });
       });
     });

@@ -10,3 +10,7 @@
 # 2.3.0
 
 - document's version -- increment on each update (direct or indirect)
+
+# 2.3.1
+
+- increment document's version if 0
