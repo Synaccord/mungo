@@ -1,7 +1,6 @@
 'use strict';
 
 import { Readable }       from 'stream';
-import Mungo               from './mungo';
 
 class Streamable extends Readable {
   constructor (options) {

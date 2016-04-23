@@ -6,9 +6,9 @@ Object.defineProperty(exports, "__esModule", {
 
 var _createClass = function () { function defineProperties(target, props) { for (var i = 0; i < props.length; i++) { var descriptor = props[i]; descriptor.enumerable = descriptor.enumerable || false; descriptor.configurable = true; if ("value" in descriptor) descriptor.writable = true; Object.defineProperty(target, descriptor.key, descriptor); } } return function (Constructor, protoProps, staticProps) { if (protoProps) defineProperties(Constructor.prototype, protoProps); if (staticProps) defineProperties(Constructor, staticProps); return Constructor; }; }();
 
-var _model = require('./model');
+var _Model2 = require('./Model');
 
-var _model2 = _interopRequireDefault(_model);
+var _Model3 = _interopRequireDefault(_Model2);
 
 var _migration = require('../models/migration');
 
@@ -99,7 +99,7 @@ var Migration = function (_Model) {
   }]);
 
   return Migration;
-}(_model2.default);
+}(_Model3.default);
 
 Migration.model = _migration2.default;
 exports.default = Migration;

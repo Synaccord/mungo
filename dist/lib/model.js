@@ -16,37 +16,37 @@ var _promiseSequencer = require('promise-sequencer');
 
 var _promiseSequencer2 = _interopRequireDefault(_promiseSequencer);
 
-var _modelStatic = require('./model-static');
+var _ModelStatic2 = require('./ModelStatic');
 
-var _modelStatic2 = _interopRequireDefault(_modelStatic);
+var _ModelStatic3 = _interopRequireDefault(_ModelStatic2);
 
-var _document = require('./document');
+var _Document = require('./Document');
 
-var _document2 = _interopRequireDefault(_document);
+var _Document2 = _interopRequireDefault(_Document);
 
-var _updateStatement = require('./update-statement');
+var _UpdateStatement = require('./UpdateStatement');
 
-var _updateStatement2 = _interopRequireDefault(_updateStatement);
+var _UpdateStatement2 = _interopRequireDefault(_UpdateStatement);
 
 var _prettify = require('./prettify');
 
 var _prettify2 = _interopRequireDefault(_prettify);
 
-var _error = require('./error');
+var _Error = require('./Error');
 
-var _error2 = _interopRequireDefault(_error);
+var _Error2 = _interopRequireDefault(_Error);
 
-var _type = require('./type');
+var _Type = require('./Type');
 
-var _type2 = _interopRequireDefault(_type);
+var _Type2 = _interopRequireDefault(_Type);
 
-var _isPrototypeOf = require('./is-prototype-of');
+var _isPrototypeOf = require('./isPrototypeOf');
 
 var _isPrototypeOf2 = _interopRequireDefault(_isPrototypeOf);
 
-var _schema = require('./schema');
+var _Schema = require('./Schema');
 
-var _schema2 = _interopRequireDefault(_schema);
+var _Schema2 = _interopRequireDefault(_Schema);
 
 function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { default: obj }; }
 
@@ -68,7 +68,7 @@ var MungoModelError = function (_MungoError) {
   }
 
   return MungoModelError;
-}(_error2.default);
+}(_Error2.default);
 
 var Model = function (_ModelStatic) {
   _inherits(Model, _ModelStatic);
@@ -109,7 +109,7 @@ var Model = function (_ModelStatic) {
 
     _this2.$fromDB = fromDB;
 
-    _this2.$document = new _document2.default(original, _this2.constructor);
+    _this2.$document = new _Document2.default(original, _this2.constructor);
 
     // console.log(prettify({ [this.constructor.name] : this }));
 
@@ -285,7 +285,7 @@ var Model = function (_ModelStatic) {
                   };
                 }));
               }, function () {
-                return Model.exec('updateOne', { _id: _this3.get('_id') }, new _updateStatement2.default(_this3.$changes, Model));
+                return Model.exec('updateOne', { _id: _this3.get('_id') }, new _UpdateStatement2.default(_this3.$changes, Model));
               }).then(function () {
                 ok(_this3);
 
@@ -434,7 +434,7 @@ var Model = function (_ModelStatic) {
                     }));
                   }
                 })();
-              } else if (type.type === _type2.default.Array && (0, _isPrototypeOf2.default)(type.args[0].type, Model)) {
+              } else if (type.type === _Type2.default.Array && (0, _isPrototypeOf2.default)(type.args[0].type, Model)) {
                 (function () {
                   var value = _this4.get(flatten[field].flatten);
 
@@ -515,7 +515,7 @@ var Model = function (_ModelStatic) {
             });
           }
 
-          var val = _schema2.default.find(field, this.$document);
+          var val = _Schema2.default.find(field, this.$document);
 
           if (typeof val === 'undefined') {
             throw new MungoModelError('Missing field ' + field, {
@@ -529,7 +529,7 @@ var Model = function (_ModelStatic) {
   }]);
 
   return Model;
-}(_modelStatic2.default);
+}(_ModelStatic3.default);
 
 Model.MungoModelError = MungoModelError;
 

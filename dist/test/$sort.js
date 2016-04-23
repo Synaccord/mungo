@@ -16,9 +16,9 @@ var _ = require('../');
 
 var _2 = _interopRequireDefault(_);
 
-var _findStatement = require('../lib/find-statement');
+var _FindStatement = require('../lib/FindStatement');
 
-var _findStatement2 = _interopRequireDefault(_findStatement);
+var _FindStatement2 = _interopRequireDefault(_FindStatement);
 
 function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { default: obj }; }
 
@@ -50,7 +50,7 @@ function test() {
 
   return (0, _redtea2.default)('$sort', function (it) {
     it('should instantiate a new FindStatement', function (it) {
-      locals.query = new _findStatement2.default({ $sort: { foo: 1 } }, Foo);
+      locals.query = new _FindStatement2.default({ $sort: { foo: 1 } }, Foo);
     });
 
     it('should have a projection property', function (it) {

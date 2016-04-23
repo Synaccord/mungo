@@ -62,11 +62,11 @@ var MungoError = function (_ExtendableError) {
 
     var _this2 = _possibleConstructorReturn(this, Object.getPrototypeOf(MungoError).call(this, message));
 
-    var msg = undefined;
+    var msg = void 0;
 
     try {
       msg = JSON.stringify({ message: message, options: options }, null, 2);
-    } catch (e) {
+    } catch (error) {
       msg = message;
     } finally {
       var _this2 = _possibleConstructorReturn(this, Object.getPrototypeOf(MungoError).call(this, msg));

@@ -1,5 +1,3 @@
-'use strict';
-
 class ExtendableError extends Error {
   constructor(message) {
     super(message);
@@ -20,8 +18,8 @@ class MungoError extends ExtendableError {
     let msg;
 
     try {
-      msg = JSON.stringify({ message , options }, null, 2);
-    } catch (e) {
+      msg = JSON.stringify({message, options}, null, 2);
+    } catch (error) {
       msg = message;
     } finally {
       super(msg);
@@ -29,7 +27,7 @@ class MungoError extends ExtendableError {
 
     this.originalMessage = message;
 
-    if ( 'code' in options ) {
+    if ('code' in options) {
       this.code = options.code;
     }
 
@@ -39,13 +37,12 @@ class MungoError extends ExtendableError {
   static rethrow (error, message, options = {}) {
     options.error = {};
 
-    if ( error instanceof this ) {
+    if (error instanceof this) {
       options.error.message = error.originalMessage;
       options.error.code = error.code;
       options.error.options = error.options;
       options.error.stack = error.stack.split(/\n/);
-    }
-    else {
+    } else {
       options.error.name = error.name;
       options.error.message = error.message;
       options.error.code = error.code;

@@ -4,17 +4,17 @@ import describe           from 'redtea';
 import should             from 'should';
 import Mungo              from '..';
 import json               from '../../package.json';
-import Index              from '../lib/index';
-import Query              from '../lib/query';
-import Model              from '../lib/model';
-import Document           from '../lib/document';
-import Schema             from '../lib/schema';
-import Type               from '../lib/type';
-import Connection         from '../lib/connection';
-import Migration          from '../lib/migration';
-import MungoError         from '../lib/error';
-import FindStatement      from '../lib/find-statement';
-import UpdateStatement    from '../lib/update-statement';
+import Index              from '../lib/Index';
+import Query              from '../lib/Query';
+import Model              from '../lib/Model';
+import Document           from '../lib/Document';
+import Schema             from '../lib/Schema';
+import Type               from '../lib/Type';
+import Connection         from '../lib/Connection';
+import Migration          from '../lib/Migration';
+import MungoError         from '../lib/Error';
+import FindStatement      from '../lib/FindStatement';
+import UpdateStatement    from '../lib/UpdateStatement';
 
 function test(props = {}) {
   return describe('Mungo v' + json.version, it => {

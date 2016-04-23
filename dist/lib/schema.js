@@ -8,13 +8,13 @@ var _typeof = typeof Symbol === "function" && typeof Symbol.iterator === "symbol
 
 var _createClass = function () { function defineProperties(target, props) { for (var i = 0; i < props.length; i++) { var descriptor = props[i]; descriptor.enumerable = descriptor.enumerable || false; descriptor.configurable = true; if ("value" in descriptor) descriptor.writable = true; Object.defineProperty(target, descriptor.key, descriptor); } } return function (Constructor, protoProps, staticProps) { if (protoProps) defineProperties(Constructor.prototype, protoProps); if (staticProps) defineProperties(Constructor, staticProps); return Constructor; }; }();
 
-var _index = require('./index');
+var _Index = require('./Index');
 
-var _index2 = _interopRequireDefault(_index);
+var _Index2 = _interopRequireDefault(_Index);
 
-var _type = require('./type');
+var _Type = require('./Type');
 
-var _type2 = _interopRequireDefault(_type);
+var _Type2 = _interopRequireDefault(_Type);
 
 function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { default: obj }; }
 
@@ -120,8 +120,8 @@ var Schema = function () {
       ns += '.';
     }
 
-    for (var field in structure) {
-      this['' + field] = structure[field];
+    for (var _field in structure) {
+      this['' + _field] = structure[_field];
     }
   }
 
@@ -198,36 +198,36 @@ var Schema = function () {
     key: 'setType',
     value: function setType(structure, ns) {
 
-      var type = undefined;
+      var type = void 0;
 
       // no field
 
       if (!structure) {
-        return new _type2.default(_type2.default.Mixed);
+        return new _Type2.default(_Type2.default.Mixed);
       }
 
       // { field : new Type() }
 
-      if (structure instanceof _type2.default) {
+      if (structure instanceof _Type2.default) {
         return structure;
       }
 
       // { field : Function }
 
       if (typeof structure === 'function') {
-        return new _type2.default(structure);
+        return new _Type2.default(structure);
       }
 
       // { field : [Function] }
 
       if (Array.isArray(structure)) {
-        return new _type2.default(Array, this.setType(structure[0], ns));
+        return new _Type2.default(Array, this.setType(structure[0], ns));
       }
 
       // { field : Schema }
 
       if (structure instanceof this.constructor) {
-        return new _type2.default(_type2.default.Subdocument, structure);
+        return new _Type2.default(_Type2.default.Subdocument, structure);
       }
 
       // { field : {} }
@@ -236,19 +236,19 @@ var Schema = function () {
 
         if (Array.isArray(structure.type)) {
           var parsed = this.setType(structure.type[0], ns);
-          return new _type2.default(Array, parsed);
+          return new _Type2.default(Array, parsed);
         }
 
-        return new _type2.default(structure.type);
+        return new _Type2.default(structure.type);
       }
 
       if (structure && (typeof structure === 'undefined' ? 'undefined' : _typeof(structure)) === 'object') {
-        return new _type2.default(_type2.default.Subdocument, new Schema(structure, 0, ns, {
+        return new _Type2.default(_Type2.default.Subdocument, new Schema(structure, 0, ns, {
           defaultFields: false
         }));
       }
 
-      return new _type2.default(_type2.default.Mixed);
+      return new _Type2.default(_Type2.default.Mixed);
     }
 
     //----------------------------------------------------------------------------
@@ -265,20 +265,20 @@ var Schema = function () {
         if (structure[field].type.isArray()) {} else if (structure[field].type.isSubdocument()) {} else {
           if ('index' in normalized[field]) {
             if (normalized[field].index === true) {
-              parsed[field] = { index: new _index2.default(true, name) };
+              parsed[field] = { index: new _Index2.default(true, name) };
             } else if (_typeof(normalized[field].index) === 'object') {
-              parsed[field] = { index: new _index2.default(true, name, normalized[field].index) };
+              parsed[field] = { index: new _Index2.default(true, name, normalized[field].index) };
             }
           } else if ('unique' in normalized[field]) {
             if (normalized[field].unique === true) {
-              parsed[field] = { index: new _index2.default(true, name, { unique: true }) };
+              parsed[field] = { index: new _Index2.default(true, name, { unique: true }) };
             } else if (_typeof(normalized[field].unique) === 'object') {
-              parsed[field] = { index: new _index2.default(true, name, Object.assign({ unique: true }, normalized[field].unique)) };
+              parsed[field] = { index: new _Index2.default(true, name, Object.assign({ unique: true }, normalized[field].unique)) };
             }
           } else if ('indexWith' in normalized[field]) {
-            parsed[field] = { index: new _index2.default(true, name, { coumpound: normalized[field].indexWith }) };
+            parsed[field] = { index: new _Index2.default(true, name, { coumpound: normalized[field].indexWith }) };
           } else if ('uniqueWith' in normalized[field]) {
-            parsed[field] = { index: new _index2.default(true, name, { coumpound: normalized[field].uniqueWith }) };
+            parsed[field] = { index: new _Index2.default(true, name, { coumpound: normalized[field].uniqueWith }) };
           }
         }
       }
@@ -392,7 +392,7 @@ var Schema = function () {
 }();
 
 Schema.defaultFields = {
-  _id: _type2.default.ObjectID,
+  _id: _Type2.default.ObjectID,
 
   __v: {
     type: Number,

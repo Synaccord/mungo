@@ -1,6 +1,6 @@
 {
   "name": "mungo",
-  "version": "2.3.2",
+  "version": "2.3.3",
   "description": "Mungo ===",
   "main": "dist/index.js",
   "directories": {
@@ -10,15 +10,17 @@
     "test": "redtea dist/test",
     "babel": "babel --out-dir dist app",
     "babel-watch": "babel --watch --out-dir dist app",
-    "prepublish" : "npm run babel && npm test"
+    "prepublish": "npm run babel && npm test"
   },
   "author": "",
   "license": "ISC",
   "devDependencies": {
     "babel-cli": "^6.5.1",
+    "babel-eslint": "^6.0.3",
     "babel-plugin-transform-builtin-extend": "^1.1.0",
     "babel-preset-es2015": "^6.5.0",
     "babel-preset-stage-0": "^6.5.0",
+    "eslint": "^2.8.0",
     "redtea": "^3.4.1",
     "should": "^7.1.0"
   },

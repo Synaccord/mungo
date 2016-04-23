@@ -20,49 +20,49 @@ var _package = require('../../package.json');
 
 var _package2 = _interopRequireDefault(_package);
 
-var _index = require('../lib/index');
+var _Index = require('../lib/Index');
 
-var _index2 = _interopRequireDefault(_index);
+var _Index2 = _interopRequireDefault(_Index);
 
-var _query = require('../lib/query');
+var _Query = require('../lib/Query');
 
-var _query2 = _interopRequireDefault(_query);
+var _Query2 = _interopRequireDefault(_Query);
 
-var _model = require('../lib/model');
+var _Model = require('../lib/Model');
 
-var _model2 = _interopRequireDefault(_model);
+var _Model2 = _interopRequireDefault(_Model);
 
-var _document = require('../lib/document');
+var _Document = require('../lib/Document');
 
-var _document2 = _interopRequireDefault(_document);
+var _Document2 = _interopRequireDefault(_Document);
 
-var _schema = require('../lib/schema');
+var _Schema = require('../lib/Schema');
 
-var _schema2 = _interopRequireDefault(_schema);
+var _Schema2 = _interopRequireDefault(_Schema);
 
-var _type = require('../lib/type');
+var _Type = require('../lib/Type');
 
-var _type2 = _interopRequireDefault(_type);
+var _Type2 = _interopRequireDefault(_Type);
 
-var _connection = require('../lib/connection');
+var _Connection = require('../lib/Connection');
 
-var _connection2 = _interopRequireDefault(_connection);
+var _Connection2 = _interopRequireDefault(_Connection);
 
-var _migration = require('../lib/migration');
+var _Migration = require('../lib/Migration');
 
-var _migration2 = _interopRequireDefault(_migration);
+var _Migration2 = _interopRequireDefault(_Migration);
 
-var _error = require('../lib/error');
+var _Error = require('../lib/Error');
 
-var _error2 = _interopRequireDefault(_error);
+var _Error2 = _interopRequireDefault(_Error);
 
-var _findStatement = require('../lib/find-statement');
+var _FindStatement = require('../lib/FindStatement');
 
-var _findStatement2 = _interopRequireDefault(_findStatement);
+var _FindStatement2 = _interopRequireDefault(_FindStatement);
 
-var _updateStatement = require('../lib/update-statement');
+var _UpdateStatement = require('../lib/UpdateStatement');
 
-var _updateStatement2 = _interopRequireDefault(_updateStatement);
+var _UpdateStatement2 = _interopRequireDefault(_UpdateStatement);
 
 function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { default: obj }; }
 
@@ -81,7 +81,7 @@ function test() {
             return _2.default.should.have.property('Mixed');
           });
           it('should be Type.Mixed', function () {
-            return _2.default.Mixed.should.be.exactly(_type2.default.Mixed);
+            return _2.default.Mixed.should.be.exactly(_Type2.default.Mixed);
           });
         });
 
@@ -90,74 +90,74 @@ function test() {
             return _2.default.should.have.property('ObjectID');
           });
           it('should be Type.ObjectID', function () {
-            return _2.default.ObjectID.should.be.exactly(_type2.default.ObjectID);
+            return _2.default.ObjectID.should.be.exactly(_Type2.default.ObjectID);
           });
         });
       });
 
       it('Index', function (it) {
         it('should be Index', function () {
-          return _2.default.should.have.property('Index').which.is.exactly(_index2.default);
+          return _2.default.should.have.property('Index').which.is.exactly(_Index2.default);
         });
       });
 
       it('Query', function (it) {
         it('should be Query', function () {
-          return _2.default.should.have.property('Query').which.is.exactly(_query2.default);
+          return _2.default.should.have.property('Query').which.is.exactly(_Query2.default);
         });
       });
 
       it('Model', function (it) {
         it('should be Model', function () {
-          return _2.default.should.have.property('Model').which.is.exactly(_model2.default);
+          return _2.default.should.have.property('Model').which.is.exactly(_Model2.default);
         });
       });
 
       it('Document', function (it) {
         it('should be Document', function () {
-          return _2.default.should.have.property('Document').which.is.exactly(_document2.default);
+          return _2.default.should.have.property('Document').which.is.exactly(_Document2.default);
         });
       });
 
       it('Schema', function (it) {
         it('should be Schema', function () {
-          return _2.default.should.have.property('Schema').which.is.exactly(_schema2.default);
+          return _2.default.should.have.property('Schema').which.is.exactly(_Schema2.default);
         });
       });
 
       it('Type', function (it) {
         it('should be Type', function () {
-          return _2.default.should.have.property('Type').which.is.exactly(_type2.default);
+          return _2.default.should.have.property('Type').which.is.exactly(_Type2.default);
         });
       });
 
       it('Connection', function (it) {
         it('should be Connection', function () {
-          return _2.default.should.have.property('Connection').which.is.exactly(_connection2.default);
+          return _2.default.should.have.property('Connection').which.is.exactly(_Connection2.default);
         });
       });
 
       it('Migration', function (it) {
         it('should be Migration', function () {
-          return _2.default.should.have.property('Migration').which.is.exactly(_migration2.default);
+          return _2.default.should.have.property('Migration').which.is.exactly(_Migration2.default);
         });
       });
 
       it('Error', function (it) {
         it('should be Error', function () {
-          return _2.default.should.have.property('Error').which.is.exactly(_error2.default);
+          return _2.default.should.have.property('Error').which.is.exactly(_Error2.default);
         });
       });
 
       it('FindStatement', function (it) {
         it('should be FindStatement', function () {
-          return _2.default.should.have.property('FindStatement').which.is.exactly(_findStatement2.default);
+          return _2.default.should.have.property('FindStatement').which.is.exactly(_FindStatement2.default);
         });
       });
 
       it('UpdateStatement', function (it) {
         it('should be UpdateStatement', function () {
-          return _2.default.should.have.property('UpdateStatement').which.is.exactly(_updateStatement2.default);
+          return _2.default.should.have.property('UpdateStatement').which.is.exactly(_UpdateStatement2.default);
         });
       });
 

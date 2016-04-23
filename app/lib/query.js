@@ -1,10 +1,10 @@
 'use strict';
 
 import mongodb              from 'mongodb';
-import Connection           from './connection';
-import Projection           from './projection';
+import Connection           from './Connection';
+import Projection           from './Projection';
 import prettify             from './prettify';
-import MungoError           from './error';
+import MungoError           from './Error';
 
 class MungoQueryError extends MungoError {}
 

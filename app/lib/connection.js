@@ -1,35 +1,19 @@
-'use strict';
-
 import mongodb from 'mongodb';
-import { EventEmitter } from 'events';
+import {EventEmitter} from 'events';
 import sequencer from 'promise-sequencer';
-import prettify from './prettify';
 
 class Connection extends EventEmitter {
 
-  //----------------------------------------------------------------------------
+  // ---------------------------------------------------------------------------
 
-  /** @type [Connection] */
+  static connections = [];
+  static url = 'mongodb://@localhost';
+  static events = new EventEmitter();
 
-  static connections  =   [];
+  // ---------------------------------------------------------------------------
 
-  static url          =   'mongodb://@localhost';
-
-  static events       =   new EventEmitter();
-
-  //----------------------------------------------------------------------------
-
-  // Static methods
-
-  //----------------------------------------------------------------------------
-
-  /** @resolve Connection
-   *  @arg String url
-   */
-
-  static connect (url) {
-
-    url = url || this.url;
+  static connect(url) {
+    const mongodb_url = url || this.url;
 
     const connection = new Connection();
 
@@ -39,7 +23,7 @@ class Connection extends EventEmitter {
 
       .promisify(
         mongodb.MongoClient.connect,
-        [url],
+        [mongodb_url],
         mongodb.MongoClient
       )
 
@@ -52,7 +36,9 @@ class Connection extends EventEmitter {
         this.events.emit('connected', connection);
       })
 
-      .catch(error => { connection.emit('error', error) });
+      .catch(error => {
+        connection.emit('error', error);
+      });
 
     return connection;
   }
@@ -65,7 +51,7 @@ class Connection extends EventEmitter {
     });
   }
 
-  //----------------------------------------------------------------------------
+  // ---------------------------------------------------------------------------
 
   /** @return Promise */
 
@@ -75,36 +61,36 @@ class Connection extends EventEmitter {
     ));
   }
 
-  //----------------------------------------------------------------------------
+  // ---------------------------------------------------------------------------
 
   // Instance properties
 
-  //----------------------------------------------------------------------------
+  // ---------------------------------------------------------------------------
 
-  connected   =   false;
+  connected = false;
 
-  db          =   null;
+  db = null;
 
-  //----------------------------------------------------------------------------
+  // ---------------------------------------------------------------------------
 
   // Instance methods
 
-  //----------------------------------------------------------------------------
+  // ---------------------------------------------------------------------------
 
   disconnect () {
     return sequencer(
       () => this.db.close(),
 
-      () => new Promise((ok, ko) => {
+      () => new Promise((resolve) => {
         this.connected = false;
         this.disconnected = true;
         this.emit('disconnected');
-        ok();
+        resolve();
       })
     );
   }
 
-  //----------------------------------------------------------------------------
+  // ---------------------------------------------------------------------------
 
 }
 

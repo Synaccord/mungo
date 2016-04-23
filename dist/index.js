@@ -3,113 +3,104 @@
 Object.defineProperty(exports, "__esModule", {
   value: true
 });
+exports.disconnect = exports.connectify = exports.connect = exports.UpdateStatement = exports.FindStatement = exports.Error = exports.Migration = exports.Type = exports.Schema = exports.Document = exports.Model = exports.Query = exports.Index = undefined;
 
-var _createClass = function () { function defineProperties(target, props) { for (var i = 0; i < props.length; i++) { var descriptor = props[i]; descriptor.enumerable = descriptor.enumerable || false; descriptor.configurable = true; if ("value" in descriptor) descriptor.writable = true; Object.defineProperty(target, descriptor.key, descriptor); } } return function (Constructor, protoProps, staticProps) { if (protoProps) defineProperties(Constructor.prototype, protoProps); if (staticProps) defineProperties(Constructor, staticProps); return Constructor; }; }();
+var _Index = require('./lib/Index');
 
-var _mongodb = require('mongodb');
+Object.defineProperty(exports, 'Index', {
+  enumerable: true,
+  get: function get() {
+    return _interopRequireDefault(_Index).default;
+  }
+});
 
-var _mongodb2 = _interopRequireDefault(_mongodb);
+var _Query = require('./lib/Query');
 
-var _model = require('./lib/model');
+Object.defineProperty(exports, 'Query', {
+  enumerable: true,
+  get: function get() {
+    return _interopRequireDefault(_Query).default;
+  }
+});
 
-var _model2 = _interopRequireDefault(_model);
+var _Model = require('./lib/Model');
 
-var _schema = require('./lib/schema');
+Object.defineProperty(exports, 'Model', {
+  enumerable: true,
+  get: function get() {
+    return _interopRequireDefault(_Model).default;
+  }
+});
 
-var _schema2 = _interopRequireDefault(_schema);
+var _Document = require('./lib/Document');
 
-var _type = require('./lib/type');
+Object.defineProperty(exports, 'Document', {
+  enumerable: true,
+  get: function get() {
+    return _interopRequireDefault(_Document).default;
+  }
+});
 
-var _type2 = _interopRequireDefault(_type);
+var _Schema = require('./lib/Schema');
 
-var _connection = require('./lib/connection');
+Object.defineProperty(exports, 'Schema', {
+  enumerable: true,
+  get: function get() {
+    return _interopRequireDefault(_Schema).default;
+  }
+});
 
-var _connection2 = _interopRequireDefault(_connection);
+var _Type = require('./lib/Type');
 
-var _migration = require('./lib/migration');
+Object.defineProperty(exports, 'Type', {
+  enumerable: true,
+  get: function get() {
+    return _interopRequireDefault(_Type).default;
+  }
+});
 
-var _migration2 = _interopRequireDefault(_migration);
+var _Migration = require('./lib/Migration');
 
-var _deprecatedNotice = require('./lib/deprecated-notice');
+Object.defineProperty(exports, 'Migration', {
+  enumerable: true,
+  get: function get() {
+    return _interopRequireDefault(_Migration).default;
+  }
+});
 
-var _deprecatedNotice2 = _interopRequireDefault(_deprecatedNotice);
+var _Error = require('./lib/Error');
 
-var _document = require('./lib/document');
+Object.defineProperty(exports, 'Error', {
+  enumerable: true,
+  get: function get() {
+    return _interopRequireDefault(_Error).default;
+  }
+});
 
-var _document2 = _interopRequireDefault(_document);
+var _FindStatement = require('./lib/FindStatement');
 
-var _index = require('./lib/index');
+Object.defineProperty(exports, 'FindStatement', {
+  enumerable: true,
+  get: function get() {
+    return _interopRequireDefault(_FindStatement).default;
+  }
+});
 
-var _index2 = _interopRequireDefault(_index);
+var _UpdateStatement = require('./lib/UpdateStatement');
 
-var _query = require('./lib/query');
+Object.defineProperty(exports, 'UpdateStatement', {
+  enumerable: true,
+  get: function get() {
+    return _interopRequireDefault(_UpdateStatement).default;
+  }
+});
 
-var _query2 = _interopRequireDefault(_query);
+var _Connection = require('./lib/Connection');
 
-var _error = require('./lib/error');
-
-var _error2 = _interopRequireDefault(_error);
-
-var _findStatement = require('./lib/find-statement');
-
-var _findStatement2 = _interopRequireDefault(_findStatement);
-
-var _updateStatement = require('./lib/update-statement');
-
-var _updateStatement2 = _interopRequireDefault(_updateStatement);
+var _Connection2 = _interopRequireDefault(_Connection);
 
 function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { default: obj }; }
 
-function _classCallCheck(instance, Constructor) { if (!(instance instanceof Constructor)) { throw new TypeError("Cannot call a class as a function"); } }
-
-var Mungo = function () {
-  function Mungo() {
-    _classCallCheck(this, Mungo);
-  }
-
-  _createClass(Mungo, null, [{
-    key: 'Mixed',
-    get: function get() {
-      (0, _deprecatedNotice2.default)('Mungo.Mixed', 'Mungo.Type.Mixed');
-      return _type2.default.Mixed;
-    }
-  }, {
-    key: 'ObjectID',
-    get: function get() {
-      (0, _deprecatedNotice2.default)('Mungo.ObjectID', 'Mungo.Type.ObjectID');
-      return _type2.default.ObjectID;
-    }
-  }]);
-
-  return Mungo;
-}();
-
-Mungo.Index = _index2.default;
-Mungo.Query = _query2.default;
-Mungo.Model = _model2.default;
-Mungo.Document = _document2.default;
-Mungo.Schema = _schema2.default;
-Mungo.Type = _type2.default;
-Mungo.Connection = _connection2.default;
-Mungo.connect = _connection2.default.connect.bind(_connection2.default);
-Mungo.connectify = _connection2.default.connectify.bind(_connection2.default);
-Mungo.disconnect = _connection2.default.disconnect.bind(_connection2.default);
-Mungo.connections = _connection2.default.connections;
-Mungo.Migration = _migration2.default;
-Mungo.Error = _error2.default;
-Mungo.FindStatement = _findStatement2.default;
-Mungo.UpdateStatement = _updateStatement2.default;
-
-Mungo.mongodb = _mongodb2.default;
-
-Mungo.verbosity = 0;
-
-/*
-  0 = no verbose
-  1 = success
-  2 = error + success
-  3 = warning + error + success
-  4 = notice + warning + error + success
-*/
-
-exports.default = Mungo;
+var connect = exports.connect = _Connection2.default.connect.bind(_Connection2.default);
+var connectify = exports.connectify = _Connection2.default.connectify.bind(_Connection2.default);
+var disconnect = exports.disconnect = _Connection2.default.disconnect.bind(_Connection2.default);

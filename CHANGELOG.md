@@ -18,3 +18,7 @@
 # 2.3.2
 
 - Test updating hook
+
+# 2.3.3
+
+- We now use ESLINT

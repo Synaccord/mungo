@@ -16,9 +16,9 @@ var _prettify = require('./prettify');
 
 var _prettify2 = _interopRequireDefault(_prettify);
 
-var _error = require('./error');
+var _Error = require('./Error');
 
-var _error2 = _interopRequireDefault(_error);
+var _Error2 = _interopRequireDefault(_Error);
 
 function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { default: obj }; }
 
@@ -40,7 +40,7 @@ var MungoTypeError = function (_MungoError) {
   }
 
   return MungoTypeError;
-}(_error2.default);
+}(_Error2.default);
 
 //------------------------------------------------------------------------------
 

@@ -2,7 +2,7 @@
 
 import mongodb from 'mongodb';
 import prettify from './prettify';
-import MungoError from './error';
+import MungoError from './Error';
 
 class MungoTypeError extends MungoError {}
 

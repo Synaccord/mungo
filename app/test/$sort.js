@@ -3,7 +3,7 @@
 import describe from 'redtea';
 import should from 'should';
 import Mungo from '../';
-import FindStatement from '../lib/find-statement';
+import FindStatement from '../lib/FindStatement';
 
 class Foo extends Mungo.Model {
   static schema = { foo : String };

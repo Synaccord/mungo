@@ -12,9 +12,9 @@ var _should = require('should');
 
 var _should2 = _interopRequireDefault(_should);
 
-var _error = require('../lib/error');
+var _Error = require('../lib/Error');
 
-var _error2 = _interopRequireDefault(_error);
+var _Error2 = _interopRequireDefault(_Error);
 
 var _package = require('../../package.json');
 
@@ -30,11 +30,11 @@ function test() {
   return (0, _redtea2.default)('Mungo v' + _package2.default.version, function (it) {
     it('Error', function (it) {
       it('should be a class', function () {
-        return _error2.default.should.be.a.Function();
+        return _Error2.default.should.be.a.Function();
       });
 
       it('should be an instance of Error', function () {
-        locals.error = new _error2.default('Oops!');
+        locals.error = new _Error2.default('Oops!');
         locals.error.should.be.an.instanceof(Error);
       });
 

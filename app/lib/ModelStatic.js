@@ -1,8 +1,7 @@
 'use strict';
 
-import Schema                     from  './schema';
-import deprecatedNotice           from './deprecated-notice';
-import ModelQuery                 from './model-query';
+import Schema                     from  './Schema';
+import ModelQuery                 from './ModelQuery';
 
 class ModelStatic extends ModelQuery {
 

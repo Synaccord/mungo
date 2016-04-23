@@ -1,7 +1,7 @@
 'use strict';
 
 import mongodb from 'mongodb';
-import MungoError from './error';
+import MungoError from './Error';
 
 class ModelTypeError extends MungoError {}
 

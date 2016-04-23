@@ -8,14 +8,6 @@ var _typeof = typeof Symbol === "function" && typeof Symbol.iterator === "symbol
 
 var _createClass = function () { function defineProperties(target, props) { for (var i = 0; i < props.length; i++) { var descriptor = props[i]; descriptor.enumerable = descriptor.enumerable || false; descriptor.configurable = true; if ("value" in descriptor) descriptor.writable = true; Object.defineProperty(target, descriptor.key, descriptor); } } return function (Constructor, protoProps, staticProps) { if (protoProps) defineProperties(Constructor.prototype, protoProps); if (staticProps) defineProperties(Constructor, staticProps); return Constructor; }; }();
 
-var _type = require('./type');
-
-var _type2 = _interopRequireDefault(_type);
-
-var _prettify = require('./prettify');
-
-var _prettify2 = _interopRequireDefault(_prettify);
-
 var _error = require('./error');
 
 var _error2 = _interopRequireDefault(_error);
@@ -89,9 +81,7 @@ var Document = function () {
     key: 'parseField',
     value: function parseField(fieldName, fieldValue, fieldStructure) {
       if (!fieldStructure) {
-        throw new MungoDocumentError('Could not parse field - missing structure', {
-          fieldName: fieldName, fieldValue: fieldValue, fieldStructure: fieldStructure
-        });
+        throw new MungoDocumentError('Could not parse field - missing structure', { fieldName: fieldName, fieldValue: fieldValue, fieldStructure: fieldStructure });
       }
       if (!fieldStructure.type) {
         throw new MungoDocumentError('Could not parse field - missing type', {

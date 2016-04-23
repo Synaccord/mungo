@@ -1,15 +1,13 @@
-'use strict';
-
 require('babel-polyfill');
 
 function isPrototypeOf (child, parent) {
   const prototypeOf = Reflect.getPrototypeOf(child);
 
-  if ( prototypeOf === parent ) {
+  if (prototypeOf === parent) {
     return true;
   }
 
-  if ( prototypeOf.name ) {
+  if (prototypeOf.name) {
     return isPrototypeOf(prototypeOf, parent);
   }
 

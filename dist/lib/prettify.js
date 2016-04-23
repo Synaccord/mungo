@@ -218,12 +218,12 @@ function prettify(prim) {
 
     if ((typeof _ret === 'undefined' ? 'undefined' : _typeof(_ret)) === "object") return _ret.v;
   } catch (error) {
-    var tab = options.tab || '';
+    var _tab = options.tab || '';
 
     if (error.message === 'Maximum call stack size exceeded') {
-      return tab + '[Circular]'.red.bold;
+      return _tab + '[Circular]'.red.bold;
     }
-    return tab + '{could not prettify}'.red.bgYellow.bold + ' ' + error.message.bgRed;
+    return _tab + '{could not prettify}'.red.bgYellow.bold + ' ' + error.message.bgRed;
   }
 }
 

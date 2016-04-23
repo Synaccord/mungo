@@ -2,7 +2,7 @@
 
 import describe           from 'redtea';
 import should             from 'should';
-import MungoError         from '../lib/error';
+import MungoError         from '../lib/Error';
 import json               from '../../package.json';
 
 function test(props = {}) {

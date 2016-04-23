@@ -16,10 +16,6 @@ var _promiseSequencer = require('promise-sequencer');
 
 var _promiseSequencer2 = _interopRequireDefault(_promiseSequencer);
 
-var _prettify = require('./prettify');
-
-var _prettify2 = _interopRequireDefault(_prettify);
-
 function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { default: obj }; }
 
 function _classCallCheck(instance, Constructor) { if (!(instance instanceof Constructor)) { throw new TypeError("Cannot call a class as a function"); } }
@@ -45,19 +41,17 @@ var Connection = function (_EventEmitter) {
     return _ret = (_temp = (_this = _possibleConstructorReturn(this, (_Object$getPrototypeO = Object.getPrototypeOf(Connection)).call.apply(_Object$getPrototypeO, [this].concat(args))), _this), _this.connected = false, _this.db = null, _temp), _possibleConstructorReturn(_this, _ret);
   }
 
-  //----------------------------------------------------------------------------
-
-  /** @type [Connection] */
+  // ---------------------------------------------------------------------------
 
   _createClass(Connection, [{
     key: 'disconnect',
 
 
-    //----------------------------------------------------------------------------
+    // ---------------------------------------------------------------------------
 
     // Instance methods
 
-    //----------------------------------------------------------------------------
+    // ---------------------------------------------------------------------------
 
     value: function disconnect() {
       var _this2 = this;
@@ -65,41 +59,33 @@ var Connection = function (_EventEmitter) {
       return (0, _promiseSequencer2.default)(function () {
         return _this2.db.close();
       }, function () {
-        return new Promise(function (ok, ko) {
+        return new Promise(function (resolve) {
           _this2.connected = false;
           _this2.disconnected = true;
           _this2.emit('disconnected');
-          ok();
+          resolve();
         });
       });
     }
 
-    //----------------------------------------------------------------------------
+    // ---------------------------------------------------------------------------
 
   }], [{
     key: 'connect',
 
 
-    //----------------------------------------------------------------------------
-
-    // Static methods
-
-    //----------------------------------------------------------------------------
-
-    /** @resolve Connection
-     *  @arg String url
-     */
+    // ---------------------------------------------------------------------------
 
     value: function connect(url) {
       var _this3 = this;
 
-      url = url || this.url;
+      var mongodb_url = url || this.url;
 
       var connection = new Connection();
 
       connection.index = this.connections.push(connection);
 
-      _promiseSequencer2.default.promisify(_mongodb2.default.MongoClient.connect, [url], _mongodb2.default.MongoClient).then(function (db) {
+      _promiseSequencer2.default.promisify(_mongodb2.default.MongoClient.connect, [mongodb_url], _mongodb2.default.MongoClient).then(function (db) {
         connection.connected = true;
 
         connection.db = db;
@@ -122,7 +108,7 @@ var Connection = function (_EventEmitter) {
       });
     }
 
-    //----------------------------------------------------------------------------
+    // ---------------------------------------------------------------------------
 
     /** @return Promise */
 
@@ -134,11 +120,11 @@ var Connection = function (_EventEmitter) {
       }));
     }
 
-    //----------------------------------------------------------------------------
+    // ---------------------------------------------------------------------------
 
     // Instance properties
 
-    //----------------------------------------------------------------------------
+    // ---------------------------------------------------------------------------
 
   }]);
 

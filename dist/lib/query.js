@@ -10,21 +10,21 @@ var _mongodb = require('mongodb');
 
 var _mongodb2 = _interopRequireDefault(_mongodb);
 
-var _connection = require('./connection');
+var _Connection = require('./Connection');
 
-var _connection2 = _interopRequireDefault(_connection);
+var _Connection2 = _interopRequireDefault(_Connection);
 
-var _projection = require('./projection');
+var _Projection = require('./Projection');
 
-var _projection2 = _interopRequireDefault(_projection);
+var _Projection2 = _interopRequireDefault(_Projection);
 
 var _prettify = require('./prettify');
 
 var _prettify2 = _interopRequireDefault(_prettify);
 
-var _error = require('./error');
+var _Error = require('./Error');
 
-var _error2 = _interopRequireDefault(_error);
+var _Error2 = _interopRequireDefault(_Error);
 
 function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { default: obj }; }
 
@@ -44,7 +44,7 @@ var MungoQueryError = function (_MungoError) {
   }
 
   return MungoQueryError;
-}(_error2.default);
+}(_Error2.default);
 
 var Query = function () {
 
@@ -69,7 +69,7 @@ var Query = function () {
           return ok();
         }
 
-        var aliveConnections = _connection2.default.connections.filter(function (conn) {
+        var aliveConnections = _Connection2.default.connections.filter(function (conn) {
           return !conn.disconnected;
         });
 
@@ -86,7 +86,7 @@ var Query = function () {
 
           ok();
         } else {
-          _connection2.default.events.on('connected', function (connection) {
+          _Connection2.default.events.on('connected', function (connection) {
             _this2.db = connection.db;
             return ok();
           });
@@ -132,7 +132,7 @@ var Query = function () {
       var model = this.model;
 
 
-      projection = new _projection2.default(projection);
+      projection = new _Projection2.default(projection);
 
       // console.log(prettify({[`>>  Query {${this.model.name}#${this.model.version}} => find`] : { query, projection, options } }));
 
@@ -180,7 +180,7 @@ var Query = function () {
       var model = this.model;
 
 
-      projection = new _projection2.default(projection);
+      projection = new _Projection2.default(projection);
 
       Object.assign(options, projection);
 
@@ -253,13 +253,13 @@ var Query = function () {
 
       return new Promise(function (ok, ko) {
 
-        projection = new _projection2.default(Object.assign({ limit: 0 }, projection));
+        projection = new _Projection2.default(Object.assign({ limit: 0 }, projection));
 
         // console.log(prettify({ [`>> Query {${this.model.name}#${this.model.version}} => deleteMany`] : {filter, projection, options}}));
 
         _this7.getCollection().then(function () {
 
-          var action = undefined;
+          var action = void 0;
 
           if (!projection.limit) {
             action = _this7.collection.deleteMany(filter);
@@ -287,13 +287,13 @@ var Query = function () {
 
       return new Promise(function (ok, ko) {
         try {
-          projection = new _projection2.default(Object.assign({ limit: 0 }, projection));
+          projection = new _Projection2.default(Object.assign({ limit: 0 }, projection));
 
           // console.log(prettify({ [`>> Query {${this.model.name}#${this.model.version}} => deleteOne`] : {filter, projection, options}}));
 
           _this8.getCollection().then(function () {
             try {
-              var action = undefined;
+              var action = void 0;
 
               if (!projection.limit) {
                 action = _this8.collection.deleteOne(filter);

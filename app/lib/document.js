@@ -1,7 +1,3 @@
-'use strict';
-
-import Type from './type';
-import prettify from './prettify';
 import MungoError from './error';
 
 class MungoDocumentError extends MungoError {}
@@ -14,23 +10,23 @@ class Document {
    **/
 
   constructor (document, model) {
-    if ( ! document || typeof document !== 'object' || Array.isArray(document) ) {
+    if (!document || typeof document !== 'object' || Array.isArray(document)) {
       throw new MungoDocumentError(
         'new Document(document) > document must be an object',
-        { document, modelName : model.name }
+        {document, modelName: model.name}
       );
     }
 
-    if ( typeof model !== 'function' ) {
+    if (typeof model !== 'function') {
       throw new MungoDocumentError(
         'new Document(model) > model must be a class',
-        { document, model }
+        {document, model}
       );
     }
 
     const parsed = this.parseAll(document, model.getSchema());
 
-    for ( let field in parsed ) {
+    for (let field in parsed) {
       this[field] = parsed[field];
     }
   }
@@ -45,9 +41,11 @@ class Document {
   parseAll (document, structure) {
     const parsed = {};
 
-    for ( let field in document ) {
-      if ( field in structure ) {
-        parsed[field] = this.parseField(field, document[field], structure[field]);
+    for (let field in document) {
+      if (field in structure) {
+        parsed[field] = this.parseField(
+          field, document[field], structure[field]
+        );
       }
     }
 
@@ -55,12 +53,12 @@ class Document {
   }
 
   parseField (fieldName, fieldValue, fieldStructure) {
-    if ( ! fieldStructure ) {
-      throw new MungoDocumentError('Could not parse field - missing structure', {
-        fieldName, fieldValue, fieldStructure
-      });
+    if (!fieldStructure) {
+      throw new MungoDocumentError(
+        'Could not parse field - missing structure',
+        {fieldName, fieldValue, fieldStructure});
     }
-    if ( ! fieldStructure.type ) {
+    if (!fieldStructure.type) {
       throw new MungoDocumentError('Could not parse field - missing type', {
         fieldName, fieldValue, fieldStructure
       });

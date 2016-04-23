@@ -1,7 +1,7 @@
 'use strict';
 
-import Type from './type';
-import MungoError from './error';
+import Type from './Type';
+import MungoError from './Error';
 
 class MungoUpdateStatementError extends MungoError {}
 

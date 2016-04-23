@@ -1,7 +1,7 @@
 'use strict';
 
-import Index                      from './index';
-import Type                       from './type';
+import Index                      from './Index';
+import Type                       from './Type';
 
 function testRegex (regex, value) {
   return regex.test(value);
