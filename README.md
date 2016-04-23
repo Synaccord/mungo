@@ -1,6 +1,8 @@
 Mungo
 ===
 
+[![Build Status](https://travis-ci.org/co2-git/badges.svg?branch=master)](https://travis-ci.org/co2-git/badges)
+
 `Mungo` is a library to create models for MongoDB.
 
 # Install
