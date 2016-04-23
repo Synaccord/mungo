@@ -1,93 +1,77 @@
-'use strict';
+import Connection from './Connection';
+import Projection from './Projection';
+// import MungoError from './Error';
 
-import mongodb              from 'mongodb';
-import Connection           from './Connection';
-import Projection           from './Projection';
-import prettify             from './prettify';
-import MungoError           from './Error';
-
-class MungoQueryError extends MungoError {}
+// class MungoQueryError extends MungoError {}
 
 class Query {
 
-  //----------------------------------------------------------------------------
+  // ---------------------------------------------------------------------------
 
   constructor (model) {
     this.model = model;
   }
 
 
-  //----------------------------------------------------------------------------
+  // ---------------------------------------------------------------------------
 
   connect () {
-    return new Promise((ok, ko) => {
-
-      if ( this.db ) {
-        return ok();
+    return new Promise((resolve) => {
+      if (this.db) {
+        return resolve();
       }
 
       const aliveConnections = Connection.connections
-        .filter(conn => ! conn.disconnected );
+        .filter(conn => !conn.disconnected);
 
       const connection = aliveConnections[0];
 
-      if ( connection ) {
-        if ( connection.connected ) {
+      if (connection) {
+        if (connection.connected) {
           this.db = connection.db;
-        }
-        else {
-          connection.on('connected', connection => {
-            this.db = connection.db;
+        } else {
+          connection.on('connected', conn => {
+            this.db = conn.db;
           });
         }
 
-        ok();
-      }
-      else {
-        Connection.events.on('connected', connection => {
-          this.db = connection.db;
-          return ok();
+        resolve();
+      } else {
+        Connection.events.on('connected', conn => {
+          this.db = conn.db;
+          return resolve();
         });
       }
-
     });
   }
 
-  //----------------------------------------------------------------------------
-
+  // ---------------------------------------------------------------------------
 
   getCollection () {
-    return new Promise((ok, ko) => {
+    return new Promise((resolve, reject) => {
       this.connect().then(
         () => {
-          if ( this.collection ) {
-            return ok();
+          if (this.collection) {
+            return resolve();
           }
 
           this.collection = this.db.collection(this.model.collection);
 
-          // console.log(prettify({ collection : this.collection.collectionName }));
-
-          ok();
+          resolve();
         },
-        ko
+        reject
       );
     });
   }
 
-  //----------------------------------------------------------------------------
-  //----------------------------------------------------------------------------
-  //----------------------------------------------------------------------------
+  // ---------------------------------------------------------------------------
+  // ---------------------------------------------------------------------------
+  // ---------------------------------------------------------------------------
 
-  find (query = {}, projection = {}, options = {}) {
-
-    const { model } = this;
-
+  find(query = {}, projection = {}) {
     projection = new Projection(projection);
 
-    // console.log(prettify({[`>>  Query {${this.model.name}#${this.model.version}} => find`] : { query, projection, options } }));
-
-    const promise = new Promise((ok, ko) => {
+    const promise = new Promise((resolve, reject) => {
       this.getCollection()
         .then(() => {
           const action = this.collection.find(query);
@@ -98,17 +82,10 @@ class Query {
             .sort(projection.sort);
 
           action.toArray()
-            .then(documents => {
-
-              // documents = documents.map(doc => new model(doc, true));
-
-              // console.log(prettify({ [`<<  Query {${this.model.name}#${this.model.version}} <= find`] : { found : documents } }));
-
-              ok(documents);
-            })
-            .catch(ko);
-          })
-          .catch(ko);
+            .then(resolve)
+            .catch(reject);
+        })
+        .catch(reject);
     });
 
     promise.limit = limit => {
@@ -124,212 +101,156 @@ class Query {
     return promise;
   }
 
-  //----------------------------------------------------------------------------
+  // ---------------------------------------------------------------------------
 
   findOne (query = {}, projection = {}, options = {}) {
-
-    const { model } = this;
-
     projection = new Projection(projection);
 
     Object.assign(options, projection);
 
-    return new Promise((ok, ko) => {
+    return new Promise((resolve, reject) => {
       this.getCollection()
         .then(() => {
           try {
             const action = this.collection.findOne(query, options);
-
-            action.
-              then(document => {
+            action
+              .then(document => {
                 try {
-                  // console.log(`>> ${this.model.name}#${this.model.version} => findOne`.blue.bold);
-                  // console.log(prettify(document));
-
-                  ok(document);
-                }
-                catch ( error ) {
-                  ko(error);
+                  resolve(document);
+                } catch (error) {
+                  reject(error);
                 }
               })
-              .catch(ko);
-          }
-          catch ( error ) {
-            ko(error);
+              .catch(reject);
+          } catch (error) {
+            reject(error);
           }
         })
-        .catch(ko);
+        .catch(reject);
     });
   }
 
-  //----------------------------------------------------------------------------
+  // ---------------------------------------------------------------------------
 
-  count (query = {}) {
-    const { model } = this;
-
-    // console.log(prettify({ [`${this.model.name}.count()`] : query }));
-
-    return new Promise((ok, ko) => {
+  count(query = {}) {
+    return new Promise((resolve, reject) => {
       this.getCollection()
         .then(() => {
           try {
             const action = this.collection.count(query);
-
             action
               .then(count => {
                 try {
-                  // console.log(prettify({ [`${this.model.name}.count()`] : count}));
-
-                  ok(count);
-                }
-                catch ( error ) {
-                  ko(error);
+                  resolve(count);
+                } catch (error) {
+                  reject(error);
                 }
               })
-              .catch(ko);
-          }
-          catch ( error ) {
-            ko(error);
+              .catch(reject);
+          } catch (error) {
+            reject(error);
           }
         })
-        .catch(ko);
+        .catch(reject);
     });
   }
 
-  //----------------------------------------------------------------------------
+  // ---------------------------------------------------------------------------
 
-  deleteMany (filter = {}, projection = {}, options = {}) {
-    return new Promise((ok, ko) => {
+  deleteMany (filter = {}, projection = {}) {
+    return new Promise((resolve, reject) => {
+      projection = new Projection(Object.assign({limit: 0}, projection));
 
-      projection = new Projection(Object.assign({ limit : 0 }, projection));
-
-      // console.log(prettify({ [`>> Query {${this.model.name}#${this.model.version}} => deleteMany`] : {filter, projection, options}}));
-
-      this.getCollection().then(
-        () => {
-
-          let action;
-
-          if ( ! projection.limit ) {
-            action = this.collection.deleteMany(filter);
+      this.getCollection()
+        .then(
+          () => {
+            let action;
+            if (!projection.limit) {
+              action = this.collection.deleteMany(filter);
+            }
+            action
+              .then(() => {
+                resolve();
+              })
+              .catch(reject);
           }
-
-          action
-            .then(result => {
-              // console.log(result);
-              ok();
-            })
-            .catch(ko)
-        },
-        ko
-      );
+        )
+        .catch(reject);
     });
   }
 
-  //----------------------------------------------------------------------------
+  // ---------------------------------------------------------------------------
 
-  deleteOne (filter = {}, projection = {}, options = {}) {
-    return new Promise((ok, ko) => {
+  deleteOne (filter = {}, projection = {}) {
+    return new Promise((resolve, reject) => {
       try {
-        projection = new Projection(Object.assign({ limit : 0 }, projection));
-
-        // console.log(prettify({ [`>> Query {${this.model.name}#${this.model.version}} => deleteOne`] : {filter, projection, options}}));
+        projection = new Projection(Object.assign({limit: 0}, projection));
 
         this.getCollection()
           .then(() => {
             try {
               let action;
-
-              if ( ! projection.limit ) {
+              if (!projection.limit) {
                 action = this.collection.deleteOne(filter);
               }
-
               action
                 .then(result => {
                   try {
-                    // console.log('---------------------------------------');
-                    // console.log(result);
-
-                    // console.log(prettify({ [`<< Query {${this.model.name}#${this.model.version}} <= deleteOne`] : result.deletedCount}));
-
-                    ok(result.deletedCount);
-                  }
-                  catch ( error ) {
-                    ko(error);
+                    resolve(result.deletedCount);
+                  } catch (error) {
+                    reject(error);
                   }
                 })
-                .catch(ko)
-            }
-            catch ( error ) {
-              ko(error);
+                .catch(reject);
+            } catch (error) {
+              reject(error);
             }
           })
-          .catch(ko);
-      }
-      catch ( error ) {
-        ko(error);
+          .catch(reject);
+      } catch (error) {
+        reject(error);
       }
     });
   }
 
-  //----------------------------------------------------------------------------
+  // ---------------------------------------------------------------------------
 
-  insertMany (docs = [], options = {}) {
-    return new Promise((ok, ko) => {
-
-      const { model } = this;
-
-      // console.log(prettify({ [`>> Query {${model.name}#${model.version}} => insertMany`] : { docs, options }}));
-
+  insertMany(docs = []) {
+    return new Promise((resolve, reject) => {
+      const {Model} = this;
       this.getCollection().then(
         () => {
-
           let action = this.collection.insertMany(docs);
-
           action
             .then(res => {
-              ok(res.ops.map(op => new model(op, true)));
+              resolve(res.ops.map(op => new Model(op, true)));
             })
-            .catch(ko);
+            .catch(reject);
         },
-        ko
+        reject
       );
     });
   }
 
-  //----------------------------------------------------------------------------
+  // ---------------------------------------------------------------------------
 
-  insertOne (doc = {}, options = {}) {
-    return new Promise((ok, ko) => {
-
-      const { model } = this;
-
-      // console.log(prettify({ [`>> Query {${this.model.name}#${this.model.version}} => insertOne`] : { doc, options } }));
-
+  insertOne(doc = {}) {
+    return new Promise((resolve, reject) => {
       this.getCollection()
-
         .then(() => {
           let action = this.collection.insertOne(doc);
-
           action
             .then(inserted => {
-
-              // const document = new model(inserted.ops[0], true);
-
-              // console.log(prettify({ [`<< Query {${this.model.name}#${this.model.version}} <= insertOne`] : { ops:  inserted.ops } }));
-
-
-
-              ok(inserted.ops[0]);
+              resolve(inserted.ops[0]);
             })
-            .catch(ko);
+            .catch(reject);
         })
 
-        .catch(ko);
+        .catch(reject);
     });
   }
 
-  //----------------------------------------------------------------------------
+  // ---------------------------------------------------------------------------
 
   /**   Update One Document
    *
@@ -338,32 +259,25 @@ class Query {
    *    @arg      {Object}    options={}
    */
 
-  //----------------------------------------------------------------------------
+  // ---------------------------------------------------------------------------
 
-  updateOne (filter = {}, modifier = {}, options = {}) {
-    return new Promise((ok, ko) => {
-
-      const { model } = this;
-
+  updateOne(filter = {}, modifier = {}, options = {}) {
+    return new Promise((resolve, reject) => {
       this.getCollection().then(
         () => {
           let action = this.collection.updateOne(filter, modifier, options);
-
-          action
-            .then(ok, ko);
+          action.then(resolve, reject);
         },
-        ko
+        reject
       );
     });
   }
 
-  //----------------------------------------------------------------------------
+  // ---------------------------------------------------------------------------
 
   updateMany (filter = {}, modifier = {}, options = {}) {
-    return new Promise((ok, ko) => {
+    return new Promise((resolve, reject) => {
       try {
-        // console.log(prettify({[`>> Query {${this.model.name}#${this.model.version}} => updateMany`]: {filter,modifier,options}}));
-
         this.getCollection().then(
           () => {
             let action = this.collection.updateMany(
@@ -372,16 +286,17 @@ class Query {
               options
             );
 
-            action.then(ok, ko);
+            action.then(resolve, reject);
           },
-          ko
+          reject
         );
-      }
-      catch ( error ) {
-        ko(error);
+      } catch (error) {
+        reject(error);
       }
     });
   }
+
+  // ---------------------------------------------------------------------------
 
 }
 

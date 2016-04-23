@@ -1,116 +1,104 @@
-'use strict';
-
 import mongodb from 'mongodb';
-import prettify from './prettify';
 import MungoError from './Error';
 
 class MungoTypeError extends MungoError {}
 
-//------------------------------------------------------------------------------
+// -----------------------------------------------------------------------------
 
 class _Object {
   constructor(object = {}) {
     Object.assign(this, object);
   }
 
-  /** Boolean */ static validate (value) {
+  static validate(value) {
     return value && typeof value === 'object' && value.constructor === Object;
   }
 
-  /** Mixed */ static convert (value) {
+  static convert(value) {
     return value;
   }
 }
 
-//------------------------------------------------------------------------------
+// -----------------------------------------------------------------------------
 
 class _Array {
-  static convert (array, type) {
+  static convert(array, type) {
     try {
-      if ( array === null ) {
+      if (array === null) {
         return null;
       }
-
       type = Type.associate(type);
-
-      // if ( type.isSubdocument() ) {
-      //   console.log('-------------------------------------');
-      //   return array.map(item => {
-      //     for ( let field in item ) {
-      //
-      //     }
-      //   })
-      // }
-
       return array.map(item => type.convert(item));
-    }
-    catch ( error ) {
-      console.log(type);
-
-      throw MungoTypeError.rethrow(error, 'Could not convert array', { array, type });
+    } catch (error) {
+      throw MungoTypeError.rethrow(
+        error,
+        'Could not convert array',
+        {
+          array,
+          type,
+        }
+      );
     }
   }
 
-  static validate (array, type) {
+  static validate(array, type) {
     try {
       type = Type.associate(type);
-
       return array.every(item => type.validate(item));
-    }
-    catch ( error ) {
-      throw MungoTypeError.rethrow(error, 'Could not convert array', { array, type });
+    } catch (error) {
+      throw MungoTypeError.rethrow(
+        error,
+        'Could not convert array',
+        {array, type}
+      );
     }
   }
 }
 
-//------------------------------------------------------------------------------
+// -----------------------------------------------------------------------------
 
 class _Subdocument {
   static convert (subdoc, schema) {
     const converted = {};
-
-    for ( let field in subdoc ) {
-      if ( field in schema ) {
+    for (let field in subdoc) {
+      if (field in schema) {
         converted[field] = schema[field].type.convert(subdoc[field]);
       }
     }
-
     return converted;
   }
 
-  static validate (array, type) {
+  static validate(subdoc, schema) {
     const validated = {};
-
-    for ( let field in subdoc ) {
+    for (let field in subdoc) {
       validated[field] = schema[field].type.validate(subdoc[field]);
     }
-
     return Object.keys(validated).every(key => validated[key]);
   }
 }
 
-//------------------------------------------------------------------------------
+// -----------------------------------------------------------------------------
 
 class _Mixed {
-  static validate (value) {
+  static validate() {
     return true;
   }
 
-  static convert (value) {
+  static convert(value) {
     return value;
   }
 }
 
-//------------------------------------------------------------------------------
+// -----------------------------------------------------------------------------
 
 class _String {
 
-  static validate (value) {
+  static validate(value) {
     return (typeof value === 'string');
   }
 
-  static convert (value) {
-    if ( value === null || typeof value === 'undefined' ) {
+  static convert(value) {
+    if (value === null || typeof value === 'undefined') {
       return null;
     }
     return value.toString();
@@ -118,52 +106,57 @@ class _String {
 
 }
 
-//------------------------------------------------------------------------------
+// -----------------------------------------------------------------------------
 
 class _Number {
 
-  static validate (value) {
+  static validate(value) {
     return value.constructor === Number && isFinite(value);
   }
 
-  static convert (value) {
-    return +value;
+  static convert(value) {
+    return Number(value);
   }
 
 }
 
-//------------------------------------------------------------------------------
+// -----------------------------------------------------------------------------
 
 class _Boolean {
 
-  static validate (value) {
+  static validate(value) {
     return typeof value === 'boolean';
   }
 
   static convert (value) {
-    return !!value;
+    return Boolean(value);
   }
 
 }
 
-//------------------------------------------------------------------------------
+// -----------------------------------------------------------------------------
 
 class _Date {
+
   static validate (value) {
     return value instanceof Date;
   }
 
-  static convert (value) {
+  static convert(value) {
     try {
       return new Date(new Date(value).toISOString());
-    }
-    catch ( error ) {
-      throw MungoTypeError.rethrow(error, 'Could not convert value to date', { value });
+    } catch (error) {
+      throw MungoTypeError.rethrow(
+        error,
+        'Could not convert value to date',
+        {value}
+      );
     }
   }
+
 }
 
-//------------------------------------------------------------------------------
+// -----------------------------------------------------------------------------
 
 class _ObjectID extends mongodb.ObjectID {
   static validate (value) {
@@ -172,38 +165,34 @@ class _ObjectID extends mongodb.ObjectID {
 
   static convert (value) {
     try {
-      // console.log(prettify({'converting ObjectId' : { value }}));
-
-      if ( value === null ) {
+      if (value === null) {
         return undefined;
       }
-
-      if ( typeof value === 'string' ) {
+      if (typeof value === 'string') {
         return mongodb.ObjectID(value);
       }
-
-      if ( value instanceof mongodb.ObjectID ) {
+      if (value instanceof mongodb.ObjectID) {
         return value;
       }
-
-      if ( value && typeof value === 'object' ) {
-
-        if ( value.$in ) {
-          return { $in : value.$in.map(value => Type.ObjectID.convert(value)) };
+      if (value && typeof value === 'object') {
+        if (value.$in) {
+          return {$in: value.$in.map(val => Type.ObjectID.convert(val))};
         }
-
-        if ( value._id ) {
+        if (value._id) {
           return mongodb.ObjectID(value._id);
         }
       }
-    }
-    catch ( error ) {
-      throw MungoTypeError.rethrow(error, 'Could not convert objectId', { value });
+    } catch (error) {
+      throw MungoTypeError.rethrow(
+        error,
+        'Could not convert objectId',
+        {value}
+      );
     }
   }
 }
 
-//------------------------------------------------------------------------------
+// -----------------------------------------------------------------------------
 
 class _Geo {
   static MongoDBType = '2d';
@@ -217,38 +206,29 @@ class _Geo {
   }
 }
 
-//------------------------------------------------------------------------------
+// -----------------------------------------------------------------------------
 
 class Type {
-  static Object         =   _Object;
-
-  static ObjectID       =   _ObjectID;
-
-  static Mixed          =   _Mixed;
-
-  static String         =   _String;
-
-  static Number         =   _Number;
-
-  static Boolean        =   _Boolean;
-
-  static Date           =   _Date;
-
-  static Array          =   _Array;
-
-  static Subdocument    =   _Subdocument;
-
-  static Geo            =   _Geo;
+  static Object = _Object;
+  static ObjectID = _ObjectID;
+  static Mixed = _Mixed;
+  static String = _String;
+  static Number = _Number;
+  static Boolean = _Boolean;
+  static Date = _Date;
+  static Array = _Array;
+  static Subdocument = _Subdocument;
+  static Geo = _Geo;
 
   static associate(type) {
-    switch ( type ) {
-      case String:      return Type.String;
-      case Number:      return Type.Number;
-      case Boolean:     return Type.Boolean;
-      case Object:      return Type.Object;
-      case Date:        return Type.Date;
-      case Array:       return Type.Array;
-      default:          return type;
+    switch (type) {
+    case String: return Type.String;
+    case Number: return Type.Number;
+    case Boolean: return Type.Boolean;
+    case Object: return Type.Object;
+    case Date: return Type.Date;
+    case Array: return Type.Array;
+    default: return type;
     }
   }
 
@@ -263,7 +243,7 @@ class Type {
   }
 
   getSubdocument () {
-    if ( this.isSubdocument() ) {
+    if (this.isSubdocument()) {
       return this.args[0];
     }
   }
@@ -273,28 +253,26 @@ class Type {
   }
 
   getArray () {
-    if ( this.isArray() ) {
+    if (this.isArray()) {
       return this.args[0];
     }
   }
 
   convert(value) {
-
-    if ( typeof this.type.convert !== 'function' ) {
+    if (typeof this.type.convert !== 'function') {
       throw MungoTypeError.rethrow(
         new Error('Can not convert type'),
         'Can not convert type',
         {
-          type : this.type.name,
-          convert : this.type.convert
+          type: this.type.name,
+          convert: this.type.convert
         }
       );
     }
 
     try {
       return this.type.convert(value, ...this.args);
-    }
-    catch ( error ) {
+    } catch (error) {
       throw error;
     }
   }
@@ -304,9 +282,7 @@ class Type {
   }
 
   constructor(type, ...args) {
-
     this.args = args;
-
     this.type = this.constructor.associate(type);
   }
 }

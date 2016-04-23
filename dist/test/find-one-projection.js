@@ -41,8 +41,6 @@ Foo.schema = {
 
 
 function test() {
-  var props = arguments.length <= 0 || arguments[0] === undefined ? {} : arguments[0];
-
   var locals = {};
 
   return (0, _redtea2.default)('Find One - Projection', function (it) {
@@ -52,47 +50,47 @@ function test() {
       });
     });
 
-    it('Create documents', function (it) {
-      var _loop = function _loop(i) {
-        it('Create { number : ' + i + ' }', function () {
-          return Foo.insert({ number: i });
+    it('Create documents', function ($$$create_document) {
+      var _loop = function _loop(number) {
+        $$$create_document('Create { number : ' + number + ' }', function () {
+          return Foo.insert({ number: number });
         });
       };
 
-      for (var i = 0; i < 5; i++) {
-        _loop(i);
+      for (var number = 0; number < 5; number++) {
+        _loop(number);
       }
     });
 
-    it('Find One - sort', function (it) {
-      it('Sort up', function (it) {
-        it('findOne().sort({ number : 1 })', function () {
+    it('Find One - sort', function ($$find_one_sort) {
+      $$find_one_sort('Sort up', function ($$sort_up) {
+        $$sort_up('findOne().sort({ number : 1 })', function () {
           return Foo.findOne().sort({ number: 1 }).then(function (result) {
             locals.result = result;
           });
         });
 
-        it('should have 1 result', function () {
-          locals.result.should.be.an.Object;
+        $$sort_up('should have 1 result', function () {
+          return locals.result.should.be.an.Object;
         });
 
-        it('it should be the lowest number', function () {
+        $$sort_up('it should be the lowest number', function () {
           locals.result.should.have.property('number').which.is.exactly(0);
         });
       });
 
-      it('Sort down', function (it) {
-        it('findOne().sort({ number : -1 })', function () {
+      $$find_one_sort('Sort down', function ($$sort_down) {
+        $$sort_down('findOne().sort({ number : -1 })', function () {
           return Foo.findOne().sort({ number: -1 }).then(function (result) {
             locals.result = result;
           });
         });
 
-        it('should have 1 result', function () {
-          locals.result.should.be.an.Object;
+        $$sort_down('should have 1 result', function () {
+          return locals.result.should.be.an.Object;
         });
 
-        it('it should be the highest number', function () {
+        $$sort_down('it should be the highest number', function () {
           locals.result.should.have.property('number').which.is.exactly(4);
         });
       });

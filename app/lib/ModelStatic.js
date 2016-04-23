@@ -1,19 +1,17 @@
-'use strict';
-
-import Schema                     from  './Schema';
-import ModelQuery                 from './ModelQuery';
+import Schema from  './Schema';
+import ModelQuery from './ModelQuery';
 
 class ModelStatic extends ModelQuery {
 
-  //---------------------------------------------------------------------------
+  // --------------------------------------------------------------------------
 
   // Static properties
 
-  //---------------------------------------------------------------------------
+  // --------------------------------------------------------------------------
 
   static version = 0;
 
-  //----------------------------------------------------------------------------
+  // ---------------------------------------------------------------------------
 
   static schema = {};
 
@@ -21,11 +19,11 @@ class ModelStatic extends ModelQuery {
 
   static _schema;
 
-  //---------------------------------------------------------------------------
+  // --------------------------------------------------------------------------
 
   // Static getters
 
-  //----------------------------------------------------------------------------
+  // ---------------------------------------------------------------------------
 
   /** @return [Index] */
 
@@ -33,7 +31,7 @@ class ModelStatic extends ModelQuery {
     return this.getSchema().indexes;
   }
 
-  //---------------------------------------------------------------------------
+  // --------------------------------------------------------------------------
 
   /** @return {String} */
 
@@ -47,40 +45,46 @@ class ModelStatic extends ModelQuery {
     this._collection = collection;
   }
 
-  //----------------------------------------------------------------------------
+  // ---------------------------------------------------------------------------
 
   // Static methods
 
-  //----------------------------------------------------------------------------
+  // ---------------------------------------------------------------------------
 
   /** @return {Schema} */
 
   static getSchema () {
-    if ( this._schema ) {
+    if (this._schema) {
       return this._schema;
     }
 
-    if ( typeof this.schema === 'object' ) {
+    if (typeof this.schema === 'object') {
       this._schema = new Schema(this.schema, this.version);
-    }
-
-    // legacy support
-
-    else if ( typeof this.schema === 'function' ) {
-      this._schema = new Schema(this.schema(), this.version);
     }
 
     return this._schema;
   }
 
-  //----------------------------------------------------------------------------
+  // ---------------------------------------------------------------------------
 
-  static updating() { return [] }
-  static updated() { return [] }
-  static inserting() { return [] }
-  static inserted() { return [] }
-  static removing() { return [] }
-  static removed() { return [] }
+  static updating() {
+    return [];
+  }
+  static updated() {
+    return [];
+  }
+  static inserting() {
+    return [];
+  }
+  static inserted() {
+    return [];
+  }
+  static removing() {
+    return [];
+  }
+  static removed() {
+    return [];
+  }
 
 }
 

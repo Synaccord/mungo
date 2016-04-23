@@ -86,8 +86,9 @@ var FindStatement = function () {
       };
 
       for (var field in document) {
-
-        if (document[field] instanceof Promise) {} else if (typeof document[field] === 'function') {
+        if (document[field] instanceof Promise) {
+          console.log('Promises not supported yet!');
+        } else if (typeof document[field] === 'function') {
           var $type = void 0;
 
           switch (document[field]) {
@@ -151,9 +152,10 @@ var FindStatement = function () {
   }, {
     key: 'parseField',
     value: function parseField(fieldName, fieldValue, fieldStructure, schema) {
+      var parsedFieldStructure = fieldStructure;
       try {
         if (/\./.test(fieldName)) {
-          fieldStructure = schema.flatten[fieldName];
+          parsedFieldStructure = schema.flatten[fieldName];
         }
 
         if (fieldValue && (typeof fieldValue === 'undefined' ? 'undefined' : _typeof(fieldValue)) === 'object') {
@@ -168,21 +170,21 @@ var FindStatement = function () {
               case '$lte':
               case '$size':
               case '$slice':
-                return _defineProperty({}, key, fieldStructure.type.convert(value));
+                return _defineProperty({}, key, parsedFieldStructure.type.convert(value));
 
               case '$eq':
               case '$ne':
-                return _defineProperty({}, key, fieldStructure.type.convert(value));
+                return _defineProperty({}, key, parsedFieldStructure.type.convert(value));
 
               case '$in':
               case '$nin':
-                return _defineProperty({}, key, value.map(function (v) {
-                  return fieldStructure.type.convert(v);
+                return _defineProperty({}, key, value.map(function (valueItem) {
+                  return parsedFieldStructure.type.convert(valueItem);
                 }));
 
               case '$not':
               case '$elemMatch':
-                return _defineProperty({}, key, this.parseField(fieldName, value, fieldStructure));
+                return _defineProperty({}, key, this.parseField(fieldName, value, parsedFieldStructure));
 
               case '$exists':
                 return _defineProperty({}, key, _type2.default.Boolean.convert(value));
@@ -199,8 +201,8 @@ var FindStatement = function () {
                 if (!Array.isArray(value)) {
                   throw new _error2.default('FindStatement:$mod > value must be an Array', { value: value });
                 }
-                return _defineProperty({}, key, value.map(function (value) {
-                  return _type2.default.Number.convert(value);
+                return _defineProperty({}, key, value.map(function (item) {
+                  return _type2.default.Number.convert(item);
                 }));
 
               case '$regex':
@@ -216,7 +218,7 @@ var FindStatement = function () {
                 if (typeof value === 'string') {
                   search.$search = value;
                 } else if (!value || (typeof value === 'undefined' ? 'undefined' : _typeof(value)) !== 'object') {
-                  throw new _error2.default('FindStatement:$text > value must be either a string or an object', { value: value });
+                  throw new _error2.default('FindStatement:$text >' + ' value must be either a string or an object', { value: value });
                 }
 
                 if ((typeof value === 'undefined' ? 'undefined' : _typeof(value)) === 'object') {
@@ -242,7 +244,7 @@ var FindStatement = function () {
                   throw new _error2.default('FindStatement:' + key + ' > value must be an array', { value: value });
                 }
 
-                return _defineProperty({}, key, fieldStructure.type.convert(value));
+                return _defineProperty({}, key, parsedFieldStructure.type.convert(value));
 
               case '$comment':
               case '$meta':
@@ -251,13 +253,13 @@ var FindStatement = function () {
           }
         }
 
-        if (!fieldStructure || !('type' in fieldStructure)) {
-          console.log('parse field error', { fieldName: fieldName, fieldValue: fieldValue, fieldStructure: fieldStructure, schema: schema });
+        if (!parsedFieldStructure || !('type' in parsedFieldStructure)) {
+          console.log('parse field error', { fieldName: fieldName, fieldValue: fieldValue, parsedFieldStructure: parsedFieldStructure, schema: schema });
         }
 
-        return fieldStructure.type.convert(fieldValue);
+        return parsedFieldStructure.type.convert(fieldValue);
       } catch (error) {
-        throw MungoFindStatementError.rethrow(error, 'Can not parse field of find statement', { fieldName: fieldName, fieldValue: fieldValue, fieldStructure: fieldStructure });
+        throw MungoFindStatementError.rethrow(error, 'Can not parse field of find statement', { fieldName: fieldName, fieldValue: fieldValue, parsedFieldStructure: parsedFieldStructure });
       }
     }
   }]);

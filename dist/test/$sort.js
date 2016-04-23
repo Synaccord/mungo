@@ -4,13 +4,11 @@ Object.defineProperty(exports, "__esModule", {
   value: true
 });
 
+require('should');
+
 var _redtea = require('redtea');
 
 var _redtea2 = _interopRequireDefault(_redtea);
-
-var _should = require('should');
-
-var _should2 = _interopRequireDefault(_should);
 
 var _ = require('../');
 
@@ -44,24 +42,22 @@ Foo.schema = { foo: String };
 
 
 function test() {
-  var props = arguments.length <= 0 || arguments[0] === undefined ? {} : arguments[0];
-
   var locals = {};
 
   return (0, _redtea2.default)('$sort', function (it) {
-    it('should instantiate a new FindStatement', function (it) {
+    it('should instantiate a new FindStatement', function () {
       locals.query = new _FindStatement2.default({ $sort: { foo: 1 } }, Foo);
     });
 
-    it('should have a projection property', function (it) {
+    it('should have a projection property', function () {
       locals.query.should.have.property('$projection').which.is.an.Object();
     });
 
-    it('should have a sort', function (it) {
+    it('should have a sort', function () {
       locals.query.$projection.should.have.property('sort').which.is.an.Object();
     });
 
-    it('should be a sorter', function (it) {
+    it('should be a sorter', function () {
       locals.query.$projection.sort.should.have.property('foo').which.is.exactly(1);
     });
   });

@@ -1,5 +1,3 @@
-'use strict';
-
 import describe from 'redtea';
 import 'should';
 import Mungo from '..';
@@ -8,11 +6,11 @@ class Foo extends Mungo.Model {
   static collection = 'mungo_test_find_one_projection';
 
   static schema = {
-    number : Number
+    number: Number,
   };
 }
 
-function test(props = {}) {
+function test() {
   const locals = {};
 
   return describe('Find One - Projection', it => {
@@ -22,41 +20,47 @@ function test(props = {}) {
         .on('connected', pass);
     }));
 
-    it('Create documents', it => {
-      for ( let i = 0; i < 5; i ++ ) {
-        it(`Create { number : ${i} }`, () => Foo.insert({ number : i }));
+    it('Create documents', $$$create_document => {
+      for (let number = 0; number < 5; number++) {
+        $$$create_document(`Create { number : ${number} }`,
+          () => Foo.insert({number})
+        );
       }
     });
 
-    it('Find One - sort', it => {
-      it('Sort up', it => {
-        it('findOne().sort({ number : 1 })', () => Foo
+    it('Find One - sort', $$find_one_sort => {
+      $$find_one_sort('Sort up', $$sort_up => {
+        $$sort_up('findOne().sort({ number : 1 })', () => Foo
           .findOne()
-          .sort({ number : 1 })
-          .then(result => { locals.result = result })
+          .sort({number: 1})
+          .then(result => {
+            locals.result = result;
+          })
         );
 
-        it('should have 1 result', () => {
-          locals.result.should.be.an.Object;
+        $$sort_up('should have 1 result', () => {
+          return locals.result.should.be.an.Object;
         });
 
-        it('it should be the lowest number', () => {
+        $$sort_up('it should be the lowest number', () => {
           locals.result.should.have.property('number').which.is.exactly(0);
         });
       });
 
-      it('Sort down', it => {
-        it('findOne().sort({ number : -1 })', () => Foo
+      $$find_one_sort('Sort down', $$sort_down => {
+        $$sort_down('findOne().sort({ number : -1 })', () => Foo
           .findOne()
-          .sort({ number : -1 })
-          .then(result => { locals.result = result })
+          .sort({number: -1})
+          .then(result => {
+            locals.result = result;
+          })
         );
 
-        it('should have 1 result', () => {
-          locals.result.should.be.an.Object;
+        $$sort_down('should have 1 result', () => {
+          return locals.result.should.be.an.Object;
         });
 
-        it('it should be the highest number', () => {
+        $$sort_down('it should be the highest number', () => {
           locals.result.should.have.property('number').which.is.exactly(4);
         });
       });

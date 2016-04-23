@@ -1,5 +1,9 @@
 'use strict';
 
+Object.defineProperty(exports, "__esModule", {
+  value: true
+});
+
 var _createClass = function () { function defineProperties(target, props) { for (var i = 0; i < props.length; i++) { var descriptor = props[i]; descriptor.enumerable = descriptor.enumerable || false; descriptor.configurable = true; if ("value" in descriptor) descriptor.writable = true; Object.defineProperty(target, descriptor.key, descriptor); } } return function (Constructor, protoProps, staticProps) { if (protoProps) defineProperties(Constructor.prototype, protoProps); if (staticProps) defineProperties(Constructor, staticProps); return Constructor; }; }();
 
 var _stream = require('stream');
@@ -13,7 +17,7 @@ function _inherits(subClass, superClass) { if (typeof superClass !== "function" 
 var Streamable = function (_Readable) {
   _inherits(Streamable, _Readable);
 
-  function Streamable(options) {
+  function Streamable() {
     _classCallCheck(this, Streamable);
 
     var _this = _possibleConstructorReturn(this, Object.getPrototypeOf(Streamable).call(this, {
@@ -21,35 +25,26 @@ var Streamable = function (_Readable) {
     }));
 
     _this.setEncoding('utf8');
-
     _this.collection = [];
     return _this;
   }
 
+  // _read(data) {}
+
   _createClass(Streamable, [{
-    key: '_read',
-    value: function _read(n) {
-      console.log('reading');
-    }
-  }, {
     key: 'add',
     value: function add() {
-      for (var _len = arguments.length, doc = Array(_len), _key = 0; _key < _len; _key++) {
-        doc[_key] = arguments[_key];
-      }
-
-      console.log('adding', doc.length);
-      // this.collection.push(...doc);
       this.resume();
       this.emit('readable');
 
-      doc.map(function (doc) {
+      for (var _len = arguments.length, docs = Array(_len), _key = 0; _key < _len; _key++) {
+        docs[_key] = arguments[_key];
+      }
+
+      docs.map(function (doc) {
         return doc.toJSON();
       });
-
-      var source = JSON.stringify(doc);
-
-      console.log(source);
+      var source = JSON.stringify(docs);
       this.emit('data', source);
     }
   }, {
@@ -62,4 +57,4 @@ var Streamable = function (_Readable) {
   return Streamable;
 }(_stream.Readable);
 
-Mungo.Streamable = Streamable;
+exports.default = Streamable;

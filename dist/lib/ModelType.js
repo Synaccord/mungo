@@ -80,7 +80,13 @@ var ModelType = function () {
 
         return model._id;
       } catch (error) {
-        throw ModelTypeError.rethrow(error, 'Could not convert model', { value: value, model: { name: this.name, version: this.version } });
+        throw ModelTypeError.rethrow(error, 'Could not convert model', {
+          value: value,
+          model: {
+            name: this.name,
+            version: this.version
+          }
+        });
       }
     }
   }]);

@@ -8,9 +8,7 @@ var _typeof = typeof Symbol === "function" && typeof Symbol.iterator === "symbol
 
 var _createClass = function () { function defineProperties(target, props) { for (var i = 0; i < props.length; i++) { var descriptor = props[i]; descriptor.enumerable = descriptor.enumerable || false; descriptor.configurable = true; if ("value" in descriptor) descriptor.writable = true; Object.defineProperty(target, descriptor.key, descriptor); } } return function (Constructor, protoProps, staticProps) { if (protoProps) defineProperties(Constructor.prototype, protoProps); if (staticProps) defineProperties(Constructor, staticProps); return Constructor; }; }();
 
-var _colors = require('colors');
-
-var _colors2 = _interopRequireDefault(_colors);
+require('colors');
 
 var _promiseSequencer = require('promise-sequencer');
 
@@ -27,10 +25,6 @@ var _Document2 = _interopRequireDefault(_Document);
 var _UpdateStatement = require('./UpdateStatement');
 
 var _UpdateStatement2 = _interopRequireDefault(_UpdateStatement);
-
-var _prettify = require('./prettify');
-
-var _prettify2 = _interopRequireDefault(_prettify);
 
 var _Error = require('./Error');
 
@@ -77,19 +71,19 @@ var Model = function (_ModelStatic) {
     key: 'getSchema',
 
 
-    //----------------------------------------------------------------------------
+    // ---------------------------------------------------------------------------
 
     value: function getSchema() {
       return this.constructor.getSchema();
     }
 
-    //----------------------------------------------------------------------------
+    // ---------------------------------------------------------------------------
 
-    //----------------------------------------------------------------------------
+    // ---------------------------------------------------------------------------
 
   }]);
 
-  //----------------------------------------------------------------------------
+  // ---------------------------------------------------------------------------
 
   function Model() {
     var original = arguments.length <= 0 || arguments[0] === undefined ? {} : arguments[0];
@@ -129,7 +123,7 @@ var Model = function (_ModelStatic) {
     return _this2;
   }
 
-  //----------------------------------------------------------------------------
+  // ---------------------------------------------------------------------------
 
   _createClass(Model, [{
     key: 'set',
@@ -137,8 +131,8 @@ var Model = function (_ModelStatic) {
       var _Object$assign2, _mutatorMap2;
 
       if ((typeof field === 'undefined' ? 'undefined' : _typeof(field)) === 'object') {
-        for (var i in field) {
-          this.set(i, field[i]);
+        for (var _field in field) {
+          this.set(_field, field[_field]);
         }
         return this;
       }
@@ -160,7 +154,7 @@ var Model = function (_ModelStatic) {
       return this;
     }
 
-    //----------------------------------------------------------------------------
+    // ---------------------------------------------------------------------------
 
   }, {
     key: 'increment',
@@ -168,20 +162,20 @@ var Model = function (_ModelStatic) {
       var step = arguments.length <= 1 || arguments[1] === undefined ? 1 : arguments[1];
 
       if ((typeof field === 'undefined' ? 'undefined' : _typeof(field)) === 'object') {
-        for (var i in field) {
-          this.increment(i, field[i]);
+        for (var _field in field) {
+          this.increment(_field, field[_field]);
         }
         return this;
       }
 
-      var schema = this.constructor.getSchema();
+      // const schema = this.constructor.getSchema();
 
-      var current = +(this.$document[field] || 0);
+      var current = Number(this.$document[field] || 0);
 
       return this.set(field, current + step);
     }
 
-    //----------------------------------------------------------------------------
+    // ---------------------------------------------------------------------------
 
   }, {
     key: 'push',
@@ -189,8 +183,8 @@ var Model = function (_ModelStatic) {
       var _Object$assign3, _mutatorMap3;
 
       if ((typeof field === 'undefined' ? 'undefined' : _typeof(field)) === 'object') {
-        for (var i in field) {
-          this.push(i, field[i]);
+        for (var _field in field) {
+          this.push(_field, field[_field]);
         }
         return this;
       }
@@ -218,15 +212,14 @@ var Model = function (_ModelStatic) {
       return this;
     }
 
-    //----------------------------------------------------------------------------
+    // ---------------------------------------------------------------------------
 
   }, {
     key: 'map',
     value: function map(field, mapper) {
-
       if ((typeof field === 'undefined' ? 'undefined' : _typeof(field)) === 'object') {
-        for (var i in field) {
-          this.push(i, field[i]);
+        for (var _field in field) {
+          this.map(_field, field[_field]);
         }
         return this;
       }
@@ -246,7 +239,7 @@ var Model = function (_ModelStatic) {
       return this.set(field, mapped);
     }
 
-    //----------------------------------------------------------------------------
+    // ---------------------------------------------------------------------------
 
   }, {
     key: 'get',
@@ -254,24 +247,21 @@ var Model = function (_ModelStatic) {
       return this.$document[field];
     }
 
-    //----------------------------------------------------------------------------
+    // --------------------------------------------------------------------------
 
   }, {
     key: 'save',
     value: function save() {
       var _this3 = this;
 
-      var options = arguments.length <= 0 || arguments[0] === undefined ? {} : arguments[0];
-
-      return new Promise(function (ok, ko) {
+      return new Promise(function (resolve, reject) {
         try {
           var _ret2 = function () {
-            var Model = _this3.constructor;
+            var ThisModel = _this3.constructor;
 
-            _this3.set('__V', Model.version);
+            _this3.set('__V', ThisModel.version);
 
             if (_this3.$fromDB) {
-
               if (typeof _this3.get('__v') === 'undefined') {
                 _this3.set('__v', 0);
               } else if (!('__v' in _this3.$changes)) {
@@ -279,24 +269,24 @@ var Model = function (_ModelStatic) {
               }
 
               (0, _promiseSequencer2.default)(function () {
-                return (0, _promiseSequencer2.default)((Model.updating() || []).map(function (fn) {
+                return (0, _promiseSequencer2.default)((ThisModel.updating() || []).map(function (fn) {
                   return function () {
                     return fn(_this3);
                   };
                 }));
               }, function () {
-                return Model.exec('updateOne', { _id: _this3.get('_id') }, new _UpdateStatement2.default(_this3.$changes, Model));
+                return ThisModel.exec('updateOne', { _id: _this3.get('_id') }, new _UpdateStatement2.default(_this3.$changes, ThisModel));
               }).then(function () {
-                ok(_this3);
+                resolve(_this3);
 
-                (0, _promiseSequencer2.default)((Model.updated() || []).map(function (fn) {
+                (0, _promiseSequencer2.default)((ThisModel.updated() || []).map(function (fn) {
                   return function () {
                     return fn(_this3);
                   };
                 })).then(function () {
                   _this3.$changes = {};
                 });
-              }).catch(ko);
+              }).catch(reject);
             } else {
               _this3.set('__v', 0);
 
@@ -306,20 +296,19 @@ var Model = function (_ModelStatic) {
                 _this3.required();
               } catch (error) {
                 return {
-                  v: ko(error)
+                  v: reject(error)
                 };
               }
 
               _promiseSequencer2.default.pipe(function () {
-                return (0, _promiseSequencer2.default)((Model.inserting() || []).map(function (fn) {
+                return (0, _promiseSequencer2.default)((ThisModel.inserting() || []).map(function (fn) {
                   return function () {
                     return fn(_this3);
                   };
                 }));
               }, function () {
-                return Model.exec('insertOne', _this3.$document);
+                return ThisModel.exec('insertOne', _this3.$document);
               }).then(function (inserted) {
-
                 _this3.set('_id', inserted._id);
 
                 _this3.$fromDB = true;
@@ -332,31 +321,29 @@ var Model = function (_ModelStatic) {
                   }
                 });
 
-                ok(_this3);
+                resolve(_this3);
 
-                (0, _promiseSequencer2.default)((Model.inserted() || []).map(function (fn) {
+                (0, _promiseSequencer2.default)((ThisModel.inserted() || []).map(function (fn) {
                   return function () {
                     return fn(_this3);
                   };
                 }));
-              }).catch(ko);
+              }).catch(reject);
             }
           }();
 
           if ((typeof _ret2 === 'undefined' ? 'undefined' : _typeof(_ret2)) === "object") return _ret2.v;
         } catch (error) {
-          ko(error);
+          reject(error);
         }
       });
     }
 
-    //----------------------------------------------------------------------------
+    // ---------------------------------------------------------------------------
 
   }, {
     key: 'toJSON',
     value: function toJSON() {
-      var options = arguments.length <= 0 || arguments[0] === undefined ? {} : arguments[0];
-
       var serialized = JSON.parse(JSON.stringify(this.$document));
 
       var schema = this.constructor.getSchema();
@@ -373,7 +360,7 @@ var Model = function (_ModelStatic) {
       return serialized;
     }
 
-    //----------------------------------------------------------------------------
+    // ---------------------------------------------------------------------------
 
   }, {
     key: 'toString',
@@ -383,24 +370,20 @@ var Model = function (_ModelStatic) {
       return JSON.stringify(this.toJSON(options));
     }
 
-    //----------------------------------------------------------------------------
+    // ---------------------------------------------------------------------------
 
   }, {
     key: 'populate',
     value: function populate() {
       var _this4 = this;
 
-      var options = arguments.length <= 0 || arguments[0] === undefined ? {} : arguments[0];
-
-
-      return new Promise(function (ok, ko) {
+      return new Promise(function (resolve, reject) {
         try {
           (function () {
             var _constructor$getSchem = _this4.constructor.getSchema();
 
             var flatten = _constructor$getSchem.flatten;
 
-            // console.log('POPULATING'.bgMagenta, this.$document);
 
             var promises = [];
 
@@ -410,26 +393,20 @@ var Model = function (_ModelStatic) {
 
               if ((0, _isPrototypeOf2.default)(type.type, Model)) {
                 (function () {
-
                   var value = _this4.get(flatten[field].flatten);
-
                   if (value) {
-
-                    // console.log('POPULATING'.bgBlue, field, flatten[field].flatten, value);
-
-                    promises.push(new Promise(function (ok, ko) {
+                    promises.push(new Promise(function (resolvePopulate, rejectPopulate) {
                       try {
                         type.type.findById(value).then(function (doc) {
                           try {
-                            // console.log('POPULATED'.bgGreen, flatten[field].flatten, doc);
                             _this4.$populated[flatten[field].flatten] = doc;
-                            ok();
+                            resolvePopulate();
                           } catch (error) {
-                            ko(error);
+                            rejectPopulate(error);
                           }
-                        }).catch(ko);
+                        }).catch(rejectPopulate);
                       } catch (error) {
-                        ko(error);
+                        rejectPopulate(error);
                       }
                     }));
                   }
@@ -437,20 +414,19 @@ var Model = function (_ModelStatic) {
               } else if (type.type === _Type2.default.Array && (0, _isPrototypeOf2.default)(type.args[0].type, Model)) {
                 (function () {
                   var value = _this4.get(flatten[field].flatten);
-
                   if (value) {
-                    promises.push(new Promise(function (ok, ko) {
+                    promises.push(new Promise(function (resolvePopulate, rejectPopulate) {
                       try {
                         type.args[0].type.find({ _id: { $in: value } }).then(function (docs) {
                           try {
                             _this4.$populated[flatten[field].flatten] = docs;
-                            ok();
+                            resolvePopulate();
                           } catch (error) {
-                            ko(error);
+                            rejectPopulate(error);
                           }
-                        }).catch(ko);
+                        }).catch(rejectPopulate);
                       } catch (error) {
-                        ko(error);
+                        rejectPopulate(error);
                       }
                     }));
                   }
@@ -461,18 +437,18 @@ var Model = function (_ModelStatic) {
             for (var field in flatten) {
               _loop2(field);
             }
-
-            Promise.all(promises).then(ok, ko);
+            Promise.all(promises).then(resolve, reject);
           })();
         } catch (error) {
-          ko(MungoModelError.rethrow(error, 'Could not populate', {
-            modelName: _this4.constructor.name, _id: _this4._id
+          reject(MungoModelError.rethrow(error, 'Could not populate', {
+            modelName: _this4.constructor.name,
+            _id: _this4._id
           }));
         }
       });
     }
 
-    //----------------------------------------------------------------------------
+    // ---------------------------------------------------------------------------
 
   }, {
     key: 'setDefaults',
@@ -482,8 +458,8 @@ var Model = function (_ModelStatic) {
       for (var field in schema) {
         var applyDefaultCheckers = ['default' in schema[field], !(field in this.$document) || this.$document[field] === null || typeof this.$document[field] === 'undefined'];
 
-        if (applyDefaultCheckers.every(function (i) {
-          return i;
+        if (applyDefaultCheckers.every(function (def) {
+          return def;
         })) {
           if (typeof schema[field].default === 'function') {
             this.set(field, schema[field].default());
@@ -496,19 +472,17 @@ var Model = function (_ModelStatic) {
       return this;
     }
 
-    //----------------------------------------------------------------------------
+    // ---------------------------------------------------------------------------
 
   }, {
     key: 'required',
     value: function required() {
       var schema = this.constructor.getSchema();
-
       var flatten = schema.flatten;
 
 
       for (var field in flatten) {
         if ('required' in flatten[field]) {
-
           if (!/\./.test(field) && !(field in this.$document)) {
             throw new MungoModelError('Missing field ' + field, {
               code: MungoModelError.MISSING_REQUIRED_FIELD

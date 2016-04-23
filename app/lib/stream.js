@@ -1,39 +1,25 @@
-'use strict';
+import {Readable} from 'stream';
 
-import { Readable }       from 'stream';
-
-class Streamable extends Readable {
-  constructor (options) {
+export default class Streamable extends Readable {
+  constructor() {
     super({
       encoding: 'utf8'
     });
-
     this.setEncoding('utf8');
-
     this.collection = [];
   }
 
-  _read (n) {
-    console.log('reading');
-  }
+  // _read(data) {}
 
-  add (...doc) {
-    console.log('adding', doc.length);
-    // this.collection.push(...doc);
+  add(...docs) {
     this.resume();
     this.emit('readable');
-
-    doc.map(doc => doc.toJSON());
-
-    let source = JSON.stringify(doc);
-
-    console.log(source)
+    docs.map(doc => doc.toJSON());
+    const source = JSON.stringify(docs);
     this.emit('data', source);
   }
 
-  end () {
+  end() {
     this.emit('end');
   }
 }
-
-Mungo.Streamable = Streamable;
