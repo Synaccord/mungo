@@ -6,13 +6,11 @@ Object.defineProperty(exports, "__esModule", {
 
 var _createClass = function () { function defineProperties(target, props) { for (var i = 0; i < props.length; i++) { var descriptor = props[i]; descriptor.enumerable = descriptor.enumerable || false; descriptor.configurable = true; if ("value" in descriptor) descriptor.writable = true; Object.defineProperty(target, descriptor.key, descriptor); } } return function (Constructor, protoProps, staticProps) { if (protoProps) defineProperties(Constructor.prototype, protoProps); if (staticProps) defineProperties(Constructor, staticProps); return Constructor; }; }();
 
+require('should');
+
 var _redtea = require('redtea');
 
 var _redtea2 = _interopRequireDefault(_redtea);
-
-var _should = require('should');
-
-var _should2 = _interopRequireDefault(_should);
 
 var _ = require('..');
 
@@ -43,7 +41,7 @@ var Foo = function (_Mungo$Model) {
   }, {
     key: 'touching',
     value: function touching(doc) {
-      return new Promise(function (pass, fail) {
+      return new Promise(function (pass) {
         doc.increment('touched', 1);
         pass();
       });
@@ -57,46 +55,45 @@ Foo.collection = 'mungo_test_updating_hook';
 Foo.schema = {
   number: Number,
   touched: {
-    type: Number, default: 0
+    type: Number,
+    default: 0
   }
 };
 
 
 function test() {
-  var props = arguments.length <= 0 || arguments[0] === undefined ? {} : arguments[0];
-
   var locals = {};
 
-  return (0, _redtea2.default)('Updating hook', function (it) {
-    it('Connect', function () {
+  return (0, _redtea2.default)('Updating hook', function (it$UpdatingHook) {
+    it$UpdatingHook('Connect', function () {
       return new Promise(function (pass, fail) {
         _2.default.connect(process.env.MUNGO_URL || 'mongodb://localhost/test').on('error', fail).on('connected', pass);
       });
     });
 
-    it('Create documents', function (it) {
-      it('Model.create({ number : 0 })', function () {
+    it$UpdatingHook('Create documents', function (it$CreateDoc) {
+      it$CreateDoc('Model.create({ number : 0 })', function () {
         return Foo.insert({ number: 0 });
       });
     });
 
-    it('Direct update', function (it) {
-      it('Model.update({ number : 1 })', function () {
+    it$UpdatingHook('Direct update', function (it$DirectUpdate) {
+      it$DirectUpdate('Model.update({ number : 1 })', function () {
         return Foo.update({}, { number: 1 });
       });
 
-      it('fetch document', function () {
+      it$DirectUpdate('fetch document', function () {
         return Foo.findOne().then(function (doc) {
           locals.doc = doc;
         });
       });
 
-      it('touched should be 1', function () {
+      it$DirectUpdate('touched should be 1', function () {
         return locals.doc.should.have.property('touched').which.is.exactly(1);
       });
     });
 
-    it('Empty collection', function () {
+    it$UpdatingHook('Empty collection', function () {
       return Foo.remove();
     });
   });

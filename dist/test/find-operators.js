@@ -4,13 +4,11 @@ Object.defineProperty(exports, "__esModule", {
   value: true
 });
 
+require('should');
+
 var _redtea = require('redtea');
 
 var _redtea2 = _interopRequireDefault(_redtea);
-
-var _should = require('should');
-
-var _should2 = _interopRequireDefault(_should);
 
 var _ = require('..');
 
@@ -45,8 +43,6 @@ Foo.schema = {
 
 
 function test() {
-  var props = arguments.length <= 0 || arguments[0] === undefined ? {} : arguments[0];
-
   var locals = {};
 
   return (0, _redtea2.default)('Find / Statement', function (it) {
@@ -56,30 +52,30 @@ function test() {
       });
     });
 
-    it('Create documents', function (it) {
-      var _loop = function _loop(i) {
-        it('Create { number : ' + i + ' }', function () {
-          return Foo.insert({ number: i });
+    it('Create documents', function ($create_documents$) {
+      var _loop = function _loop(number) {
+        $create_documents$('Create { number : ' + number + ' }', function () {
+          return Foo.insert({ number: number });
         });
       };
 
-      for (var i = 0; i < 5; i++) {
-        _loop(i);
+      for (var number = 0; number < 5; number++) {
+        _loop(number);
       }
     });
 
-    it('$lt', function (it) {
-      it('{ number : { $lt : 2 } }', function () {
+    it('$lt', function ($lt) {
+      $lt('{ number : { $lt : 2 } }', function () {
         return Foo.find({ number: { $lt: 2 } }).then(function (result) {
           locals.result = result;
         });
       });
 
-      it('should have 2 results', function () {
+      $lt('should have 2 results', function () {
         locals.result.should.have.length(2);
       });
 
-      it('all results should be below 2', function () {
+      $lt('all results should be below 2', function () {
         locals.result.forEach(function (result) {
           return result.number.should.be.below(2);
         });

@@ -1,3 +1,4 @@
+import 'should';
 import describe from 'redtea';
 import Mungo from '..';
 import json from '../../package.json';
@@ -15,105 +16,87 @@ import UpdateStatement from '../lib/UpdateStatement';
 
 function test() {
   return describe('Mungo v' + json.version, it => {
-    it('module', $module$ => {
-      $module$('should be a class', () => Mungo.should.be.a.Function());
+    it('module', it$module => {
+      it$module('should be an object', () => Mungo.should.be.an.Object());
 
-      $module$('Deprecated', $deprecated$ => {
-        $deprecated$('Mixed', $Mixed$ => {
-          $Mixed$('should exist', () => Mungo.should.have.property('Mixed'));
-          $Mixed$('should be Type.Mixed',
-            () => Mungo.Mixed.should.be.exactly(Type.Mixed)
-          );
-        });
-
-        it('ObjectID', $objectID$ => {
-          $objectID$('should exist',
-            () => Mungo.should.have.property('ObjectID')
-          );
-          $objectID$('should be Type.ObjectID',
-            () => Mungo.ObjectID.should.be.exactly(Type.ObjectID)
-          );
-        });
-      });
-
-      it('Index', $Index$ => {
+      it$module('Index', $Index$ => {
         $Index$('should be Index', () => Mungo
           .should.have.property('Index')
           .which.is.exactly(Index)
         );
       });
 
-      it('Query', $Query$ => {
+      it$module('Query', $Query$ => {
         $Query$('should be Query', () => Mungo
           .should.have.property('Query')
           .which.is.exactly(Query)
         );
       });
 
-      it('Model', $Model$ => {
+      it$module('Model', $Model$ => {
         $Model$('should be Model', () => Mungo
           .should.have.property('Model')
           .which.is.exactly(Model)
         );
       });
 
-      it('Document', $Document$ => {
+      it$module('Document', $Document$ => {
         $Document$('should be Document', () => Mungo
           .should.have.property('Document')
           .which.is.exactly(Document)
         );
       });
 
-      it('Schema', $Schema$ => {
+      it$module('Schema', $Schema$ => {
         $Schema$('should be Schema', () => Mungo
           .should.have.property('Schema')
           .which.is.exactly(Schema)
         );
       });
 
-      it('Type', $Type$ => {
+      it$module('Type', $Type$ => {
         $Type$('should be Type', () => Mungo
           .should.have.property('Type')
           .which.is.exactly(Type)
         );
       });
 
-      it('Connection', $Connection$ => {
+      it$module('Connection', $Connection$ => {
         $Connection$('should be Connection', () => Mungo
           .should.have.property('Connection')
           .which.is.exactly(Connection)
         );
       });
 
-      it('Migration', $Migration$ => {
+      it$module('Migration', $Migration$ => {
         $Migration$('should be Migration', () => Mungo
           .should.have.property('Migration')
           .which.is.exactly(Migration)
         );
       });
 
-      it('Error', $Error$ => {
+      it$module('Error', $Error$ => {
         $Error$('should be Error', () => Mungo
           .should.have.property('Error')
           .which.is.exactly(MungoError)
         );
       });
 
-      it('FindStatement', $FindStatement$ => {
+      it$module('FindStatement', $FindStatement$ => {
         $FindStatement$('should be FindStatement', () => Mungo
           .should.have.property('FindStatement')
           .which.is.exactly(FindStatement)
         );
       });
 
-      it('UpdateStatement', $UpdateStatement$ => {
+      it$module('UpdateStatement', $UpdateStatement$ => {
         $UpdateStatement$('should be UpdateStatement', () => Mungo
           .should.have.property('UpdateStatement')
           .which.is.exactly(UpdateStatement)
         );
       });
 
-      it('Aliases', $Aliases$ => {
+      it$module('Aliases', $Aliases$ => {
         $Aliases$('Connect', $Connect$ => {
           $Connect$('connect()', $connect$ => {
             $connect$('should be Connection.connect()', () =>

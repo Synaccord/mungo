@@ -3,104 +3,67 @@
 Object.defineProperty(exports, "__esModule", {
   value: true
 });
-exports.disconnect = exports.connectify = exports.connect = exports.UpdateStatement = exports.FindStatement = exports.Error = exports.Migration = exports.Type = exports.Schema = exports.Document = exports.Model = exports.Query = exports.Index = undefined;
-
-var _Index = require('./lib/Index');
-
-Object.defineProperty(exports, 'Index', {
-  enumerable: true,
-  get: function get() {
-    return _interopRequireDefault(_Index).default;
-  }
-});
-
-var _Query = require('./lib/Query');
-
-Object.defineProperty(exports, 'Query', {
-  enumerable: true,
-  get: function get() {
-    return _interopRequireDefault(_Query).default;
-  }
-});
-
-var _Model = require('./lib/Model');
-
-Object.defineProperty(exports, 'Model', {
-  enumerable: true,
-  get: function get() {
-    return _interopRequireDefault(_Model).default;
-  }
-});
-
-var _Document = require('./lib/Document');
-
-Object.defineProperty(exports, 'Document', {
-  enumerable: true,
-  get: function get() {
-    return _interopRequireDefault(_Document).default;
-  }
-});
-
-var _Schema = require('./lib/Schema');
-
-Object.defineProperty(exports, 'Schema', {
-  enumerable: true,
-  get: function get() {
-    return _interopRequireDefault(_Schema).default;
-  }
-});
-
-var _Type = require('./lib/Type');
-
-Object.defineProperty(exports, 'Type', {
-  enumerable: true,
-  get: function get() {
-    return _interopRequireDefault(_Type).default;
-  }
-});
-
-var _Migration = require('./lib/Migration');
-
-Object.defineProperty(exports, 'Migration', {
-  enumerable: true,
-  get: function get() {
-    return _interopRequireDefault(_Migration).default;
-  }
-});
-
-var _Error = require('./lib/Error');
-
-Object.defineProperty(exports, 'Error', {
-  enumerable: true,
-  get: function get() {
-    return _interopRequireDefault(_Error).default;
-  }
-});
-
-var _FindStatement = require('./lib/FindStatement');
-
-Object.defineProperty(exports, 'FindStatement', {
-  enumerable: true,
-  get: function get() {
-    return _interopRequireDefault(_FindStatement).default;
-  }
-});
-
-var _UpdateStatement = require('./lib/UpdateStatement');
-
-Object.defineProperty(exports, 'UpdateStatement', {
-  enumerable: true,
-  get: function get() {
-    return _interopRequireDefault(_UpdateStatement).default;
-  }
-});
 
 var _Connection = require('./lib/Connection');
 
 var _Connection2 = _interopRequireDefault(_Connection);
 
+var _Index = require('./lib/Index');
+
+var _Index2 = _interopRequireDefault(_Index);
+
+var _Query = require('./lib/Query');
+
+var _Query2 = _interopRequireDefault(_Query);
+
+var _Model = require('./lib/Model');
+
+var _Model2 = _interopRequireDefault(_Model);
+
+var _Document = require('./lib/Document');
+
+var _Document2 = _interopRequireDefault(_Document);
+
+var _Schema = require('./lib/Schema');
+
+var _Schema2 = _interopRequireDefault(_Schema);
+
+var _Type = require('./lib/Type');
+
+var _Type2 = _interopRequireDefault(_Type);
+
+var _Migration = require('./lib/Migration');
+
+var _Migration2 = _interopRequireDefault(_Migration);
+
+var _Error = require('./lib/Error');
+
+var _Error2 = _interopRequireDefault(_Error);
+
+var _FindStatement = require('./lib/FindStatement');
+
+var _FindStatement2 = _interopRequireDefault(_FindStatement);
+
+var _UpdateStatement = require('./lib/UpdateStatement');
+
+var _UpdateStatement2 = _interopRequireDefault(_UpdateStatement);
+
 function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { default: obj }; }
 
-var connect = exports.connect = _Connection2.default.connect.bind(_Connection2.default);
-var connectify = exports.connectify = _Connection2.default.connectify.bind(_Connection2.default);
-var disconnect = exports.disconnect = _Connection2.default.disconnect.bind(_Connection2.default);
+exports.default = {
+  Connection: _Connection2.default,
+  Index: _Index2.default,
+  Query: _Query2.default,
+  Model: _Model2.default,
+  Document: _Document2.default,
+  Schema: _Schema2.default,
+  Type: _Type2.default,
+  Migration: _Migration2.default,
+  Error: _Error2.default,
+  FindStatement: _FindStatement2.default,
+  UpdateStatement: _UpdateStatement2.default,
+  connect: _Connection2.default.connect.bind(_Connection2.default),
+  connectify: _Connection2.default.connectify.bind(_Connection2.default),
+  disconnect: _Connection2.default.disconnect.bind(_Connection2.default),
+  connections: _Connection2.default.connections
+};

@@ -10,10 +10,6 @@ var _Query = require('./Query');
 
 var _Query2 = _interopRequireDefault(_Query);
 
-var _Document = require('./Document');
-
-var _Document2 = _interopRequireDefault(_Document);
-
 var _FindStatement = require('./FindStatement');
 
 var _FindStatement2 = _interopRequireDefault(_FindStatement);
@@ -30,14 +26,6 @@ var _promiseSequencer = require('promise-sequencer');
 
 var _promiseSequencer2 = _interopRequireDefault(_promiseSequencer);
 
-var _prettify = require('./prettify');
-
-var _prettify2 = _interopRequireDefault(_prettify);
-
-var _Error = require('./Error');
-
-var _Error2 = _interopRequireDefault(_Error);
-
 function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { default: obj }; }
 
 function _toConsumableArray(arr) { if (Array.isArray(arr)) { for (var i = 0, arr2 = Array(arr.length); i < arr.length; i++) { arr2[i] = arr[i]; } return arr2; } else { return Array.from(arr); } }
@@ -48,17 +36,9 @@ function _possibleConstructorReturn(self, call) { if (!self) { throw new Referen
 
 function _inherits(subClass, superClass) { if (typeof superClass !== "function" && superClass !== null) { throw new TypeError("Super expression must either be null or a function, not " + typeof superClass); } subClass.prototype = Object.create(superClass && superClass.prototype, { constructor: { value: subClass, enumerable: false, writable: true, configurable: true } }); if (superClass) Object.setPrototypeOf ? Object.setPrototypeOf(subClass, superClass) : subClass.__proto__ = superClass; }
 
-var MungoModelQueryError = function (_MungoError) {
-  _inherits(MungoModelQueryError, _MungoError);
+// import MungoError from './Error';
 
-  function MungoModelQueryError() {
-    _classCallCheck(this, MungoModelQueryError);
-
-    return _possibleConstructorReturn(this, Object.getPrototypeOf(MungoModelQueryError).apply(this, arguments));
-  }
-
-  return MungoModelQueryError;
-}(_Error2.default);
+// class MungoModelQueryError extends MungoError {}
 
 function normalizeModifier(modifier, model) {
   if (!('$inc' in modifier)) {
@@ -93,7 +73,7 @@ var ModelQuery = function (_ModelMigrate) {
     key: 'exec',
 
 
-    //----------------------------------------------------------------------------
+    // ---------------------------------------------------------------------------
 
     /** Execute a new Query with this as model
      *
@@ -102,19 +82,19 @@ var ModelQuery = function (_ModelMigrate) {
      *  @return     {Promise}
      */
 
-    //----------------------------------------------------------------------------
+    // ---------------------------------------------------------------------------
 
     value: function exec(cmd) {
-      var q = new _Query2.default(this);
+      var query = new _Query2.default(this);
 
       for (var _len = arguments.length, args = Array(_len > 1 ? _len - 1 : 0), _key = 1; _key < _len; _key++) {
         args[_key - 1] = arguments[_key];
       }
 
-      return q[cmd].apply(q, args);
+      return query[cmd].apply(query, args);
     }
 
-    //----------------------------------------------------------------------------
+    // ---------------------------------------------------------------------------
 
     /** Count documents in collection
      *
@@ -123,7 +103,7 @@ var ModelQuery = function (_ModelMigrate) {
      *  @return     {Promise}
      */
 
-    //----------------------------------------------------------------------------
+    // ---------------------------------------------------------------------------
 
   }, {
     key: 'count',
@@ -134,13 +114,11 @@ var ModelQuery = function (_ModelMigrate) {
       if (!(filter instanceof _FindStatement2.default)) {
         filter = new _FindStatement2.default(filter, this);
       }
-
       delete filter.$projection;
-
       return this.exec('count', filter, options);
     }
 
-    //----------------------------------------------------------------------------
+    // ---------------------------------------------------------------------------
 
   }, {
     key: 'create',
@@ -148,19 +126,16 @@ var ModelQuery = function (_ModelMigrate) {
       if (Array.isArray(arguments.length <= 0 ? undefined : arguments[0])) {
         return this.insertMany.apply(this, _toConsumableArray(arguments.length <= 0 ? undefined : arguments[0]));
       }
-
       if (!arguments.length) {
         return this.insertOne({});
       }
-
       if (arguments.length === 1) {
         return this.insertOne(arguments.length <= 0 ? undefined : arguments[0]);
       }
-
       return this.insertMany.apply(this, arguments);
     }
 
-    //----------------------------------------------------------------------------
+    // ---------------------------------------------------------------------------
 
   }, {
     key: 'delete',
@@ -168,7 +143,7 @@ var ModelQuery = function (_ModelMigrate) {
       return this.deleteMany.apply(this, arguments);
     }
 
-    //----------------------------------------------------------------------------
+    // ---------------------------------------------------------------------------
 
   }, {
     key: 'deleteById',
@@ -176,7 +151,7 @@ var ModelQuery = function (_ModelMigrate) {
       return this.deleteOne({ _id: _id });
     }
 
-    //----------------------------------------------------------------------------
+    // ---------------------------------------------------------------------------
 
     /** Delete many
      *
@@ -186,163 +161,146 @@ var ModelQuery = function (_ModelMigrate) {
      *  @return     {Promise}
      */
 
-    //----------------------------------------------------------------------------
+    // ---------------------------------------------------------------------------
 
   }, {
     key: 'deleteMany',
     value: function deleteMany() {
       var filter = arguments.length <= 0 || arguments[0] === undefined ? {} : arguments[0];
 
-      var _this3 = this;
+      var _this2 = this;
 
       var projection = arguments.length <= 1 || arguments[1] === undefined ? {} : arguments[1];
       var options = arguments.length <= 2 || arguments[2] === undefined ? {} : arguments[2];
 
-      return new Promise(function (ok, ko) {
+      return new Promise(function (resolve, reject) {
         if (!(filter instanceof _FindStatement2.default)) {
-          filter = new _FindStatement2.default(filter, _this3);
+          filter = new _FindStatement2.default(filter, _this2);
         }
-
         Object.assign(projection, filter.$projection);
-
         delete filter.$projection;
-
         var delProjection = function delProjection(query) {
           delete query.$projection;
           return query;
         };
-
         _promiseSequencer2.default.pipe(function () {
-          return _this3.find(filter, projection, options);
+          return _this2.find(filter, projection, options);
         }, function (docs) {
           return _promiseSequencer2.default.pipe(function () {
             return Promise.all(docs.map(function (doc) {
-              return (0, _promiseSequencer2.default)((_this3.removing() || []).map(function (fn) {
+              return (0, _promiseSequencer2.default)((_this2.removing() || []).map(function (fn) {
                 return function () {
                   return fn(doc);
                 };
               }));
             }));
           }, function () {
-            return _this3.exec('deleteMany', delProjection(new _FindStatement2.default({ _id: { $in: docs } }, _this3)));
+            return _this2.exec('deleteMany', delProjection(new _FindStatement2.default({ _id: { $in: docs } }, _this2)));
           }, function () {
-            return new Promise(function (ok) {
-              return ok(docs);
+            return new Promise(function (resolveDocs) {
+              return resolveDocs(docs);
             });
           });
         }).then(function (docs) {
-          ok(docs);
-
+          resolve(docs);
           Promise.all(docs.map(function (doc) {
-            return (0, _promiseSequencer2.default)((_this3.removed() || []).map(function (fn) {
+            return (0, _promiseSequencer2.default)((_this2.removed() || []).map(function (fn) {
               return function () {
                 return fn(doc);
               };
             }));
           }));
-        }).catch(ko);
+        }).catch(reject);
       });
     }
 
-    //----------------------------------------------------------------------------
+    // ---------------------------------------------------------------------------
 
   }, {
     key: 'deleteOne',
     value: function deleteOne() {
-      var _this4 = this;
+      var _this3 = this;
 
       var filter = arguments.length <= 0 || arguments[0] === undefined ? {} : arguments[0];
 
-      return new Promise(function (ok, ko) {
+      return new Promise(function (resolve, reject) {
         if (!(filter instanceof _FindStatement2.default)) {
-          filter = new _FindStatement2.default(filter, _this4);
+          filter = new _FindStatement2.default(filter, _this3);
         }
-
         delete filter.$projection;
-
         var delProjection = function delProjection(query) {
           delete query.$projection;
           return query;
         };
-
         _promiseSequencer2.default.pipe(function () {
-          return _this4.findOne(filter);
+          return _this3.findOne(filter);
         }, function (doc) {
           return _promiseSequencer2.default.pipe(function () {
-            return (0, _promiseSequencer2.default)((_this4.removing() || []).map(function (fn) {
+            return (0, _promiseSequencer2.default)((_this3.removing() || []).map(function (fn) {
               return function () {
                 return fn(doc);
               };
             }));
           }, function () {
-            return _this4.exec('deleteOne', delProjection(new _FindStatement2.default({ _id: doc }, _this4)));
+            return _this3.exec('deleteOne', delProjection(new _FindStatement2.default({ _id: doc }, _this3)));
           }, function () {
-            return new Promise(function (ok) {
-              return ok(doc);
+            return new Promise(function (resolveDocs) {
+              return resolveDocs(doc);
             });
           });
         }).then(function (doc) {
-          ok(doc);
-
-          (0, _promiseSequencer2.default)((_this4.removed() || []).map(function (fn) {
+          resolve(doc);
+          (0, _promiseSequencer2.default)((_this3.removed() || []).map(function (fn) {
             return function () {
               return fn(doc);
             };
           }));
-        }).catch(ko);
+        }).catch(reject);
       });
     }
 
-    //----------------------------------------------------------------------------
+    // ---------------------------------------------------------------------------
 
   }, {
     key: 'find',
     value: function find() {
       var filter = arguments.length <= 0 || arguments[0] === undefined ? {} : arguments[0];
 
-      var _this5 = this;
+      var _this4 = this;
 
       var projection = arguments.length <= 1 || arguments[1] === undefined ? {} : arguments[1];
       var options = arguments.length <= 2 || arguments[2] === undefined ? {} : arguments[2];
 
-      var promise = new Promise(function (ok, ko) {
+      var promise = new Promise(function (resolve, reject) {
         if (!(filter instanceof _FindStatement2.default)) {
-          filter = new _FindStatement2.default(filter, _this5);
+          filter = new _FindStatement2.default(filter, _this4);
         }
-
         Object.assign(projection, filter.$projection);
-
         delete filter.$projection;
-
         process.nextTick(function () {
-          _this5.exec('find', filter, projection, options).then(function (documents) {
-            documents = documents.map(function (doc) {
-              return new _this5(doc, true);
-            });
-            ok(documents);
-          }).catch(ko);
+          _this4.exec('find', filter, projection, options).then(function (documents) {
+            resolve(documents.map(function (doc) {
+              return new _this4(doc, true);
+            }));
+          }).catch(reject);
         });
       });
-
       promise.limit = function (limit) {
         projection.limit = limit;
         return promise;
       };
-
       promise.skip = function (skip) {
         projection.skip = skip;
         return promise;
       };
-
       promise.sort = function (sort) {
         projection.sort = sort;
         return promise;
       };
-
       return promise;
     }
 
-    //----------------------------------------------------------------------------
+    // ---------------------------------------------------------------------------
 
   }, {
     key: 'findById',
@@ -350,7 +308,7 @@ var ModelQuery = function (_ModelMigrate) {
       return this.findOne({ _id: id });
     }
 
-    //----------------------------------------------------------------------------
+    // ---------------------------------------------------------------------------
 
   }, {
     key: 'findByIds',
@@ -365,12 +323,12 @@ var ModelQuery = function (_ModelMigrate) {
       return this.find({ _id: { $in: _ids } });
     }
 
-    //----------------------------------------------------------------------------
+    // ---------------------------------------------------------------------------
 
   }, {
     key: 'findOne',
     value: function findOne() {
-      var _this6 = this;
+      var _this5 = this;
 
       var filter = arguments.length <= 0 || arguments[0] === undefined ? {} : arguments[0];
       var projection = arguments.length <= 1 || arguments[1] === undefined ? {} : arguments[1];
@@ -378,48 +336,41 @@ var ModelQuery = function (_ModelMigrate) {
       if (!(filter instanceof _FindStatement2.default)) {
         filter = new _FindStatement2.default(filter, this);
       }
-
       Object.assign(projection, filter.$projection);
-
       delete filter.$projection;
-
-      var promise = new Promise(function (ok, ko) {
+      var promise = new Promise(function (resolve, reject) {
         process.nextTick(function () {
-          _this6.exec('findOne', filter, projection).then(function (document) {
+          _this5.exec('findOne', filter, projection).then(function (document) {
             if (!document) {
-              return ok();
+              return resolve();
             }
-            ok(new _this6(document, _this6.isFromDB));
-          }).catch(ko);
+            resolve(new _this5(document, _this5.isFromDB));
+          }).catch(reject);
         });
       });
-
       promise.limit = function (limit) {
         projection.limit = limit;
         return promise;
       };
-
       promise.skip = function (skip) {
         projection.skip = skip;
         return promise;
       };
-
       promise.sort = function (sort) {
         projection.sort = sort;
         return promise;
       };
-
       return promise;
     }
 
-    //----------------------------------------------------------------------------
+    // ---------------------------------------------------------------------------
 
   }, {
     key: 'findOneRandom',
     value: function findOneRandom() {
       var filter = arguments.length <= 0 || arguments[0] === undefined ? {} : arguments[0];
 
-      var _this7 = this;
+      var _this6 = this;
 
       var projection = arguments.length <= 1 || arguments[1] === undefined ? {} : arguments[1];
       var options = arguments.length <= 2 || arguments[2] === undefined ? {} : arguments[2];
@@ -427,24 +378,21 @@ var ModelQuery = function (_ModelMigrate) {
       if (!(filter instanceof _FindStatement2.default)) {
         filter = new _FindStatement2.default(filter, this);
       }
-
       Object.assign(projection, filter.$projection);
-
       delete filter.$projection;
-
       return _promiseSequencer2.default.pipe(function () {
-        return _this7.exec('count', filter);
+        return _this6.exec('count', filter);
       }, function (count) {
-        return new Promise(function (ok, ko) {
+        return new Promise(function (resolve) {
           options.skip = Math.ceil(Math.max(0, Math.floor(count) * Math.random()));
-          ok();
+          resolve();
         });
       }, function () {
-        return _this7.findOne(filter, projection, options);
+        return _this6.findOne(filter, projection, options);
       });
     }
 
-    //----------------------------------------------------------------------------
+    // ---------------------------------------------------------------------------
 
   }, {
     key: 'findRandomOne',
@@ -456,7 +404,7 @@ var ModelQuery = function (_ModelMigrate) {
       return this.findOneRandom(filter, projection, options);
     }
 
-    //----------------------------------------------------------------------------
+    // ---------------------------------------------------------------------------
 
   }, {
     key: 'insert',
@@ -464,56 +412,57 @@ var ModelQuery = function (_ModelMigrate) {
       return this.create.apply(this, arguments);
     }
 
-    //----------------------------------------------------------------------------
+    // ---------------------------------------------------------------------------
 
   }, {
     key: 'insertMany',
     value: function insertMany() {
-      var _this8 = this;
+      var _this7 = this;
 
       for (var _len3 = arguments.length, docs = Array(_len3), _key3 = 0; _key3 < _len3; _key3++) {
         docs[_key3] = arguments[_key3];
       }
 
-      // console.log('insertMany', ...docs);
       return Promise.all(docs.map(function (doc) {
-        if (!(doc instanceof _this8)) {
-          doc = new _this8(doc);
+        if (!(doc instanceof _this7)) {
+          doc = new _this7(doc);
         }
-        // console.log('new', doc);
         return doc;
       }).map(function (doc) {
-        return new Promise(function (ok, ko) {
+        return new Promise(function (resolve, reject) {
           doc.save().then(function () {
-            return ok(doc);
-          }).catch(ko);
+            return resolve(doc);
+          }).catch(reject);
         });
       }));
     }
 
-    //----------------------------------------------------------------------------
+    // ---------------------------------------------------------------------------
 
   }, {
     key: 'insertOne',
     value: function insertOne(doc) {
-      var _this9 = this;
+      var _this8 = this;
 
-      return new Promise(function (ok, ko) {
+      return new Promise(function (resolve, reject) {
         try {
-          if (!(doc instanceof _this9)) {
-            doc = new _this9(doc);
+          if (!(doc instanceof _this8)) {
+            doc = new _this8(doc);
           }
 
-          doc.set({ __v: 0, __V: _this9.version }).save().then(function () {
-            return ok(doc);
-          }).catch(ko);
+          doc.set({
+            __v: 0,
+            __V: _this8.version
+          }).save().then(function () {
+            return resolve(doc);
+          }).catch(reject);
         } catch (error) {
-          ko(error);
+          reject(error);
         }
       });
     }
 
-    //----------------------------------------------------------------------------
+    // ---------------------------------------------------------------------------
 
   }, {
     key: 'remove',
@@ -523,7 +472,7 @@ var ModelQuery = function (_ModelMigrate) {
       return this.deleteMany(filter);
     }
 
-    //----------------------------------------------------------------------------
+    // ---------------------------------------------------------------------------
 
   }, {
     key: 'update',
@@ -535,7 +484,7 @@ var ModelQuery = function (_ModelMigrate) {
       return this.updateMany(filter, modifier, options);
     }
 
-    //----------------------------------------------------------------------------
+    // ---------------------------------------------------------------------------
 
   }, {
     key: 'updateById',
@@ -546,7 +495,7 @@ var ModelQuery = function (_ModelMigrate) {
       return this.updateOne({ _id: _id }, modifier, options);
     }
 
-    //----------------------------------------------------------------------------
+    // ---------------------------------------------------------------------------
 
   }, {
     key: 'updateByIds',
@@ -557,101 +506,69 @@ var ModelQuery = function (_ModelMigrate) {
       return this.updateMany({ _id: { $in: ids } }, modifier, options);
     }
 
-    //----------------------------------------------------------------------------
+    // ---------------------------------------------------------------------------
 
   }, {
     key: 'updateOne',
     value: function updateOne(filter, modifier) {
-      var _this10 = this;
+      var _this9 = this;
 
       var options = arguments.length <= 2 || arguments[2] === undefined ? {} : arguments[2];
 
-      return new Promise(function (ok, ko) {
+      return new Promise(function (resolve, reject) {
         if (!(filter instanceof _FindStatement2.default)) {
-          filter = new _FindStatement2.default(filter, _this10);
+          filter = new _FindStatement2.default(filter, _this9);
         }
-
         delete filter.$projection;
-
         if (!(modifier instanceof _UpdateStatement2.default)) {
-          modifier = new _UpdateStatement2.default(modifier, _this10);
+          modifier = new _UpdateStatement2.default(modifier, _this9);
         }
-
-        normalizeModifier(modifier, _this10);
-
+        normalizeModifier(modifier, _this9);
         // Get document from DB
-
-        _this10.findOne(filter, options).then(function (doc) {
+        _this9.findOne(filter, options).then(function (doc) {
           if (!doc) {
-            return ok();
+            return resolve();
           }
-
           _promiseSequencer2.default.pipe(
-
           // Apply before hooks
-
           function () {
-            return (0, _promiseSequencer2.default)((_this10.updating() || []).map(function (fn) {
+            return (0, _promiseSequencer2.default)((_this9.updating() || []).map(function (fn) {
               return function () {
                 return fn(doc);
               };
             }));
           },
-
           // Put hooks changes into modifiers and update
-
           function () {
-            return new Promise(function (ok, ko) {
-
+            return new Promise(function (resolveDoc, rejectDoc) {
               var _modifiers = Object.assign({}, modifier);
-
               if (Object.keys(doc.$changes).length) {
                 if (!('$set' in _modifiers)) {
                   _modifiers.$set = {};
                 }
-
                 Object.assign(_modifiers.$set, doc.$changes);
               }
-
               _promiseSequencer2.default.pipe(function () {
-                return _this10.exec('updateOne', { _id: doc._id }, _modifiers);
+                return _this9.exec('updateOne', { _id: doc._id }, _modifiers);
               }, function () {
-                return _this10.findOne({ _id: doc._id });
-              }).then(function (doc) {
-                return ok(doc);
-              }).catch(ko);
+                return _this9.findOne({ _id: doc._id });
+              }).then(function (document) {
+                return resolveDoc(document);
+              }).catch(rejectDoc);
             });
-          }).then(function (doc) {
-
-            ok(doc);
-
-            (0, _promiseSequencer2.default)((_this10.updated() || []).map(function (fn) {
+          }).then(function (document) {
+            resolve(document);
+            (0, _promiseSequencer2.default)((_this9.updated() || []).map(function (fn) {
               return function () {
                 return fn(doc);
               };
             }));
-          }).catch(ko);
-        }).catch(ko);
+          }).catch(reject);
+        }).catch(reject);
       });
-
-      // if ( ! ( filter instanceof FindStatement ) ) {
-      //   filter = new FindStatement(filter, this);
-      // }
-      //
-      // if ( ! ( modifier instanceof UpdateStatement ) ) {
-      //   modifier = new UpdateStatement(modifier, this);
-      // }
-      //
-      // normalizeModifier(modifier, this);
-      //
-      // return sequencer.pipe(
-      //   () => this.exec('updateOne', filter, modifier, options),
-      //
-      //   updated => new Promise(ok => ok(new this(updated, true)))
-      // );
     }
 
-    //----------------------------------------------------------------------------
+    // ---------------------------------------------------------------------------
 
     /**   Update Many - Update more than 1 document at a time
      *
@@ -661,114 +578,76 @@ var ModelQuery = function (_ModelMigrate) {
      *    @return   {Promise}
     */
 
-    //----------------------------------------------------------------------------
+    // ---------------------------------------------------------------------------
 
   }, {
     key: 'updateMany',
     value: function updateMany() {
       var filter = arguments.length <= 0 || arguments[0] === undefined ? {} : arguments[0];
 
-      var _this11 = this;
+      var _this10 = this;
 
       var modifier = arguments.length <= 1 || arguments[1] === undefined ? {} : arguments[1];
       var options = arguments.length <= 2 || arguments[2] === undefined ? {} : arguments[2];
 
-      return new Promise(function (ok, ko) {
-
+      return new Promise(function (resolve, reject) {
         if (!(filter instanceof _FindStatement2.default)) {
-          filter = new _FindStatement2.default(filter, _this11);
+          filter = new _FindStatement2.default(filter, _this10);
         }
-
         delete filter.$projection;
-
         if (!(modifier instanceof _UpdateStatement2.default)) {
-          modifier = new _UpdateStatement2.default(modifier, _this11);
+          modifier = new _UpdateStatement2.default(modifier, _this10);
         }
-
-        normalizeModifier(modifier, _this11);
-
+        normalizeModifier(modifier, _this10);
         _promiseSequencer2.default.pipe(
-
         // Get documents from DB
-
         function () {
-          return _this11.find(filter, options);
+          return _this10.find(filter, options);
         }, function (docs) {
           return _promiseSequencer2.default.pipe(
-
           // Apply before hooks
-
           // () => Promise.all(docs.map(doc =>
           //   sequencer((this.updating() || []).map(fn => () => fn(doc)))
           // )),
-
           // Put hooks changes into modifiers
-
           function () {
             return Promise.all(docs.map(function (doc) {
-              return new Promise(function (ok, ko) {
-
+              return new Promise(function (resolveDoc, rejectDoc) {
                 var _modifiers = Object.assign({}, modifier);
-
                 if (Object.keys(doc.$changes).length) {
                   if (!('$set' in _modifiers)) {
                     _modifiers.$set = {};
                   }
-
                   Object.assign(_modifiers.$set, doc.$changes);
                 }
-
                 if (_modifiers.$set) {
                   for (var set in _modifiers.$set) {
                     doc.set(set, _modifiers.$set[set]);
                   }
                 }
-
                 if (_modifiers.$inc) {
                   for (var inc in _modifiers.$inc) {
                     doc.increment(inc, _modifiers.$inc[inc]);
                   }
                 }
-
-                doc.save().then(ok, ko);
-
-                // this
-                //   .exec('updateOne', { _id : doc._id }, _modifiers)
-                //   .then(() => {
-                //
-                //     if ( _modifiers.$set ) {
-                //       for ( const set in _modifiers.$set ) {
-                //         doc.set(set, _modifiers.$set[set]);
-                //       }
-                //     }
-                //
-                //     if ( _modifiers.$inc ) {
-                //       for ( const inc in _modifiers.$inc ) {
-                //         doc.increment(inc, _modifiers.$inc[inc]);
-                //       }
-                //     }
-                //
-                //     ok(doc);
-                //   })
-                //   .catch(ko)
+                doc.save().then(resolveDoc, rejectDoc);
               });
             }));
           });
         }).then(function (docs) {
-          ok(docs);
-
+          resolve(docs);
           docs.forEach(function (doc) {
-            return (0, _promiseSequencer2.default)((_this11.updated() || []).map(function (fn) {
+            return (0, _promiseSequencer2.default)((_this10.updated() || []).map(function (fn) {
               return function () {
                 return fn(doc);
               };
             }));
           });
-        }).catch(ko);
+        }).catch(reject);
       });
     }
 
-    //----------------------------------------------------------------------------
+    // ---------------------------------------------------------------------------
 
   }]);
 

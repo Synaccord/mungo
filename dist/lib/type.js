@@ -12,10 +12,6 @@ var _mongodb = require('mongodb');
 
 var _mongodb2 = _interopRequireDefault(_mongodb);
 
-var _prettify = require('./prettify');
-
-var _prettify2 = _interopRequireDefault(_prettify);
-
 var _Error = require('./Error');
 
 var _Error2 = _interopRequireDefault(_Error);
@@ -42,7 +38,7 @@ var MungoTypeError = function (_MungoError) {
   return MungoTypeError;
 }(_Error2.default);
 
-//------------------------------------------------------------------------------
+// -----------------------------------------------------------------------------
 
 var _Object = function () {
   function _Object() {
@@ -53,15 +49,11 @@ var _Object = function () {
     Object.assign(this, object);
   }
 
-  /** Boolean */
-
   _createClass(_Object, null, [{
     key: 'validate',
     value: function validate(value) {
       return value && (typeof value === 'undefined' ? 'undefined' : _typeof(value)) === 'object' && value.constructor === Object;
     }
-
-    /** Mixed */
   }, {
     key: 'convert',
     value: function convert(value) {
@@ -72,7 +64,7 @@ var _Object = function () {
   return _Object;
 }();
 
-//------------------------------------------------------------------------------
+// -----------------------------------------------------------------------------
 
 var _Array = function () {
   function _Array() {
@@ -86,25 +78,15 @@ var _Array = function () {
         if (array === null) {
           return null;
         }
-
         type = Type.associate(type);
-
-        // if ( type.isSubdocument() ) {
-        //   console.log('-------------------------------------');
-        //   return array.map(item => {
-        //     for ( let field in item ) {
-        //
-        //     }
-        //   })
-        // }
-
         return array.map(function (item) {
           return type.convert(item);
         });
       } catch (error) {
-        console.log(type);
-
-        throw MungoTypeError.rethrow(error, 'Could not convert array', { array: array, type: type });
+        throw MungoTypeError.rethrow(error, 'Could not convert array', {
+          array: array,
+          type: type
+        });
       }
     }
   }, {
@@ -112,7 +94,6 @@ var _Array = function () {
     value: function validate(array, type) {
       try {
         type = Type.associate(type);
-
         return array.every(function (item) {
           return type.validate(item);
         });
@@ -125,7 +106,7 @@ var _Array = function () {
   return _Array;
 }();
 
-//------------------------------------------------------------------------------
+// -----------------------------------------------------------------------------
 
 var _Subdocument = function () {
   function _Subdocument() {
@@ -136,24 +117,20 @@ var _Subdocument = function () {
     key: 'convert',
     value: function convert(subdoc, schema) {
       var converted = {};
-
       for (var field in subdoc) {
         if (field in schema) {
           converted[field] = schema[field].type.convert(subdoc[field]);
         }
       }
-
       return converted;
     }
   }, {
     key: 'validate',
-    value: function validate(array, type) {
+    value: function validate(subdoc, schema) {
       var validated = {};
-
       for (var field in subdoc) {
         validated[field] = schema[field].type.validate(subdoc[field]);
       }
-
       return Object.keys(validated).every(function (key) {
         return validated[key];
       });
@@ -163,7 +140,7 @@ var _Subdocument = function () {
   return _Subdocument;
 }();
 
-//------------------------------------------------------------------------------
+// -----------------------------------------------------------------------------
 
 var _Mixed = function () {
   function _Mixed() {
@@ -172,7 +149,7 @@ var _Mixed = function () {
 
   _createClass(_Mixed, null, [{
     key: 'validate',
-    value: function validate(value) {
+    value: function validate() {
       return true;
     }
   }, {
@@ -185,7 +162,7 @@ var _Mixed = function () {
   return _Mixed;
 }();
 
-//------------------------------------------------------------------------------
+// -----------------------------------------------------------------------------
 
 var _String = function () {
   function _String() {
@@ -210,7 +187,7 @@ var _String = function () {
   return _String;
 }();
 
-//------------------------------------------------------------------------------
+// -----------------------------------------------------------------------------
 
 var _Number = function () {
   function _Number() {
@@ -225,14 +202,14 @@ var _Number = function () {
   }, {
     key: 'convert',
     value: function convert(value) {
-      return +value;
+      return Number(value);
     }
   }]);
 
   return _Number;
 }();
 
-//------------------------------------------------------------------------------
+// -----------------------------------------------------------------------------
 
 var _Boolean = function () {
   function _Boolean() {
@@ -247,14 +224,14 @@ var _Boolean = function () {
   }, {
     key: 'convert',
     value: function convert(value) {
-      return !!value;
+      return Boolean(value);
     }
   }]);
 
   return _Boolean;
 }();
 
-//------------------------------------------------------------------------------
+// -----------------------------------------------------------------------------
 
 var _Date = function () {
   function _Date() {
@@ -280,7 +257,7 @@ var _Date = function () {
   return _Date;
 }();
 
-//------------------------------------------------------------------------------
+// -----------------------------------------------------------------------------
 
 var _ObjectID = function (_mongodb$ObjectID) {
   _inherits(_ObjectID, _mongodb$ObjectID);
@@ -300,28 +277,21 @@ var _ObjectID = function (_mongodb$ObjectID) {
     key: 'convert',
     value: function convert(value) {
       try {
-        // console.log(prettify({'converting ObjectId' : { value }}));
-
         if (value === null) {
           return undefined;
         }
-
         if (typeof value === 'string') {
           return _mongodb2.default.ObjectID(value);
         }
-
         if (value instanceof _mongodb2.default.ObjectID) {
           return value;
         }
-
         if (value && (typeof value === 'undefined' ? 'undefined' : _typeof(value)) === 'object') {
-
           if (value.$in) {
-            return { $in: value.$in.map(function (value) {
-                return Type.ObjectID.convert(value);
+            return { $in: value.$in.map(function (val) {
+                return Type.ObjectID.convert(val);
               }) };
           }
-
           if (value._id) {
             return _mongodb2.default.ObjectID(value._id);
           }
@@ -335,7 +305,7 @@ var _ObjectID = function (_mongodb$ObjectID) {
   return _ObjectID;
 }(_mongodb2.default.ObjectID);
 
-//------------------------------------------------------------------------------
+// -----------------------------------------------------------------------------
 
 var _Geo = function () {
   function _Geo() {
@@ -357,7 +327,7 @@ var _Geo = function () {
   return _Geo;
 }();
 
-//------------------------------------------------------------------------------
+// -----------------------------------------------------------------------------
 
 _Geo.MongoDBType = '2d';
 
@@ -394,7 +364,6 @@ var Type = function () {
   }, {
     key: 'convert',
     value: function convert(value) {
-
       if (typeof this.type.convert !== 'function') {
         throw MungoTypeError.rethrow(new Error('Can not convert type'), 'Can not convert type', {
           type: this.type.name,
@@ -449,7 +418,6 @@ var Type = function () {
     }
 
     this.args = args;
-
     this.type = this.constructor.associate(type);
   }
 

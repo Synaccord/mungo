@@ -4,13 +4,11 @@ Object.defineProperty(exports, "__esModule", {
   value: true
 });
 
+require('should');
+
 var _redtea = require('redtea');
 
 var _redtea2 = _interopRequireDefault(_redtea);
-
-var _should = require('should');
-
-var _should2 = _interopRequireDefault(_should);
 
 var _ = require('..');
 
@@ -43,68 +41,66 @@ Foo.schema = {
 
 
 function test() {
-  var props = arguments.length <= 0 || arguments[0] === undefined ? {} : arguments[0];
-
   var locals = {};
 
-  return (0, _redtea2.default)('Update', function (it) {
-    it('Connect', function () {
+  return (0, _redtea2.default)('Update', function (it$Update) {
+    it$Update('Connect', function () {
       return new Promise(function (pass, fail) {
         _2.default.connect(process.env.MUNGO_URL || 'mongodb://localhost/test').on('error', fail).on('connected', pass);
       });
     });
 
-    it('Create documents', function (it) {
-      var _loop = function _loop(i) {
-        it('Create { number : ' + i + ' }', function () {
-          return Foo.insert({ number: i });
+    it$Update('Create documents', function (it$CreateDocuments) {
+      var _loop = function _loop(number) {
+        it$CreateDocuments('Create {number: ' + number + '}', function () {
+          return Foo.insert({ number: number });
         });
       };
 
-      for (var i = 0; i < 1; i++) {
-        _loop(i);
+      for (var number = 0; number < 1; number++) {
+        _loop(number);
       }
     });
 
-    it('Document\'s version should be 0', function (it) {
-      it('Fetch document', function () {
+    it$Update('Document\'s version should be 0', function (it$DocVersionIsZero) {
+      it$DocVersionIsZero('Fetch document', function () {
         return Foo.findOne().then(function (doc) {
           locals.doc = doc;
         });
       });
 
-      it('__v should be 0', function () {
+      it$DocVersionIsZero('__v should be 0', function () {
         locals.doc.should.have.property('__v').which.is.exactly(0);
       });
     });
 
-    it('Direct update', function (it) {
-      it('Update document', function () {
+    it$Update('Direct update', function (it$DirectUpdate) {
+      it$DirectUpdate('Update document', function () {
         return Foo.update({}, { $inc: { number: 1 } }).then(function (docs) {
           locals.doc = docs[0];
         });
       });
 
-      it('__v should be 1', function () {
+      it$DirectUpdate('__v should be 1', function () {
         return locals.doc.should.have.property('__v').which.is.exactly(1);
       });
 
-      it('Document\'s version should be 1', function (it) {
-        it('Fetch document', function () {
+      it$DirectUpdate('Document\'s version should be 1', function (it$DocVersionIsOne) {
+        it$DocVersionIsOne('Fetch document', function () {
           return Foo.findOne().then(function (doc) {
             locals.doc = doc;
           });
         });
 
-        it('__v should be 1', function () {
+        it$DocVersionIsOne('__v should be 1', function () {
           locals.doc.should.have.property('__v').which.is.exactly(1);
         });
       });
     });
 
-    it('Indirect update', function (it) {
-      it('Find one', function (it) {
-        it('Update document by fetching it', function () {
+    it$Update('Indirect update', function (it$IndirectUpdate) {
+      it$IndirectUpdate('Find one', function (it$FindOne) {
+        it$FindOne('Update document by fetching it', function () {
           return new Promise(function (pass, fail) {
             Foo.findOne().then(function (doc) {
               locals.doc = doc;
@@ -113,29 +109,29 @@ function test() {
           });
         });
 
-        it('Document\'s version should be 2', function (it) {
-          it('Fetch document', function () {
+        it$FindOne('Document\'s version should be 2', function (it$DocVersionIs2) {
+          it$DocVersionIs2('Fetch document', function () {
             return Foo.findOne().then(function (doc) {
               locals.doc = doc;
             });
           });
 
-          it('__v should be 2', function () {
+          it$DocVersionIs2('__v should be 2', function () {
             locals.doc.should.have.property('__v').which.is.exactly(2);
           });
         });
       });
 
-      it('Find', function (it) {
-        it('Empty collection', function () {
+      it$IndirectUpdate('Find', function (it$Find) {
+        it$Find('Empty collection', function () {
           return Foo.remove();
         });
 
-        it('Create { number : 10 }', function () {
+        it$Find('Create {number: 10}', function () {
           return Foo.insert({ number: 10 });
         });
 
-        it('Update document by fetching it', function () {
+        it$Find('Update document by fetching it', function () {
           return new Promise(function (pass, fail) {
             Foo.find().then(function (docs) {
               Promise.all(docs.map(function (doc) {
@@ -145,21 +141,21 @@ function test() {
           });
         });
 
-        it('Document\'s version should be 1', function (it) {
-          it('Fetch document', function () {
+        it$Find('Document\'s version should be 1', function (it$DocVersionIs1) {
+          it$DocVersionIs1('Fetch document', function () {
             return Foo.findOne().then(function (doc) {
               locals.doc = doc;
             });
           });
 
-          it('__v should be 1', function () {
+          it$DocVersionIs1('__v should be 1', function () {
             locals.doc.should.have.property('__v').which.is.exactly(1);
           });
         });
       });
     });
 
-    it('Empty collection', function () {
+    it$Update('Empty collection', function () {
       return Foo.remove();
     });
   });

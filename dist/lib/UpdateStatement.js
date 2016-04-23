@@ -6,10 +6,6 @@ Object.defineProperty(exports, "__esModule", {
 
 var _createClass = function () { function defineProperties(target, props) { for (var i = 0; i < props.length; i++) { var descriptor = props[i]; descriptor.enumerable = descriptor.enumerable || false; descriptor.configurable = true; if ("value" in descriptor) descriptor.writable = true; Object.defineProperty(target, descriptor.key, descriptor); } } return function (Constructor, protoProps, staticProps) { if (protoProps) defineProperties(Constructor.prototype, protoProps); if (staticProps) defineProperties(Constructor, staticProps); return Constructor; }; }();
 
-var _Type = require('./Type');
-
-var _Type2 = _interopRequireDefault(_Type);
-
 var _Error = require('./Error');
 
 var _Error2 = _interopRequireDefault(_Error);
@@ -48,15 +44,12 @@ var UpdateStatement = function () {
 
     try {
       if (document.constructor !== Object) {
-        throw new Mungo.Error('new UpdateStatement(document) > document must be an object', { document: document, model: model.name });
+        throw new MungoUpdateStatementError('new UpdateStatement(document) > document must be an object', { document: document, model: model.name });
       }
-
       if (typeof model !== 'function') {
-        throw new Mungo.Error('new UpdateStatement(model) > model must be a class', { document: document, model: model });
+        throw new MungoUpdateStatementError('new UpdateStatement(model) > model must be a class', { document: document, model: model });
       }
-
       var parsed = this.parseAll(document, model.getSchema());
-
       for (var field in parsed) {
         this[field] = parsed[field];
       }
@@ -69,52 +62,41 @@ var UpdateStatement = function () {
     key: 'parseAll',
     value: function parseAll(document, structure) {
       var parsed = {};
-
       for (var field in document) {
-
         if (UpdateStatement.operators.indexOf(field) > -1) {
-
           // Aliases
-
           var operator = field;
-
           if (field === '$incr' || field === '$increment') {
             operator = '$inc';
           }
-
           switch (operator) {
             case '$inc':
             case '$mul':
               parsed[operator] = document[field];
-              for (var f in parsed[field]) {
-                parsed[operator][f] = this.parseField(f, parsed[operator][f], structure[f]);
+              for (var _field in parsed[field]) {
+                parsed[operator][_field] = this.parseField(_field, parsed[operator][_field], structure[_field]);
               }
               break;
-
             case '$rename':
               parsed[operator] = document[field];
               break;
-
             case '$push':
               parsed[operator] = {};
-              for (var i in document[field]) {
-                parsed[operator][i] = this.parseField(i, [document[field][i]], structure[i])[0];
+              for (var _field2 in document[field]) {
+                parsed[operator][_field2] = this.parseField(_field2, [document[field][_field2]], structure[_field2])[0];
               }
               break;
-
             case '$unset':
-
               if (Array.isArray(document[field])) {
-                parsed.$unset = document[field].reduce(function (unset, field) {
-                  unset[field] = '';
+                parsed.$unset = document[field].reduce(function (unset, _field) {
+                  unset[_field] = '';
                   return unset;
                 }, {});
               } else if (typeof document[field] === 'string') {
                 parsed.$unset = _defineProperty({}, document[field], '');
               } else {
-                parset.$unset = document[field];
+                parsed.$unset = document[field];
               }
-
               break;
           }
         } else {
@@ -122,17 +104,18 @@ var UpdateStatement = function () {
             parsed.$set = {};
           }
           var parsedField = void 0;
-
           try {
             parsedField = this.parseField(field, document[field], structure[field]);
-
             Object.assign(parsed.$set, _defineProperty({}, field, parsedField));
           } catch (error) {
-            console.log(' mungodb . new UpdateStatement > warning > Could not parse field', { field: field, doc: document[field], structure: structure[field] });
+            throw new MungoUpdateStatementError('new UpdateStatement(model) > Could not parse field', {
+              field: field,
+              document: document[field],
+              structure: structure[field]
+            });
           }
         }
       }
-
       return parsed;
     }
   }, {
@@ -141,7 +124,11 @@ var UpdateStatement = function () {
       try {
         return fieldStructure.type.convert(fieldValue);
       } catch (error) {
-        throw MungoUpdateStatementError.rethrow(error, 'Could not parse field', { name: fieldName, value: fieldValue, field: fieldStructure });
+        throw MungoUpdateStatementError.rethrow(error, 'Could not parse field', {
+          name: fieldName,
+          value: fieldValue,
+          field: fieldStructure
+        });
       }
     }
   }]);

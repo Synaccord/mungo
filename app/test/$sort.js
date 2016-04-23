@@ -1,3 +1,4 @@
+import 'should';
 import describe from 'redtea';
 import Mungo from '../';
 import FindStatement from '../lib/FindStatement';

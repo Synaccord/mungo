@@ -31,11 +31,11 @@ var Index = function () {
 
     _classCallCheck(this, Index);
 
-    this.v = 1;
+    this.version = 1;
     this.fields = {};
     this.options = {};
 
-    options.v = this.v;
+    options.version = this.version;
 
     if (index === true) {
       this.fields = _defineProperty({}, field, 1);

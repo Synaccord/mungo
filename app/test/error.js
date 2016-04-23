@@ -1,5 +1,6 @@
+import 'should';
 import describe from 'redtea';
-import MungoError from '../lib/Rrror';
+import MungoError from '../lib/Error';
 import json from '../../package.json';
 
 function test() {

@@ -38,59 +38,55 @@ var ModelMigrate = function (_ModelType) {
   _createClass(ModelMigrate, null, [{
     key: 'buildIndexes',
 
-
-    //----------------------------------------------------------------------------
+    // ---------------------------------------------------------------------------
 
     /**
      *  @return     {Promise}
      */
 
     value: function buildIndexes() {
-      var name = this.name;
       var indexes = this.indexes;
 
-
-      var q = new _Query2.default(this);
+      var query = new _Query2.default(this);
 
       return (0, _promiseSequencer2.default)(function () {
-        return q.getCollection();
+        return query.getCollection();
       }, function () {
-        return q.collection.indexes();
+        return query.collection.indexes();
       }, function (dbIndexes) {
-        return new Promise(function (ok, ko) {
-          dbIndexes = dbIndexes.filter(function (dbIndex) {
+        return new Promise(function (resolve, reject) {
+          var filteredDbIndexes = dbIndexes.filter(function (dbIndex) {
             return dbIndex.name !== '_id_';
           });
 
-          if (!dbIndexes.length && !indexes.length) {
-            return ok();
+          if (!filteredDbIndexes.length && !indexes.length) {
+            return resolve();
           }
 
           var promises = indexes.map(function (index) {
-            return new Promise(function (ok, ko) {
-              var indexExists = dbIndexes.some(function (dbIndex) {
+            return new Promise(function (resolveIndex, rejectIndex) {
+              var indexExists = filteredDbIndexes.some(function (dbIndex) {
                 return dbIndex.name === index.name;
               });
 
               if (indexExists) {
-                return ok();
-              } else {
-
-                if (index.options.force) {
-                  index.options.dropDups = true;
-                }
-
-                q.collection.createIndex(index.fields, index.options).then(ok, ko);
+                return resolveIndex();
               }
+
+              if (index.options.force) {
+                index.options.dropDups = true;
+              }
+
+              query.collection.createIndex(index.fields, index.options).then(resolveIndex, rejectIndex);
             });
           });
 
-          Promise.all(promises).then(ok, ko);
+          Promise.all(promises).then(resolve, reject);
         });
       });
     }
 
-    //----------------------------------------------------------------------------
+    // ---------------------------------------------------------------------------
 
     /** Migrate model
      *
@@ -98,7 +94,7 @@ var ModelMigrate = function (_ModelType) {
      *  @return     {Promise}
      */
 
-    //----------------------------------------------------------------------------
+    // ---------------------------------------------------------------------------
 
   }, {
     key: 'migrate',
@@ -112,50 +108,47 @@ var ModelMigrate = function (_ModelType) {
       return (0, _promiseSequencer2.default)(function () {
         return _this2.buildIndexes();
       }, function () {
-        return new Promise(function (ok, ko) {
-          {
-            var name = _this2.name;
-            var migrations = _this2.migrations;
+        return new Promise(function (resolve, reject) {
+          var migrations = _this2.migrations;
 
 
-            var currentVersion = _this2.version;
+          var currentVersion = _this2.version;
 
-            if (!migrations) {
-              return ok();
-            }
-
-            var pipe = [];
-
-            var _loop = function _loop(_version) {
-              _version = +_version;
-
-              var migration = migrations[_version];
-
-              if (versions.length && versions.indexOf(_version) === -1) {
-                return 'continue';
-              }
-
-              if (_version <= currentVersion) {
-                pipe.push(function () {
-                  return migration.do();
-                });
-              }
-              version = _version;
-            };
-
-            for (var version in migrations) {
-              var _ret = _loop(version);
-
-              if (_ret === 'continue') continue;
-            }
-
-            (0, _promiseSequencer2.default)(pipe).then(ok, ko);
+          if (!migrations) {
+            return resolve();
           }
+
+          var pipe = [];
+
+          var _loop = function _loop(_version) {
+            _version = Number(_version);
+
+            var migration = migrations[_version];
+
+            if (versions.length && versions.indexOf(_version) === -1) {
+              return 'continue';
+            }
+
+            if (_version <= currentVersion) {
+              pipe.push(function () {
+                return migration.do();
+              });
+            }
+            version = _version;
+          };
+
+          for (var version in migrations) {
+            var _ret = _loop(version);
+
+            if (_ret === 'continue') continue;
+          }
+
+          (0, _promiseSequencer2.default)(pipe).then(resolve, reject);
         });
       });
     }
 
-    //----------------------------------------------------------------------------
+    // ---------------------------------------------------------------------------
 
   }]);
 

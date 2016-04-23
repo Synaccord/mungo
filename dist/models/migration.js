@@ -4,17 +4,17 @@ Object.defineProperty(exports, "__esModule", {
   value: true
 });
 
-var _model = require('../lib/model');
+var _Model2 = require('../lib/Model');
 
-var _model2 = _interopRequireDefault(_model);
+var _Model3 = _interopRequireDefault(_Model2);
 
-var _type = require('../lib/type');
+var _Type = require('../lib/Type');
 
-var _type2 = _interopRequireDefault(_type);
+var _Type2 = _interopRequireDefault(_Type);
 
-var _schema = require('../lib/schema');
+var _Schema = require('../lib/Schema');
 
-var _schema2 = _interopRequireDefault(_schema);
+var _Schema2 = _interopRequireDefault(_Schema);
 
 function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { default: obj }; }
 
@@ -34,7 +34,7 @@ var Migration = function (_Model) {
   }
 
   return Migration;
-}(_model2.default);
+}(_Model3.default);
 
 Migration.version = 2;
 Migration.collection = 'mungo_migrations';
@@ -48,11 +48,11 @@ Migration.schema = {
     required: true
   },
   remove: Object,
-  unset: new _schema2.default({
+  unset: new _Schema2.default({
     fields: [String],
     get: Object
   }),
-  update: new _schema2.default({
+  update: new _Schema2.default({
     get: Object,
     set: Object
   })
