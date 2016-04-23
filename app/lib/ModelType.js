@@ -1,5 +1,3 @@
-'use strict';
-
 import mongodb from 'mongodb';
 import MungoError from './Error';
 
@@ -13,12 +11,12 @@ class ModelType {
 
   static convert (value) {
     try {
-      if ( ! value ) {
+      if (!value) {
         return null;
       }
 
-      if ( value instanceof this ) {
-        if ( value.get('_id') ) {
+      if (value instanceof this) {
+        if (value.get('_id')) {
           return value.get('_id');
         }
 
@@ -27,15 +25,15 @@ class ModelType {
         return value.get('_id');
       }
 
-      if ( value instanceof mongodb.ObjectID ) {
+      if (value instanceof mongodb.ObjectID) {
         return value;
       }
 
-      else if ( typeof value === 'string' ) {
+      else if (typeof value === 'string') {
         return mongodb.ObjectID(value);
       }
 
-      if ( typeof value === 'object' && value._id ) {
+      if (typeof value === 'object' && value._id) {
         return mongodb.ObjectID(value._id);
       }
 
@@ -44,9 +42,17 @@ class ModelType {
       model.set('_id', mongodb.ObjectID());
 
       return model._id;
-    }
-    catch ( error ) {
-      throw ModelTypeError.rethrow(error, 'Could not convert model', { value, model: { name : this.name, version : this.version } });
+    } catch (error) {
+      throw ModelTypeError.rethrow(
+        error,
+        'Could not convert model',
+        {
+          value,
+          model: {
+            name: this.name,
+            version: this.version,
+          },
+        });
     }
   }
 

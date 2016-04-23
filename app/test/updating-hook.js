@@ -1,17 +1,15 @@
-'use strict';
-
 import describe from 'redtea';
-import should from 'should';
 import Mungo from '..';
 
 class Foo extends Mungo.Model {
   static collection = 'mungo_test_updating_hook';
 
   static schema = {
-    number : Number,
-    touched : {
-      type : Number, default : 0
-    }
+    number: Number,
+    touched: {
+      type: Number,
+      default: 0,
+    },
   };
 
   static updating () {
@@ -19,36 +17,46 @@ class Foo extends Mungo.Model {
   }
 
   static touching (doc) {
-    return new Promise((pass, fail) => {
+    return new Promise((pass) => {
       doc.increment('touched', 1);
       pass();
     });
   }
 }
 
-function test(props = {}) {
+function test() {
   const locals = {};
 
-  return describe('Updating hook', it => {
-    it('Connect', () => new Promise((pass, fail) => {
+  return describe('Updating hook', it$UpdatingHook => {
+    it$UpdatingHook('Connect', () => new Promise((pass, fail) => {
       Mungo.connect(process.env.MUNGO_URL || 'mongodb://localhost/test')
         .on('error', fail)
         .on('connected', pass);
     }));
 
-    it('Create documents', it => {
-      it('Model.create({ number : 0 })', () => Foo.insert({ number : 0 }))
+    it$UpdatingHook('Create documents', it$CreateDoc => {
+      it$CreateDoc('Model.create({ number : 0 })',
+        () => Foo.insert({number: 0})
+      );
     });
 
-    it('Direct update', it => {
-      it('Model.update({ number : 1 })', () => Foo.update({}, { number : 1 }));
+    it$UpdatingHook('Direct update', it$DirectUpdate => {
+      it$DirectUpdate('Model.update({ number : 1 })',
+        () => Foo.update({}, {number: 1})
+      );
 
-      it('fetch document', () => Foo.findOne().then(doc => { locals.doc = doc }));
+      it$DirectUpdate('fetch document',
+        () => Foo.findOne().then(doc => {
+          locals.doc = doc;
+        })
+      );
 
-      it('touched should be 1', () => locals.doc.should.have.property('touched').which.is.exactly(1));
+      it$DirectUpdate('touched should be 1',
+        () => locals.doc.should.have.property('touched').which.is.exactly(1)
+      );
     });
 
-    it('Empty collection', () => Foo.remove());
+    it$UpdatingHook('Empty collection', () => Foo.remove());
   });
 }
 

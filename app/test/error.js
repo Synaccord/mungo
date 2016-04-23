@@ -1,23 +1,20 @@
-'use strict';
+import describe from 'redtea';
+import MungoError from '../lib/Rrror';
+import json from '../../package.json';
 
-import describe           from 'redtea';
-import should             from 'should';
-import MungoError         from '../lib/Error';
-import json               from '../../package.json';
-
-function test(props = {}) {
+function test() {
   const locals = {};
 
   return describe('Mungo v' + json.version, it => {
-    it('Error', it => {
-      it('should be a class', () => MungoError.should.be.a.Function());
+    it('Error', $MungoError => {
+      $MungoError('should be a class', () => MungoError.should.be.a.Function());
 
-      it('should be an instance of Error', () => {
+      $MungoError('should be an instance of Error', () => {
         locals.error = new MungoError('Oops!');
         locals.error.should.be.an.instanceof(Error);
       });
 
-      it('should have the original message', () =>
+      $MungoError('should have the original message', () =>
         locals.error.should.have.property('originalMessage')
           .which.is.exactly('Oops!')
       );
