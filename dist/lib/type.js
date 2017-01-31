@@ -4,7 +4,7 @@ Object.defineProperty(exports, "__esModule", {
   value: true
 });
 
-var _typeof = typeof Symbol === "function" && typeof Symbol.iterator === "symbol" ? function (obj) { return typeof obj; } : function (obj) { return obj && typeof Symbol === "function" && obj.constructor === Symbol ? "symbol" : typeof obj; };
+var _typeof = typeof Symbol === "function" && typeof Symbol.iterator === "symbol" ? function (obj) { return typeof obj; } : function (obj) { return obj && typeof Symbol === "function" && obj.constructor === Symbol && obj !== Symbol.prototype ? "symbol" : typeof obj; };
 
 var _createClass = function () { function defineProperties(target, props) { for (var i = 0; i < props.length; i++) { var descriptor = props[i]; descriptor.enumerable = descriptor.enumerable || false; descriptor.configurable = true; if ("value" in descriptor) descriptor.writable = true; Object.defineProperty(target, descriptor.key, descriptor); } } return function (Constructor, protoProps, staticProps) { if (protoProps) defineProperties(Constructor.prototype, protoProps); if (staticProps) defineProperties(Constructor, staticProps); return Constructor; }; }();
 
@@ -36,7 +36,7 @@ var MungoTypeError = function (_MungoError) {
   function MungoTypeError() {
     _classCallCheck(this, MungoTypeError);
 
-    return _possibleConstructorReturn(this, Object.getPrototypeOf(MungoTypeError).apply(this, arguments));
+    return _possibleConstructorReturn(this, (MungoTypeError.__proto__ || Object.getPrototypeOf(MungoTypeError)).apply(this, arguments));
   }
 
   return MungoTypeError;
@@ -46,7 +46,7 @@ var MungoTypeError = function (_MungoError) {
 
 var _Object = function () {
   function _Object() {
-    var object = arguments.length <= 0 || arguments[0] === undefined ? {} : arguments[0];
+    var object = arguments.length > 0 && arguments[0] !== undefined ? arguments[0] : {};
 
     _classCallCheck(this, _Object);
 
@@ -288,7 +288,7 @@ var _ObjectID = function (_mongodb$ObjectID) {
   function _ObjectID() {
     _classCallCheck(this, _ObjectID);
 
-    return _possibleConstructorReturn(this, Object.getPrototypeOf(_ObjectID).apply(this, arguments));
+    return _possibleConstructorReturn(this, (_ObjectID.__proto__ || Object.getPrototypeOf(_ObjectID)).apply(this, arguments));
   }
 
   _createClass(_ObjectID, null, [{

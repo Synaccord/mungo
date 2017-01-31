@@ -67,7 +67,7 @@ var _updateStatement2 = _interopRequireDefault(_updateStatement);
 function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { default: obj }; }
 
 function test() {
-  var props = arguments.length <= 0 || arguments[0] === undefined ? {} : arguments[0];
+  var props = arguments.length > 0 && arguments[0] !== undefined ? arguments[0] : {};
 
   return (0, _redtea2.default)('Mungo v' + _package2.default.version, function (it) {
     it('module', function (it) {

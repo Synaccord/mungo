@@ -36,7 +36,7 @@ var Migration = function (_Model) {
   function Migration() {
     _classCallCheck(this, Migration);
 
-    return _possibleConstructorReturn(this, Object.getPrototypeOf(Migration).apply(this, arguments));
+    return _possibleConstructorReturn(this, (Migration.__proto__ || Object.getPrototypeOf(Migration)).apply(this, arguments));
   }
 
   _createClass(Migration, null, [{
@@ -89,7 +89,7 @@ var Migration = function (_Model) {
   }, {
     key: 'revert',
     value: function revert() {
-      var instructions = arguments.length <= 0 || arguments[0] === undefined ? {} : arguments[0];
+      var instructions = arguments.length > 0 && arguments[0] !== undefined ? arguments[0] : {};
 
       return _migration2.default.insert(Object.assign({
         collection: this.collection,

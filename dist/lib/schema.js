@@ -4,7 +4,7 @@ Object.defineProperty(exports, "__esModule", {
   value: true
 });
 
-var _typeof = typeof Symbol === "function" && typeof Symbol.iterator === "symbol" ? function (obj) { return typeof obj; } : function (obj) { return obj && typeof Symbol === "function" && obj.constructor === Symbol ? "symbol" : typeof obj; };
+var _typeof = typeof Symbol === "function" && typeof Symbol.iterator === "symbol" ? function (obj) { return typeof obj; } : function (obj) { return obj && typeof Symbol === "function" && obj.constructor === Symbol && obj !== Symbol.prototype ? "symbol" : typeof obj; };
 
 var _createClass = function () { function defineProperties(target, props) { for (var i = 0; i < props.length; i++) { var descriptor = props[i]; descriptor.enumerable = descriptor.enumerable || false; descriptor.configurable = true; if ("value" in descriptor) descriptor.writable = true; Object.defineProperty(target, descriptor.key, descriptor); } } return function (Constructor, protoProps, staticProps) { if (protoProps) defineProperties(Constructor.prototype, protoProps); if (staticProps) defineProperties(Constructor, staticProps); return Constructor; }; }();
 
@@ -84,10 +84,10 @@ var Schema = function () {
   }]);
 
   function Schema() {
-    var original = arguments.length <= 0 || arguments[0] === undefined ? {} : arguments[0];
-    var version = arguments.length <= 1 || arguments[1] === undefined ? 0 : arguments[1];
-    var ns = arguments.length <= 2 || arguments[2] === undefined ? '' : arguments[2];
-    var options = arguments.length <= 3 || arguments[3] === undefined ? {} : arguments[3];
+    var original = arguments.length > 0 && arguments[0] !== undefined ? arguments[0] : {};
+    var version = arguments.length > 1 && arguments[1] !== undefined ? arguments[1] : 0;
+    var ns = arguments.length > 2 && arguments[2] !== undefined ? arguments[2] : '';
+    var options = arguments.length > 3 && arguments[3] !== undefined ? arguments[3] : {};
 
     _classCallCheck(this, Schema);
 
@@ -120,8 +120,8 @@ var Schema = function () {
       ns += '.';
     }
 
-    for (var field in structure) {
-      this['' + field] = structure[field];
+    for (var _field in structure) {
+      this['' + _field] = structure[_field];
     }
   }
 
@@ -144,7 +144,7 @@ var Schema = function () {
   }, {
     key: 'makeFlatten',
     value: function makeFlatten(structure) {
-      var ns = arguments.length <= 1 || arguments[1] === undefined ? '' : arguments[1];
+      var ns = arguments.length > 1 && arguments[1] !== undefined ? arguments[1] : '';
 
       var flatten = {};
 
@@ -198,7 +198,7 @@ var Schema = function () {
     key: 'setType',
     value: function setType(structure, ns) {
 
-      var type = undefined;
+      var type = void 0;
 
       // no field
 

@@ -22,7 +22,7 @@ var Streamable = function (_Readable) {
   function Streamable(options) {
     _classCallCheck(this, Streamable);
 
-    var _this = _possibleConstructorReturn(this, Object.getPrototypeOf(Streamable).call(this, {
+    var _this = _possibleConstructorReturn(this, (Streamable.__proto__ || Object.getPrototypeOf(Streamable)).call(this, {
       encoding: 'utf8'
     }));
 

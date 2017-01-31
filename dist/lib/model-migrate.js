@@ -32,7 +32,7 @@ var ModelMigrate = function (_ModelType) {
   function ModelMigrate() {
     _classCallCheck(this, ModelMigrate);
 
-    return _possibleConstructorReturn(this, Object.getPrototypeOf(ModelMigrate).apply(this, arguments));
+    return _possibleConstructorReturn(this, (ModelMigrate.__proto__ || Object.getPrototypeOf(ModelMigrate)).apply(this, arguments));
   }
 
   _createClass(ModelMigrate, null, [{
@@ -46,8 +46,8 @@ var ModelMigrate = function (_ModelType) {
      */
 
     value: function buildIndexes() {
-      var name = this.name;
-      var indexes = this.indexes;
+      var name = this.name,
+          indexes = this.indexes;
 
 
       var q = new _query2.default(this);
@@ -114,8 +114,8 @@ var ModelMigrate = function (_ModelType) {
       }, function () {
         return new Promise(function (ok, ko) {
           {
-            var name = _this2.name;
-            var migrations = _this2.migrations;
+            var name = _this2.name,
+                migrations = _this2.migrations;
 
 
             var currentVersion = _this2.version;

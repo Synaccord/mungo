@@ -30,7 +30,7 @@ var MungoUpdateStatementError = function (_MungoError) {
   function MungoUpdateStatementError() {
     _classCallCheck(this, MungoUpdateStatementError);
 
-    return _possibleConstructorReturn(this, Object.getPrototypeOf(MungoUpdateStatementError).apply(this, arguments));
+    return _possibleConstructorReturn(this, (MungoUpdateStatementError.__proto__ || Object.getPrototypeOf(MungoUpdateStatementError)).apply(this, arguments));
   }
 
   return MungoUpdateStatementError;
@@ -121,7 +121,7 @@ var UpdateStatement = function () {
           if (!('$set' in parsed)) {
             parsed.$set = {};
           }
-          var parsedField = undefined;
+          var parsedField = void 0;
 
           try {
             parsedField = this.parseField(field, document[field], structure[field]);

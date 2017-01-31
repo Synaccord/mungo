@@ -32,7 +32,7 @@ var Connection = function (_EventEmitter) {
   _inherits(Connection, _EventEmitter);
 
   function Connection() {
-    var _Object$getPrototypeO;
+    var _ref;
 
     var _temp, _this, _ret;
 
@@ -42,7 +42,7 @@ var Connection = function (_EventEmitter) {
       args[_key] = arguments[_key];
     }
 
-    return _ret = (_temp = (_this = _possibleConstructorReturn(this, (_Object$getPrototypeO = Object.getPrototypeOf(Connection)).call.apply(_Object$getPrototypeO, [this].concat(args))), _this), _this.connected = false, _this.db = null, _temp), _possibleConstructorReturn(_this, _ret);
+    return _ret = (_temp = (_this = _possibleConstructorReturn(this, (_ref = Connection.__proto__ || Object.getPrototypeOf(Connection)).call.apply(_ref, [this].concat(args))), _this), _this.connected = false, _this.db = null, _temp), _possibleConstructorReturn(_this, _ret);
   }
 
   //----------------------------------------------------------------------------

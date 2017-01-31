@@ -4,7 +4,7 @@ Object.defineProperty(exports, "__esModule", {
   value: true
 });
 
-var _typeof = typeof Symbol === "function" && typeof Symbol.iterator === "symbol" ? function (obj) { return typeof obj; } : function (obj) { return obj && typeof Symbol === "function" && obj.constructor === Symbol ? "symbol" : typeof obj; };
+var _typeof = typeof Symbol === "function" && typeof Symbol.iterator === "symbol" ? function (obj) { return typeof obj; } : function (obj) { return obj && typeof Symbol === "function" && obj.constructor === Symbol && obj !== Symbol.prototype ? "symbol" : typeof obj; };
 
 var _createClass = function () { function defineProperties(target, props) { for (var i = 0; i < props.length; i++) { var descriptor = props[i]; descriptor.enumerable = descriptor.enumerable || false; descriptor.configurable = true; if ("value" in descriptor) descriptor.writable = true; Object.defineProperty(target, descriptor.key, descriptor); } } return function (Constructor, protoProps, staticProps) { if (protoProps) defineProperties(Constructor.prototype, protoProps); if (staticProps) defineProperties(Constructor, staticProps); return Constructor; }; }();
 
@@ -64,7 +64,7 @@ var MungoModelError = function (_MungoError) {
   function MungoModelError() {
     _classCallCheck(this, MungoModelError);
 
-    return _possibleConstructorReturn(this, Object.getPrototypeOf(MungoModelError).apply(this, arguments));
+    return _possibleConstructorReturn(this, (MungoModelError.__proto__ || Object.getPrototypeOf(MungoModelError)).apply(this, arguments));
   }
 
   return MungoModelError;
@@ -92,12 +92,12 @@ var Model = function (_ModelStatic) {
   //----------------------------------------------------------------------------
 
   function Model() {
-    var original = arguments.length <= 0 || arguments[0] === undefined ? {} : arguments[0];
-    var fromDB = arguments.length <= 1 || arguments[1] === undefined ? false : arguments[1];
+    var original = arguments.length > 0 && arguments[0] !== undefined ? arguments[0] : {};
+    var fromDB = arguments.length > 1 && arguments[1] !== undefined ? arguments[1] : false;
 
     _classCallCheck(this, Model);
 
-    var _this2 = _possibleConstructorReturn(this, Object.getPrototypeOf(Model).call(this));
+    var _this2 = _possibleConstructorReturn(this, (Model.__proto__ || Object.getPrototypeOf(Model)).call(this));
 
     _this2.$changes = {};
     _this2.$populated = {};
@@ -165,7 +165,7 @@ var Model = function (_ModelStatic) {
   }, {
     key: 'increment',
     value: function increment(field) {
-      var step = arguments.length <= 1 || arguments[1] === undefined ? 1 : arguments[1];
+      var step = arguments.length > 1 && arguments[1] !== undefined ? arguments[1] : 1;
 
       if ((typeof field === 'undefined' ? 'undefined' : _typeof(field)) === 'object') {
         for (var i in field) {
@@ -261,7 +261,7 @@ var Model = function (_ModelStatic) {
     value: function save() {
       var _this3 = this;
 
-      var options = arguments.length <= 0 || arguments[0] === undefined ? {} : arguments[0];
+      var options = arguments.length > 0 && arguments[0] !== undefined ? arguments[0] : {};
 
       return new Promise(function (ok, ko) {
         try {
@@ -355,7 +355,7 @@ var Model = function (_ModelStatic) {
   }, {
     key: 'toJSON',
     value: function toJSON() {
-      var options = arguments.length <= 0 || arguments[0] === undefined ? {} : arguments[0];
+      var options = arguments.length > 0 && arguments[0] !== undefined ? arguments[0] : {};
 
       var serialized = JSON.parse(JSON.stringify(this.$document));
 
@@ -378,7 +378,7 @@ var Model = function (_ModelStatic) {
   }, {
     key: 'toString',
     value: function toString() {
-      var options = arguments.length <= 0 || arguments[0] === undefined ? {} : arguments[0];
+      var options = arguments.length > 0 && arguments[0] !== undefined ? arguments[0] : {};
 
       return JSON.stringify(this.toJSON(options));
     }
@@ -390,15 +390,14 @@ var Model = function (_ModelStatic) {
     value: function populate() {
       var _this4 = this;
 
-      var options = arguments.length <= 0 || arguments[0] === undefined ? {} : arguments[0];
+      var options = arguments.length > 0 && arguments[0] !== undefined ? arguments[0] : {};
 
 
       return new Promise(function (ok, ko) {
         try {
           (function () {
-            var _constructor$getSchem = _this4.constructor.getSchema();
-
-            var flatten = _constructor$getSchem.flatten;
+            var _constructor$getSchem = _this4.constructor.getSchema(),
+                flatten = _constructor$getSchem.flatten;
 
             // console.log('POPULATING'.bgMagenta, this.$document);
 

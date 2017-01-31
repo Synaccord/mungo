@@ -23,7 +23,7 @@ var _package2 = _interopRequireDefault(_package);
 function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { default: obj }; }
 
 function test() {
-  var props = arguments.length <= 0 || arguments[0] === undefined ? {} : arguments[0];
+  var props = arguments.length > 0 && arguments[0] !== undefined ? arguments[0] : {};
 
   var locals = {};
 

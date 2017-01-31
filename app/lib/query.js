@@ -77,7 +77,7 @@ class Query {
 
   //----------------------------------------------------------------------------
   //----------------------------------------------------------------------------
-  //----------------------------------------------------------------------------
+   //----------------------------------------------------------------------------
 
   find (query = {}, projection = {}, options = {}) {
 
@@ -96,6 +96,53 @@ class Query {
             .limit(projection.limit)
             .skip(projection.skip)
             .sort(projection.sort);
+
+          action.toArray()
+            .then(documents => {
+
+              // documents = documents.map(doc => new model(doc, true));
+
+              // console.log(prettify({ [`<<  Query {${this.model.name}#${this.model.version}} <= find`] : { found : documents } }));
+
+              ok(documents);
+            })
+            .catch(ko);
+          })
+          .catch(ko);
+    });
+
+    promise.limit = limit => {
+      projection.setLimit(limit);
+      return promise;
+    };
+
+    promise.skip = skip => {
+      projection.setSkip(skip);
+      return promise;
+    };
+
+    return promise;
+  }
+   //----------------------------------------------------------------------------
+
+  aggregate (query = {}, projection = {}, options = {}) {
+    console.info("query.aggregate", query, projection, options);
+
+    const { model } = this;
+
+    projection = new Projection(projection);
+
+    // console.log(prettify({[`>>  Query {${this.model.name}#${this.model.version}} => find`] : { query, projection, options } }));
+
+    const promise = new Promise((ok, ko) => {
+      this.getCollection()
+        .then(() => {
+          const action = this.collection.aggregate(query);
+
+          action
+            .limit(projection.limit)
+            .skip(projection.skip);
+ //           .sort(projection.sort); Sort is built in to aggregate query
 
           action.toArray()
             .then(documents => {
@@ -161,6 +208,8 @@ class Query {
         .catch(ko);
     });
   }
+
+
 
   //----------------------------------------------------------------------------
 

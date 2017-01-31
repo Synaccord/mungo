@@ -40,7 +40,7 @@ var MungoQueryError = function (_MungoError) {
   function MungoQueryError() {
     _classCallCheck(this, MungoQueryError);
 
-    return _possibleConstructorReturn(this, Object.getPrototypeOf(MungoQueryError).apply(this, arguments));
+    return _possibleConstructorReturn(this, (MungoQueryError.__proto__ || Object.getPrototypeOf(MungoQueryError)).apply(this, arguments));
   }
 
   return MungoQueryError;
@@ -96,6 +96,7 @@ var Query = function () {
 
     //----------------------------------------------------------------------------
 
+
   }, {
     key: 'getCollection',
     value: function getCollection() {
@@ -123,12 +124,12 @@ var Query = function () {
   }, {
     key: 'find',
     value: function find() {
-      var query = arguments.length <= 0 || arguments[0] === undefined ? {} : arguments[0];
+      var query = arguments.length > 0 && arguments[0] !== undefined ? arguments[0] : {};
 
       var _this4 = this;
 
-      var projection = arguments.length <= 1 || arguments[1] === undefined ? {} : arguments[1];
-      var options = arguments.length <= 2 || arguments[2] === undefined ? {} : arguments[2];
+      var projection = arguments.length > 1 && arguments[1] !== undefined ? arguments[1] : {};
+      var options = arguments.length > 2 && arguments[2] !== undefined ? arguments[2] : {};
       var model = this.model;
 
 
@@ -165,18 +166,69 @@ var Query = function () {
 
       return promise;
     }
+    //----------------------------------------------------------------------------
+
+  }, {
+    key: 'aggregate',
+    value: function aggregate() {
+      var query = arguments.length > 0 && arguments[0] !== undefined ? arguments[0] : {};
+
+      var _this5 = this;
+
+      var projection = arguments.length > 1 && arguments[1] !== undefined ? arguments[1] : {};
+      var options = arguments.length > 2 && arguments[2] !== undefined ? arguments[2] : {};
+
+      console.info("query.aggregate", query, projection, options);
+
+      var model = this.model;
+
+
+      projection = new _projection2.default(projection);
+
+      // console.log(prettify({[`>>  Query {${this.model.name}#${this.model.version}} => find`] : { query, projection, options } }));
+
+      var promise = new Promise(function (ok, ko) {
+        _this5.getCollection().then(function () {
+          var action = _this5.collection.aggregate(query);
+
+          action.limit(projection.limit).skip(projection.skip);
+          //           .sort(projection.sort); Sort is built in to aggregate query
+
+          action.toArray().then(function (documents) {
+
+            // documents = documents.map(doc => new model(doc, true));
+
+            // console.log(prettify({ [`<<  Query {${this.model.name}#${this.model.version}} <= find`] : { found : documents } }));
+
+            ok(documents);
+          }).catch(ko);
+        }).catch(ko);
+      });
+
+      promise.limit = function (limit) {
+        projection.setLimit(limit);
+        return promise;
+      };
+
+      promise.skip = function (skip) {
+        projection.setSkip(skip);
+        return promise;
+      };
+
+      return promise;
+    }
 
     //----------------------------------------------------------------------------
 
   }, {
     key: 'findOne',
     value: function findOne() {
-      var query = arguments.length <= 0 || arguments[0] === undefined ? {} : arguments[0];
+      var query = arguments.length > 0 && arguments[0] !== undefined ? arguments[0] : {};
 
-      var _this5 = this;
+      var _this6 = this;
 
-      var projection = arguments.length <= 1 || arguments[1] === undefined ? {} : arguments[1];
-      var options = arguments.length <= 2 || arguments[2] === undefined ? {} : arguments[2];
+      var projection = arguments.length > 1 && arguments[1] !== undefined ? arguments[1] : {};
+      var options = arguments.length > 2 && arguments[2] !== undefined ? arguments[2] : {};
       var model = this.model;
 
 
@@ -185,9 +237,9 @@ var Query = function () {
       Object.assign(options, projection);
 
       return new Promise(function (ok, ko) {
-        _this5.getCollection().then(function () {
+        _this6.getCollection().then(function () {
           try {
-            var action = _this5.collection.findOne(query, options);
+            var action = _this6.collection.findOne(query, options);
 
             action.then(function (document) {
               try {
@@ -211,17 +263,17 @@ var Query = function () {
   }, {
     key: 'count',
     value: function count() {
-      var _this6 = this;
+      var _this7 = this;
 
-      var query = arguments.length <= 0 || arguments[0] === undefined ? {} : arguments[0];
+      var query = arguments.length > 0 && arguments[0] !== undefined ? arguments[0] : {};
       var model = this.model;
 
       // console.log(prettify({ [`${this.model.name}.count()`] : query }));
 
       return new Promise(function (ok, ko) {
-        _this6.getCollection().then(function () {
+        _this7.getCollection().then(function () {
           try {
-            var action = _this6.collection.count(query);
+            var action = _this7.collection.count(query);
 
             action.then(function (count) {
               try {
@@ -244,12 +296,12 @@ var Query = function () {
   }, {
     key: 'deleteMany',
     value: function deleteMany() {
-      var filter = arguments.length <= 0 || arguments[0] === undefined ? {} : arguments[0];
+      var filter = arguments.length > 0 && arguments[0] !== undefined ? arguments[0] : {};
 
-      var _this7 = this;
+      var _this8 = this;
 
-      var projection = arguments.length <= 1 || arguments[1] === undefined ? {} : arguments[1];
-      var options = arguments.length <= 2 || arguments[2] === undefined ? {} : arguments[2];
+      var projection = arguments.length > 1 && arguments[1] !== undefined ? arguments[1] : {};
+      var options = arguments.length > 2 && arguments[2] !== undefined ? arguments[2] : {};
 
       return new Promise(function (ok, ko) {
 
@@ -257,12 +309,12 @@ var Query = function () {
 
         // console.log(prettify({ [`>> Query {${this.model.name}#${this.model.version}} => deleteMany`] : {filter, projection, options}}));
 
-        _this7.getCollection().then(function () {
+        _this8.getCollection().then(function () {
 
-          var action = undefined;
+          var action = void 0;
 
           if (!projection.limit) {
-            action = _this7.collection.deleteMany(filter);
+            action = _this8.collection.deleteMany(filter);
           }
 
           action.then(function (result) {
@@ -278,12 +330,12 @@ var Query = function () {
   }, {
     key: 'deleteOne',
     value: function deleteOne() {
-      var filter = arguments.length <= 0 || arguments[0] === undefined ? {} : arguments[0];
+      var filter = arguments.length > 0 && arguments[0] !== undefined ? arguments[0] : {};
 
-      var _this8 = this;
+      var _this9 = this;
 
-      var projection = arguments.length <= 1 || arguments[1] === undefined ? {} : arguments[1];
-      var options = arguments.length <= 2 || arguments[2] === undefined ? {} : arguments[2];
+      var projection = arguments.length > 1 && arguments[1] !== undefined ? arguments[1] : {};
+      var options = arguments.length > 2 && arguments[2] !== undefined ? arguments[2] : {};
 
       return new Promise(function (ok, ko) {
         try {
@@ -291,12 +343,12 @@ var Query = function () {
 
           // console.log(prettify({ [`>> Query {${this.model.name}#${this.model.version}} => deleteOne`] : {filter, projection, options}}));
 
-          _this8.getCollection().then(function () {
+          _this9.getCollection().then(function () {
             try {
-              var action = undefined;
+              var action = void 0;
 
               if (!projection.limit) {
-                action = _this8.collection.deleteOne(filter);
+                action = _this9.collection.deleteOne(filter);
               }
 
               action.then(function (result) {
@@ -326,19 +378,19 @@ var Query = function () {
   }, {
     key: 'insertMany',
     value: function insertMany() {
-      var _this9 = this;
+      var _this10 = this;
 
-      var docs = arguments.length <= 0 || arguments[0] === undefined ? [] : arguments[0];
-      var options = arguments.length <= 1 || arguments[1] === undefined ? {} : arguments[1];
+      var docs = arguments.length > 0 && arguments[0] !== undefined ? arguments[0] : [];
+      var options = arguments.length > 1 && arguments[1] !== undefined ? arguments[1] : {};
 
       return new Promise(function (ok, ko) {
-        var model = _this9.model;
+        var model = _this10.model;
 
         // console.log(prettify({ [`>> Query {${model.name}#${model.version}} => insertMany`] : { docs, options }}));
 
-        _this9.getCollection().then(function () {
+        _this10.getCollection().then(function () {
 
-          var action = _this9.collection.insertMany(docs);
+          var action = _this10.collection.insertMany(docs);
 
           action.then(function (res) {
             ok(res.ops.map(function (op) {
@@ -354,24 +406,25 @@ var Query = function () {
   }, {
     key: 'insertOne',
     value: function insertOne() {
-      var _this10 = this;
+      var _this11 = this;
 
-      var doc = arguments.length <= 0 || arguments[0] === undefined ? {} : arguments[0];
-      var options = arguments.length <= 1 || arguments[1] === undefined ? {} : arguments[1];
+      var doc = arguments.length > 0 && arguments[0] !== undefined ? arguments[0] : {};
+      var options = arguments.length > 1 && arguments[1] !== undefined ? arguments[1] : {};
 
       return new Promise(function (ok, ko) {
-        var model = _this10.model;
+        var model = _this11.model;
 
         // console.log(prettify({ [`>> Query {${this.model.name}#${this.model.version}} => insertOne`] : { doc, options } }));
 
-        _this10.getCollection().then(function () {
-          var action = _this10.collection.insertOne(doc);
+        _this11.getCollection().then(function () {
+          var action = _this11.collection.insertOne(doc);
 
           action.then(function (inserted) {
 
             // const document = new model(inserted.ops[0], true);
 
             // console.log(prettify({ [`<< Query {${this.model.name}#${this.model.version}} <= insertOne`] : { ops:  inserted.ops } }));
+
 
             ok(inserted.ops[0]);
           }).catch(ko);
@@ -393,19 +446,19 @@ var Query = function () {
   }, {
     key: 'updateOne',
     value: function updateOne() {
-      var filter = arguments.length <= 0 || arguments[0] === undefined ? {} : arguments[0];
+      var filter = arguments.length > 0 && arguments[0] !== undefined ? arguments[0] : {};
 
-      var _this11 = this;
+      var _this12 = this;
 
-      var modifier = arguments.length <= 1 || arguments[1] === undefined ? {} : arguments[1];
-      var options = arguments.length <= 2 || arguments[2] === undefined ? {} : arguments[2];
+      var modifier = arguments.length > 1 && arguments[1] !== undefined ? arguments[1] : {};
+      var options = arguments.length > 2 && arguments[2] !== undefined ? arguments[2] : {};
 
       return new Promise(function (ok, ko) {
-        var model = _this11.model;
+        var model = _this12.model;
 
 
-        _this11.getCollection().then(function () {
-          var action = _this11.collection.updateOne(filter, modifier, options);
+        _this12.getCollection().then(function () {
+          var action = _this12.collection.updateOne(filter, modifier, options);
 
           action.then(ok, ko);
         }, ko);
@@ -417,19 +470,19 @@ var Query = function () {
   }, {
     key: 'updateMany',
     value: function updateMany() {
-      var filter = arguments.length <= 0 || arguments[0] === undefined ? {} : arguments[0];
+      var filter = arguments.length > 0 && arguments[0] !== undefined ? arguments[0] : {};
 
-      var _this12 = this;
+      var _this13 = this;
 
-      var modifier = arguments.length <= 1 || arguments[1] === undefined ? {} : arguments[1];
-      var options = arguments.length <= 2 || arguments[2] === undefined ? {} : arguments[2];
+      var modifier = arguments.length > 1 && arguments[1] !== undefined ? arguments[1] : {};
+      var options = arguments.length > 2 && arguments[2] !== undefined ? arguments[2] : {};
 
       return new Promise(function (ok, ko) {
         try {
           // console.log(prettify({[`>> Query {${this.model.name}#${this.model.version}} => updateMany`]: {filter,modifier,options}}));
 
-          _this12.getCollection().then(function () {
-            var action = _this12.collection.updateMany(filter, modifier, options);
+          _this13.getCollection().then(function () {
+            var action = _this13.collection.updateMany(filter, modifier, options);
 
             action.then(ok, ko);
           }, ko);

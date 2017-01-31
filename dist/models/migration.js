@@ -30,7 +30,7 @@ var Migration = function (_Model) {
   function Migration() {
     _classCallCheck(this, Migration);
 
-    return _possibleConstructorReturn(this, Object.getPrototypeOf(Migration).apply(this, arguments));
+    return _possibleConstructorReturn(this, (Migration.__proto__ || Object.getPrototypeOf(Migration)).apply(this, arguments));
   }
 
   return Migration;

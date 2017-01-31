@@ -200,6 +200,48 @@ class ModelQuery extends ModelMigrate {
 
   //----------------------------------------------------------------------------
 
+  static aggregate (filter = {}, projection = {}, options = {}) {
+    console.info("modelQuery.aggregate", filter, projection, options);
+    const promise = new Promise((ok, ko) => {
+//      if ( ! ( filter instanceof FindStatement ) ) {
+//        filter = new FindStatement(filter, this);
+//      }  we are not parsing the filter to check it. In aggregation new properties can be defined, and what is the value of going this at runtime
+
+
+      Object.assign(projection, {}); // sort does not need to be taken out and run externally in a projection, it's one of the steps
+
+//      delete filter.$projection;
+
+      process.nextTick(() => {
+        this
+          .exec('aggregate', filter, projection, options)
+          .then(documents => {
+            documents = documents.map(doc => new this(doc, true));
+            ok(documents);
+          })
+          .catch(ko);
+      });
+    });
+
+    promise.limit = limit => {
+      projection.limit = limit;
+      return promise;
+    };
+
+    promise.skip = skip => {
+      projection.skip = skip;
+      return promise;
+    };
+
+    promise.sort = sort => {
+      projection.sort = sort;
+      return promise;
+    };
+
+    return promise;
+  } 
+   //----------------------------------------------------------------------------
+
   static find (filter = {}, projection = {}, options = {}) {
     const promise = new Promise((ok, ko) => {
       if ( ! ( filter instanceof FindStatement ) ) {

@@ -54,7 +54,7 @@ var MungoModelQueryError = function (_MungoError) {
   function MungoModelQueryError() {
     _classCallCheck(this, MungoModelQueryError);
 
-    return _possibleConstructorReturn(this, Object.getPrototypeOf(MungoModelQueryError).apply(this, arguments));
+    return _possibleConstructorReturn(this, (MungoModelQueryError.__proto__ || Object.getPrototypeOf(MungoModelQueryError)).apply(this, arguments));
   }
 
   return MungoModelQueryError;
@@ -86,7 +86,7 @@ var ModelQuery = function (_ModelMigrate) {
   function ModelQuery() {
     _classCallCheck(this, ModelQuery);
 
-    return _possibleConstructorReturn(this, Object.getPrototypeOf(ModelQuery).apply(this, arguments));
+    return _possibleConstructorReturn(this, (ModelQuery.__proto__ || Object.getPrototypeOf(ModelQuery)).apply(this, arguments));
   }
 
   _createClass(ModelQuery, null, [{
@@ -128,8 +128,8 @@ var ModelQuery = function (_ModelMigrate) {
   }, {
     key: 'count',
     value: function count() {
-      var filter = arguments.length <= 0 || arguments[0] === undefined ? {} : arguments[0];
-      var options = arguments.length <= 1 || arguments[1] === undefined ? {} : arguments[1];
+      var filter = arguments.length > 0 && arguments[0] !== undefined ? arguments[0] : {};
+      var options = arguments.length > 1 && arguments[1] !== undefined ? arguments[1] : {};
 
       if (!(filter instanceof _findStatement2.default)) {
         filter = new _findStatement2.default(filter, this);
@@ -191,12 +191,12 @@ var ModelQuery = function (_ModelMigrate) {
   }, {
     key: 'deleteMany',
     value: function deleteMany() {
-      var filter = arguments.length <= 0 || arguments[0] === undefined ? {} : arguments[0];
+      var filter = arguments.length > 0 && arguments[0] !== undefined ? arguments[0] : {};
 
       var _this3 = this;
 
-      var projection = arguments.length <= 1 || arguments[1] === undefined ? {} : arguments[1];
-      var options = arguments.length <= 2 || arguments[2] === undefined ? {} : arguments[2];
+      var projection = arguments.length > 1 && arguments[1] !== undefined ? arguments[1] : {};
+      var options = arguments.length > 2 && arguments[2] !== undefined ? arguments[2] : {};
 
       return new Promise(function (ok, ko) {
         if (!(filter instanceof _findStatement2.default)) {
@@ -251,7 +251,7 @@ var ModelQuery = function (_ModelMigrate) {
     value: function deleteOne() {
       var _this4 = this;
 
-      var filter = arguments.length <= 0 || arguments[0] === undefined ? {} : arguments[0];
+      var filter = arguments.length > 0 && arguments[0] !== undefined ? arguments[0] : {};
 
       return new Promise(function (ok, ko) {
         if (!(filter instanceof _findStatement2.default)) {
@@ -296,18 +296,68 @@ var ModelQuery = function (_ModelMigrate) {
     //----------------------------------------------------------------------------
 
   }, {
-    key: 'find',
-    value: function find() {
-      var filter = arguments.length <= 0 || arguments[0] === undefined ? {} : arguments[0];
+    key: 'aggregate',
+    value: function aggregate() {
+      var filter = arguments.length > 0 && arguments[0] !== undefined ? arguments[0] : {};
 
       var _this5 = this;
 
-      var projection = arguments.length <= 1 || arguments[1] === undefined ? {} : arguments[1];
-      var options = arguments.length <= 2 || arguments[2] === undefined ? {} : arguments[2];
+      var projection = arguments.length > 1 && arguments[1] !== undefined ? arguments[1] : {};
+      var options = arguments.length > 2 && arguments[2] !== undefined ? arguments[2] : {};
+
+      console.info("modelQuery.aggregate", filter, projection, options);
+      var promise = new Promise(function (ok, ko) {
+        //      if ( ! ( filter instanceof FindStatement ) ) {
+        //        filter = new FindStatement(filter, this);
+        //      }  we are not parsing the filter to check it. In aggregation new properties can be defined, and what is the value of going this at runtime
+
+
+        Object.assign(projection, {}); // sort does not need to be taken out and run externally in a projection, it's one of the steps
+
+        //      delete filter.$projection;
+
+        process.nextTick(function () {
+          _this5.exec('aggregate', filter, projection, options).then(function (documents) {
+            documents = documents.map(function (doc) {
+              return new _this5(doc, true);
+            });
+            ok(documents);
+          }).catch(ko);
+        });
+      });
+
+      promise.limit = function (limit) {
+        projection.limit = limit;
+        return promise;
+      };
+
+      promise.skip = function (skip) {
+        projection.skip = skip;
+        return promise;
+      };
+
+      promise.sort = function (sort) {
+        projection.sort = sort;
+        return promise;
+      };
+
+      return promise;
+    }
+    //----------------------------------------------------------------------------
+
+  }, {
+    key: 'find',
+    value: function find() {
+      var filter = arguments.length > 0 && arguments[0] !== undefined ? arguments[0] : {};
+
+      var _this6 = this;
+
+      var projection = arguments.length > 1 && arguments[1] !== undefined ? arguments[1] : {};
+      var options = arguments.length > 2 && arguments[2] !== undefined ? arguments[2] : {};
 
       var promise = new Promise(function (ok, ko) {
         if (!(filter instanceof _findStatement2.default)) {
-          filter = new _findStatement2.default(filter, _this5);
+          filter = new _findStatement2.default(filter, _this6);
         }
 
         Object.assign(projection, filter.$projection);
@@ -315,9 +365,9 @@ var ModelQuery = function (_ModelMigrate) {
         delete filter.$projection;
 
         process.nextTick(function () {
-          _this5.exec('find', filter, projection, options).then(function (documents) {
+          _this6.exec('find', filter, projection, options).then(function (documents) {
             documents = documents.map(function (doc) {
-              return new _this5(doc, true);
+              return new _this6(doc, true);
             });
             ok(documents);
           }).catch(ko);
@@ -370,10 +420,10 @@ var ModelQuery = function (_ModelMigrate) {
   }, {
     key: 'findOne',
     value: function findOne() {
-      var _this6 = this;
+      var _this7 = this;
 
-      var filter = arguments.length <= 0 || arguments[0] === undefined ? {} : arguments[0];
-      var projection = arguments.length <= 1 || arguments[1] === undefined ? {} : arguments[1];
+      var filter = arguments.length > 0 && arguments[0] !== undefined ? arguments[0] : {};
+      var projection = arguments.length > 1 && arguments[1] !== undefined ? arguments[1] : {};
 
       if (!(filter instanceof _findStatement2.default)) {
         filter = new _findStatement2.default(filter, this);
@@ -385,11 +435,11 @@ var ModelQuery = function (_ModelMigrate) {
 
       var promise = new Promise(function (ok, ko) {
         process.nextTick(function () {
-          _this6.exec('findOne', filter, projection).then(function (document) {
+          _this7.exec('findOne', filter, projection).then(function (document) {
             if (!document) {
               return ok();
             }
-            ok(new _this6(document, _this6.isFromDB));
+            ok(new _this7(document, _this7.isFromDB));
           }).catch(ko);
         });
       });
@@ -417,12 +467,12 @@ var ModelQuery = function (_ModelMigrate) {
   }, {
     key: 'findOneRandom',
     value: function findOneRandom() {
-      var filter = arguments.length <= 0 || arguments[0] === undefined ? {} : arguments[0];
+      var filter = arguments.length > 0 && arguments[0] !== undefined ? arguments[0] : {};
 
-      var _this7 = this;
+      var _this8 = this;
 
-      var projection = arguments.length <= 1 || arguments[1] === undefined ? {} : arguments[1];
-      var options = arguments.length <= 2 || arguments[2] === undefined ? {} : arguments[2];
+      var projection = arguments.length > 1 && arguments[1] !== undefined ? arguments[1] : {};
+      var options = arguments.length > 2 && arguments[2] !== undefined ? arguments[2] : {};
 
       if (!(filter instanceof _findStatement2.default)) {
         filter = new _findStatement2.default(filter, this);
@@ -433,14 +483,14 @@ var ModelQuery = function (_ModelMigrate) {
       delete filter.$projection;
 
       return _promiseSequencer2.default.pipe(function () {
-        return _this7.exec('count', filter);
+        return _this8.exec('count', filter);
       }, function (count) {
         return new Promise(function (ok, ko) {
           options.skip = Math.ceil(Math.max(0, Math.floor(count) * Math.random()));
           ok();
         });
       }, function () {
-        return _this7.findOne(filter, projection, options);
+        return _this8.findOne(filter, projection, options);
       });
     }
 
@@ -449,9 +499,9 @@ var ModelQuery = function (_ModelMigrate) {
   }, {
     key: 'findRandomOne',
     value: function findRandomOne() {
-      var filter = arguments.length <= 0 || arguments[0] === undefined ? {} : arguments[0];
-      var projection = arguments.length <= 1 || arguments[1] === undefined ? {} : arguments[1];
-      var options = arguments.length <= 2 || arguments[2] === undefined ? {} : arguments[2];
+      var filter = arguments.length > 0 && arguments[0] !== undefined ? arguments[0] : {};
+      var projection = arguments.length > 1 && arguments[1] !== undefined ? arguments[1] : {};
+      var options = arguments.length > 2 && arguments[2] !== undefined ? arguments[2] : {};
 
       return this.findOneRandom(filter, projection, options);
     }
@@ -469,7 +519,7 @@ var ModelQuery = function (_ModelMigrate) {
   }, {
     key: 'insertMany',
     value: function insertMany() {
-      var _this8 = this;
+      var _this9 = this;
 
       for (var _len3 = arguments.length, docs = Array(_len3), _key3 = 0; _key3 < _len3; _key3++) {
         docs[_key3] = arguments[_key3];
@@ -477,8 +527,8 @@ var ModelQuery = function (_ModelMigrate) {
 
       // console.log('insertMany', ...docs);
       return Promise.all(docs.map(function (doc) {
-        if (!(doc instanceof _this8)) {
-          doc = new _this8(doc);
+        if (!(doc instanceof _this9)) {
+          doc = new _this9(doc);
         }
         // console.log('new', doc);
         return doc;
@@ -496,15 +546,15 @@ var ModelQuery = function (_ModelMigrate) {
   }, {
     key: 'insertOne',
     value: function insertOne(doc) {
-      var _this9 = this;
+      var _this10 = this;
 
       return new Promise(function (ok, ko) {
         try {
-          if (!(doc instanceof _this9)) {
-            doc = new _this9(doc);
+          if (!(doc instanceof _this10)) {
+            doc = new _this10(doc);
           }
 
-          doc.set({ __v: 0, __V: _this9.version }).save().then(function () {
+          doc.set({ __v: 0, __V: _this10.version }).save().then(function () {
             return ok(doc);
           }).catch(ko);
         } catch (error) {
@@ -518,7 +568,7 @@ var ModelQuery = function (_ModelMigrate) {
   }, {
     key: 'remove',
     value: function remove() {
-      var filter = arguments.length <= 0 || arguments[0] === undefined ? {} : arguments[0];
+      var filter = arguments.length > 0 && arguments[0] !== undefined ? arguments[0] : {};
 
       return this.deleteMany(filter);
     }
@@ -528,9 +578,9 @@ var ModelQuery = function (_ModelMigrate) {
   }, {
     key: 'update',
     value: function update() {
-      var filter = arguments.length <= 0 || arguments[0] === undefined ? {} : arguments[0];
-      var modifier = arguments.length <= 1 || arguments[1] === undefined ? {} : arguments[1];
-      var options = arguments.length <= 2 || arguments[2] === undefined ? {} : arguments[2];
+      var filter = arguments.length > 0 && arguments[0] !== undefined ? arguments[0] : {};
+      var modifier = arguments.length > 1 && arguments[1] !== undefined ? arguments[1] : {};
+      var options = arguments.length > 2 && arguments[2] !== undefined ? arguments[2] : {};
 
       return this.updateMany(filter, modifier, options);
     }
@@ -540,8 +590,8 @@ var ModelQuery = function (_ModelMigrate) {
   }, {
     key: 'updateById',
     value: function updateById(_id) {
-      var modifier = arguments.length <= 1 || arguments[1] === undefined ? {} : arguments[1];
-      var options = arguments.length <= 2 || arguments[2] === undefined ? {} : arguments[2];
+      var modifier = arguments.length > 1 && arguments[1] !== undefined ? arguments[1] : {};
+      var options = arguments.length > 2 && arguments[2] !== undefined ? arguments[2] : {};
 
       return this.updateOne({ _id: _id }, modifier, options);
     }
@@ -551,8 +601,8 @@ var ModelQuery = function (_ModelMigrate) {
   }, {
     key: 'updateByIds',
     value: function updateByIds(ids) {
-      var modifier = arguments.length <= 1 || arguments[1] === undefined ? {} : arguments[1];
-      var options = arguments.length <= 2 || arguments[2] === undefined ? {} : arguments[2];
+      var modifier = arguments.length > 1 && arguments[1] !== undefined ? arguments[1] : {};
+      var options = arguments.length > 2 && arguments[2] !== undefined ? arguments[2] : {};
 
       return this.updateMany({ _id: { $in: ids } }, modifier, options);
     }
@@ -562,26 +612,26 @@ var ModelQuery = function (_ModelMigrate) {
   }, {
     key: 'updateOne',
     value: function updateOne(filter, modifier) {
-      var _this10 = this;
+      var _this11 = this;
 
-      var options = arguments.length <= 2 || arguments[2] === undefined ? {} : arguments[2];
+      var options = arguments.length > 2 && arguments[2] !== undefined ? arguments[2] : {};
 
       return new Promise(function (ok, ko) {
         if (!(filter instanceof _findStatement2.default)) {
-          filter = new _findStatement2.default(filter, _this10);
+          filter = new _findStatement2.default(filter, _this11);
         }
 
         delete filter.$projection;
 
         if (!(modifier instanceof _updateStatement2.default)) {
-          modifier = new _updateStatement2.default(modifier, _this10);
+          modifier = new _updateStatement2.default(modifier, _this11);
         }
 
-        normalizeModifier(modifier, _this10);
+        normalizeModifier(modifier, _this11);
 
         // Get document from DB
 
-        _this10.findOne(filter, options).then(function (doc) {
+        _this11.findOne(filter, options).then(function (doc) {
           if (!doc) {
             return ok();
           }
@@ -591,7 +641,7 @@ var ModelQuery = function (_ModelMigrate) {
           // Apply before hooks
 
           function () {
-            return (0, _promiseSequencer2.default)((_this10.updating() || []).map(function (fn) {
+            return (0, _promiseSequencer2.default)((_this11.updating() || []).map(function (fn) {
               return function () {
                 return fn(doc);
               };
@@ -614,9 +664,9 @@ var ModelQuery = function (_ModelMigrate) {
               }
 
               _promiseSequencer2.default.pipe(function () {
-                return _this10.exec('updateOne', { _id: doc._id }, _modifiers);
+                return _this11.exec('updateOne', { _id: doc._id }, _modifiers);
               }, function () {
-                return _this10.findOne({ _id: doc._id });
+                return _this11.findOne({ _id: doc._id });
               }).then(function (doc) {
                 return ok(doc);
               }).catch(ko);
@@ -625,7 +675,7 @@ var ModelQuery = function (_ModelMigrate) {
 
             ok(doc);
 
-            (0, _promiseSequencer2.default)((_this10.updated() || []).map(function (fn) {
+            (0, _promiseSequencer2.default)((_this11.updated() || []).map(function (fn) {
               return function () {
                 return fn(doc);
               };
@@ -666,33 +716,33 @@ var ModelQuery = function (_ModelMigrate) {
   }, {
     key: 'updateMany',
     value: function updateMany() {
-      var filter = arguments.length <= 0 || arguments[0] === undefined ? {} : arguments[0];
+      var filter = arguments.length > 0 && arguments[0] !== undefined ? arguments[0] : {};
 
-      var _this11 = this;
+      var _this12 = this;
 
-      var modifier = arguments.length <= 1 || arguments[1] === undefined ? {} : arguments[1];
-      var options = arguments.length <= 2 || arguments[2] === undefined ? {} : arguments[2];
+      var modifier = arguments.length > 1 && arguments[1] !== undefined ? arguments[1] : {};
+      var options = arguments.length > 2 && arguments[2] !== undefined ? arguments[2] : {};
 
       return new Promise(function (ok, ko) {
 
         if (!(filter instanceof _findStatement2.default)) {
-          filter = new _findStatement2.default(filter, _this11);
+          filter = new _findStatement2.default(filter, _this12);
         }
 
         delete filter.$projection;
 
         if (!(modifier instanceof _updateStatement2.default)) {
-          modifier = new _updateStatement2.default(modifier, _this11);
+          modifier = new _updateStatement2.default(modifier, _this12);
         }
 
-        normalizeModifier(modifier, _this11);
+        normalizeModifier(modifier, _this12);
 
         _promiseSequencer2.default.pipe(
 
         // Get documents from DB
 
         function () {
-          return _this11.find(filter, options);
+          return _this12.find(filter, options);
         }, function (docs) {
           return _promiseSequencer2.default.pipe(
 
@@ -758,7 +808,7 @@ var ModelQuery = function (_ModelMigrate) {
           ok(docs);
 
           docs.forEach(function (doc) {
-            return (0, _promiseSequencer2.default)((_this11.updated() || []).map(function (fn) {
+            return (0, _promiseSequencer2.default)((_this12.updated() || []).map(function (fn) {
               return function () {
                 return fn(doc);
               };

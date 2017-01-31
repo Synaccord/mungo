@@ -4,7 +4,7 @@ Object.defineProperty(exports, "__esModule", {
   value: true
 });
 
-var _typeof = typeof Symbol === "function" && typeof Symbol.iterator === "symbol" ? function (obj) { return typeof obj; } : function (obj) { return obj && typeof Symbol === "function" && obj.constructor === Symbol ? "symbol" : typeof obj; };
+var _typeof = typeof Symbol === "function" && typeof Symbol.iterator === "symbol" ? function (obj) { return typeof obj; } : function (obj) { return obj && typeof Symbol === "function" && obj.constructor === Symbol && obj !== Symbol.prototype ? "symbol" : typeof obj; };
 
 var _createClass = function () { function defineProperties(target, props) { for (var i = 0; i < props.length; i++) { var descriptor = props[i]; descriptor.enumerable = descriptor.enumerable || false; descriptor.configurable = true; if ("value" in descriptor) descriptor.writable = true; Object.defineProperty(target, descriptor.key, descriptor); } } return function (Constructor, protoProps, staticProps) { if (protoProps) defineProperties(Constructor.prototype, protoProps); if (staticProps) defineProperties(Constructor, staticProps); return Constructor; }; }();
 
@@ -40,7 +40,7 @@ var MungoFindStatementError = function (_MungoError) {
   function MungoFindStatementError() {
     _classCallCheck(this, MungoFindStatementError);
 
-    return _possibleConstructorReturn(this, Object.getPrototypeOf(MungoFindStatementError).apply(this, arguments));
+    return _possibleConstructorReturn(this, (MungoFindStatementError.__proto__ || Object.getPrototypeOf(MungoFindStatementError)).apply(this, arguments));
   }
 
   return MungoFindStatementError;
@@ -92,7 +92,7 @@ var FindStatement = function () {
       for (var field in document) {
 
         if (document[field] instanceof Promise) {} else if (typeof document[field] === 'function') {
-          var $type = undefined;
+          var $type = void 0;
 
           switch (document[field]) {
             case Number:
@@ -209,11 +209,11 @@ var FindStatement = function () {
                 }));
 
               case '$regex':
-                var parsed = _defineProperty({}, key, value);
+                var _parsed = _defineProperty({}, key, value);
                 if ('$options' in fieldValue) {
-                  parsed.$options = fieldValue.$options;
+                  _parsed.$options = fieldValue.$options;
                 }
-                return parsed;
+                return _parsed;
 
               case '$text':
                 var search = {};

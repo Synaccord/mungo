@@ -41,7 +41,7 @@ var ExtendableError = function (_extendableBuiltin2) {
   function ExtendableError(message) {
     _classCallCheck(this, ExtendableError);
 
-    var _this = _possibleConstructorReturn(this, Object.getPrototypeOf(ExtendableError).call(this, message));
+    var _this = _possibleConstructorReturn(this, (ExtendableError.__proto__ || Object.getPrototypeOf(ExtendableError)).call(this, message));
 
     _this.name = _this.constructor.name;
     _this.message = message;
@@ -56,20 +56,20 @@ var MungoError = function (_ExtendableError) {
   _inherits(MungoError, _ExtendableError);
 
   function MungoError(message) {
-    var options = arguments.length <= 1 || arguments[1] === undefined ? {} : arguments[1];
+    var options = arguments.length > 1 && arguments[1] !== undefined ? arguments[1] : {};
 
     _classCallCheck(this, MungoError);
 
-    var _this2 = _possibleConstructorReturn(this, Object.getPrototypeOf(MungoError).call(this, message));
+    var _this2 = _possibleConstructorReturn(this, (MungoError.__proto__ || Object.getPrototypeOf(MungoError)).call(this, message));
 
-    var msg = undefined;
+    var msg = void 0;
 
     try {
       msg = JSON.stringify({ message: message, options: options }, null, 2);
     } catch (e) {
       msg = message;
     } finally {
-      var _this2 = _possibleConstructorReturn(this, Object.getPrototypeOf(MungoError).call(this, msg));
+      var _this2 = _possibleConstructorReturn(this, (MungoError.__proto__ || Object.getPrototypeOf(MungoError)).call(this, msg));
     }
 
     _this2.originalMessage = message;
@@ -85,7 +85,7 @@ var MungoError = function (_ExtendableError) {
   _createClass(MungoError, null, [{
     key: 'rethrow',
     value: function rethrow(error, message) {
-      var options = arguments.length <= 2 || arguments[2] === undefined ? {} : arguments[2];
+      var options = arguments.length > 2 && arguments[2] !== undefined ? arguments[2] : {};
 
       options.error = {};
 
