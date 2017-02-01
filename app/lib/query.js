@@ -141,10 +141,10 @@ class Query {
 
           action
             .limit(projection.limit)
-            .skip(projection.skip);
+            .skip(projection.skip)
  //           .sort(projection.sort); Sort is built in to aggregate query
 
-          action.toArray()
+ //         action.toArray() don't convert it to an array
             .then(documents => {
 
               // documents = documents.map(doc => new model(doc, true));
