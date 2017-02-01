@@ -140,11 +140,11 @@ class Query {
           const action = this.collection.aggregate(query);
 
           action
-            .limit(projection.limit)
-            .skip(projection.skip)
- //           .sort(projection.sort); Sort is built in to aggregate query
-
- //         action.toArray() don't convert it to an array
+//            .limit(projection.limit)
+//            .skip(projection.skip)
+//            .sort(projection.sort);
+//
+//          action.toArray() 
             .then(documents => {
               console.info("mungo query aggregate",documents, projection);
               // documents = documents.map(doc => new model(doc, true));

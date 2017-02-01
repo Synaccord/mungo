@@ -191,10 +191,12 @@ var Query = function () {
         _this5.getCollection().then(function () {
           var action = _this5.collection.aggregate(query);
 
-          action.limit(projection.limit).skip(projection.skip)
-          //           .sort(projection.sort); Sort is built in to aggregate query
-
-          //         action.toArray() don't convert it to an array
+          action
+          //            .limit(projection.limit)
+          //            .skip(projection.skip)
+          //            .sort(projection.sort);
+          //
+          //          action.toArray() 
           .then(function (documents) {
             console.info("mungo query aggregate", documents, projection);
             // documents = documents.map(doc => new model(doc, true));
