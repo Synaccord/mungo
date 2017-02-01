@@ -201,7 +201,7 @@ class ModelQuery extends ModelMigrate {
   //----------------------------------------------------------------------------
 
   static aggregate (filter = {}, projection = {}, options = {}) {
-    console.info("modelQuery.aggregate", filter, projection, options);
+//    console.info("modelQuery.aggregate", filter, projection, options);
     const promise = new Promise((ok, ko) => {
 //      if ( ! ( filter instanceof FindStatement ) ) {
 //        filter = new FindStatement(filter, this);
@@ -215,7 +215,7 @@ class ModelQuery extends ModelMigrate {
       process.nextTick(() => {
         this
           .exec('aggregate', filter, projection, options)
-          .then(docs =>{ console.info("mungo model-query aggregate",docs); ok(docs) })
+          .then(docs =>{ ok(docs) })
           .catch(ko);
       });
     });

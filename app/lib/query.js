@@ -126,7 +126,7 @@ class Query {
    //----------------------------------------------------------------------------
 
   aggregate (query = {}, projection = {}, options = {}) {
-    console.info("query.aggregate", query, projection, options);
+//    console.info("query.aggregate", query, projection, options);
 
     const { model } = this;
 
@@ -139,14 +139,14 @@ class Query {
         .then(() => {
           const action = this.collection.aggregate(query);
 
- //         action
- //           .limit(projection.limit)
- //          .skip(projection.skip)
+          action
+            .limit(projection.limit)
+           .skip(projection.skip);
 //            .sort(projection.sort);
 //
           action.toArray() 
             .then(documents => {
-              console.info("mungo query aggregate",documents, projection);
+//              console.info("mungo query aggregate",documents, projection);
               // documents = documents.map(doc => new model(doc, true));
 
               // console.log(prettify({ [`<<  Query {${this.model.name}#${this.model.version}} <= find`] : { found : documents } }));

@@ -178,7 +178,7 @@ var Query = function () {
       var projection = arguments.length > 1 && arguments[1] !== undefined ? arguments[1] : {};
       var options = arguments.length > 2 && arguments[2] !== undefined ? arguments[2] : {};
 
-      console.info("query.aggregate", query, projection, options);
+      //    console.info("query.aggregate", query, projection, options);
 
       var model = this.model;
 
@@ -191,13 +191,11 @@ var Query = function () {
         _this5.getCollection().then(function () {
           var action = _this5.collection.aggregate(query);
 
-          //         action
-          //           .limit(projection.limit)
-          //          .skip(projection.skip)
+          action.limit(projection.limit).skip(projection.skip);
           //            .sort(projection.sort);
           //
           action.toArray().then(function (documents) {
-            console.info("mungo query aggregate", documents, projection);
+            //              console.info("mungo query aggregate",documents, projection);
             // documents = documents.map(doc => new model(doc, true));
 
             // console.log(prettify({ [`<<  Query {${this.model.name}#${this.model.version}} <= find`] : { found : documents } }));

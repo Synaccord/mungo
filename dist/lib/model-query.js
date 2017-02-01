@@ -305,7 +305,7 @@ var ModelQuery = function (_ModelMigrate) {
       var projection = arguments.length > 1 && arguments[1] !== undefined ? arguments[1] : {};
       var options = arguments.length > 2 && arguments[2] !== undefined ? arguments[2] : {};
 
-      console.info("modelQuery.aggregate", filter, projection, options);
+      //    console.info("modelQuery.aggregate", filter, projection, options);
       var promise = new Promise(function (ok, ko) {
         //      if ( ! ( filter instanceof FindStatement ) ) {
         //        filter = new FindStatement(filter, this);
@@ -318,7 +318,7 @@ var ModelQuery = function (_ModelMigrate) {
 
         process.nextTick(function () {
           _this5.exec('aggregate', filter, projection, options).then(function (docs) {
-            console.info("mungo model-query aggregate", docs);ok(docs);
+            ok(docs);
           }).catch(ko);
         });
       });
