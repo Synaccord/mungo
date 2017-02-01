@@ -139,12 +139,12 @@ class Query {
         .then(() => {
           const action = this.collection.aggregate(query);
 
-          action
-//            .limit(projection.limit)
-//            .skip(projection.skip)
+ //         action
+ //           .limit(projection.limit)
+ //          .skip(projection.skip)
 //            .sort(projection.sort);
 //
-//          action.toArray() 
+          action.toArray() 
             .then(documents => {
               console.info("mungo query aggregate",documents, projection);
               // documents = documents.map(doc => new model(doc, true));

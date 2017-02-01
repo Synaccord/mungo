@@ -191,13 +191,12 @@ var Query = function () {
         _this5.getCollection().then(function () {
           var action = _this5.collection.aggregate(query);
 
-          action
-          //            .limit(projection.limit)
-          //            .skip(projection.skip)
+          //         action
+          //           .limit(projection.limit)
+          //          .skip(projection.skip)
           //            .sort(projection.sort);
           //
-          //          action.toArray() 
-          .then(function (documents) {
+          action.toArray().then(function (documents) {
             console.info("mungo query aggregate", documents, projection);
             // documents = documents.map(doc => new model(doc, true));
 
