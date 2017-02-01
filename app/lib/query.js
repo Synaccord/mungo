@@ -146,7 +146,7 @@ class Query {
 
  //         action.toArray() don't convert it to an array
             .then(documents => {
-
+              console.info("mungo query aggregate",documents, projection);
               // documents = documents.map(doc => new model(doc, true));
 
               // console.log(prettify({ [`<<  Query {${this.model.name}#${this.model.version}} <= find`] : { found : documents } }));

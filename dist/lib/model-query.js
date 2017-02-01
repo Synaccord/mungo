@@ -317,11 +317,8 @@ var ModelQuery = function (_ModelMigrate) {
         //      delete filter.$projection;
 
         process.nextTick(function () {
-          _this5.exec('aggregate', filter, projection, options).then(function (documents) {
-            documents = documents.map(function (doc) {
-              return new _this5(doc, true);
-            });
-            ok(documents);
+          _this5.exec('aggregate', filter, projection, options).then(function (docs) {
+            console.info("mungo model-query aggregate", docs);ok(docs);
           }).catch(ko);
         });
       });

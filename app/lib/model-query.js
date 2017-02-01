@@ -215,7 +215,7 @@ class ModelQuery extends ModelMigrate {
       process.nextTick(() => {
         this
           .exec('aggregate', filter, projection, options)
-          .then(docs => ok(docs) )
+          .then(docs =>{ console.info("mungo model-query aggregate",docs); ok(docs) })
           .catch(ko);
       });
     });
