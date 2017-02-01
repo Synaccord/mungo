@@ -215,10 +215,7 @@ class ModelQuery extends ModelMigrate {
       process.nextTick(() => {
         this
           .exec('aggregate', filter, projection, options)
-          .then(documents => {
-            documents = documents.map(doc => new this(doc, true));
-            ok(documents);
-          })
+          .then(docs => ok(docs) )
           .catch(ko);
       });
     });
