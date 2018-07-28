@@ -43,10 +43,11 @@ class Connection extends EventEmitter {
         mongodb.MongoClient
       )
 
-      .then(db => {
+      .then(client => {
         connection.connected = true;
+        connection.client = client;
 
-        connection.db = db;
+        connection.db = client.db();
 
         connection.emit('connected', connection);
         this.events.emit('connected', connection);
@@ -93,7 +94,7 @@ class Connection extends EventEmitter {
 
   disconnect () {
     return sequencer(
-      () => this.db.close(),
+      () => this.client.close(),
 
       () => new Promise((ok, ko) => {
         this.connected = false;

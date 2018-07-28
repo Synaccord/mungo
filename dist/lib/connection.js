@@ -63,7 +63,7 @@ var Connection = function (_EventEmitter) {
       var _this2 = this;
 
       return (0, _promiseSequencer2.default)(function () {
-        return _this2.db.close();
+        return _this2.client.close();
       }, function () {
         return new Promise(function (ok, ko) {
           _this2.connected = false;
@@ -99,10 +99,11 @@ var Connection = function (_EventEmitter) {
 
       connection.index = this.connections.push(connection);
 
-      _promiseSequencer2.default.promisify(_mongodb2.default.MongoClient.connect, [url], _mongodb2.default.MongoClient).then(function (db) {
+      _promiseSequencer2.default.promisify(_mongodb2.default.MongoClient.connect, [url], _mongodb2.default.MongoClient).then(function (client) {
         connection.connected = true;
+        connection.client = client;
 
-        connection.db = db;
+        connection.db = client.db();
 
         connection.emit('connected', connection);
         _this3.events.emit('connected', connection);
