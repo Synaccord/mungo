@@ -5,7 +5,7 @@ Object.defineProperty(exports, "__esModule", {
 });
 exports["default"] = void 0;
 
-require('babel-polyfill');
+require('@babel/polyfill');
 
 function isPrototypeOf(child, parent) {
   var prototypeOf = Reflect.getPrototypeOf(child);
