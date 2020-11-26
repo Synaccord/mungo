@@ -9,9 +9,11 @@ exports["default"] = void 0;
 
 var _redtea = _interopRequireDefault(require("redtea"));
 
-require("should");
+var _should = _interopRequireDefault(require("should"));
 
-var _ = _interopRequireDefault(require(".."));
+var _ = _interopRequireDefault(require("../"));
+
+var _findStatement = _interopRequireDefault(require("../lib/find-statement"));
 
 function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { "default": obj }; }
 
@@ -47,68 +49,29 @@ var Foo = /*#__PURE__*/function (_Mungo$Model) {
   return Foo;
 }(_["default"].Model);
 
-_defineProperty(Foo, "collection", 'mungo_test_find_one_projection');
-
 _defineProperty(Foo, "schema", {
-  number: Number
+  foo: String
 });
 
 function test() {
   var props = arguments.length > 0 && arguments[0] !== undefined ? arguments[0] : {};
   var locals = {};
-  return (0, _redtea["default"])('Find One - Projection', function (it) {
-    it('Connect', function () {
-      return new Promise(function (pass, fail) {
-        _["default"].connect(process.env.MUNGO_URL || 'mongodb://localhost/test').on('error', fail).on('connected', pass);
-      });
+  return (0, _redtea["default"])('$sort', function (it) {
+    it('should instantiate a new FindStatement', function (it) {
+      locals.query = new _findStatement["default"]({
+        $sort: {
+          foo: 1
+        }
+      }, Foo);
     });
-    it('Create documents', function (it) {
-      var _loop = function _loop(i) {
-        it("Create { number : ".concat(i, " }"), function () {
-          return Foo.insert({
-            number: i
-          });
-        });
-      };
-
-      for (var i = 0; i < 5; i++) {
-        _loop(i);
-      }
+    it('should have a projection property', function (it) {
+      locals.query.should.have.property('$projection').which.is.an.Object();
     });
-    it('Find One - sort', function (it) {
-      it('Sort up', function (it) {
-        it('findOne().sort({ number : 1 })', function () {
-          return Foo.findOne().sort({
-            number: 1
-          }).then(function (result) {
-            locals.result = result;
-          });
-        });
-        it('should have 1 result', function () {
-          locals.result.should.be.an.Object;
-        });
-        it('it should be the lowest number', function () {
-          locals.result.should.have.property('number').which.is.exactly(0);
-        });
-      });
-      it('Sort down', function (it) {
-        it('findOne().sort({ number : -1 })', function () {
-          return Foo.findOne().sort({
-            number: -1
-          }).then(function (result) {
-            locals.result = result;
-          });
-        });
-        it('should have 1 result', function () {
-          locals.result.should.be.an.Object;
-        });
-        it('it should be the highest number', function () {
-          locals.result.should.have.property('number').which.is.exactly(4);
-        });
-      });
+    it('should have a sort', function (it) {
+      locals.query.$projection.should.have.property('sort').which.is.an.Object();
     });
-    it('Empty collection', function () {
-      return Foo.remove();
+    it('should be a sorter', function (it) {
+      locals.query.$projection.sort.should.have.property('foo').which.is.exactly(1);
     });
   });
 }
