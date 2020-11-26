@@ -11,7 +11,7 @@ var _redtea = _interopRequireDefault(require("redtea"));
 
 var _should = _interopRequireDefault(require("should"));
 
-var _ = _interopRequireDefault(require("../"));
+var _ = _interopRequireDefault(require(".."));
 
 var _findStatement = _interopRequireDefault(require("../lib/find-statement"));
 
