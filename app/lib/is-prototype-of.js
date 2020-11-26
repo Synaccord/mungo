@@ -1,6 +1,6 @@
 'use strict';
 
-require('babel-polyfill');
+require('@babel/polyfill');
 
 function isPrototypeOf (child, parent) {
   const prototypeOf = Reflect.getPrototypeOf(child);
