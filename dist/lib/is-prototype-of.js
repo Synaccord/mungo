@@ -3,6 +3,8 @@
 Object.defineProperty(exports, "__esModule", {
   value: true
 });
+exports["default"] = void 0;
+
 require('babel-polyfill');
 
 function isPrototypeOf(child, parent) {
@@ -19,4 +21,5 @@ function isPrototypeOf(child, parent) {
   return false;
 }
 
-exports.default = isPrototypeOf;
+var _default = isPrototypeOf;
+exports["default"] = _default;

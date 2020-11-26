@@ -2,7 +2,7 @@
 
 import describe from 'redtea';
 import should from 'should';
-import Mungo from '../';
+import Mungo from '..';
 import FindStatement from '../lib/find-statement';
 
 class Foo extends Mungo.Model {
